@@ -1,1 +1,1 @@
-odin::odin_package()
+odin::odin_package(".")

@@ -34,39 +34,39 @@ initial(IPH)<-IP0*(1-phi)
 initial(RP)<-0
 
 # Initial egg number (at equilibrium)
-E0<-((delta*HPS*TPrev*(1-CPrev))+(delta*HPS*TPrev*CPrev))/dE
+E0<-user()
 # Intitial number of infected pigs
-IP0<-PPS*PTPrev
+IP0<-user()
 # Intitial number of susceptible pigs
-SP0<-PPS-IP0
+SP0<-user()
 # Egg to pig transmission parameter
-tau<-(dP*IP0)/(SP0*E0)
+tau<-user()
 #tau<-if(t<100) tau0 else tau0/2
 
 # Initial number of Human: T- C+
-SHC0<-HPS*(1-TPrev)*CPrev
+SHC0<-user()
 # Initial number of Human: T+ C+
-IHC0<-HPS*TPrev*CPrev
+IHC0<-user()
 # Initial number of Human: susceptible
-SH0<-HPS*(1-TPrev)*(1-CPrev)
+SH0<-user()
 # Initial number of Human: T+ C-
-IH0<-HPS*TPrev*(1-CPrev)
+IH0<-user()
 
 ### Parameters ###
 # Demographic:
 # Human life expectancy (years)
-LEH<-user(54)
+LEH<-user()
 # Pig life expectancy (years)
-LEP<-user(1)
+LEP<-user()
 # Human population size
-HPS<-user(10000)
+HPS<-user()
 # Pig population size
-PPS<-user(2000)
+PPS<-user()
 
 # Human mortality rate
-dH<-1/(LEH*12)
+dH<-user()
 # Pig mortality rate
-dP<-1/(LEP*12)
+dP<-user()
 # Human births (per month):
 bH<-HPS*dH
 # Pig births (per month):
@@ -74,42 +74,41 @@ bP<-PPS*dP
 
 # Taenia
 # Average egg survival (years)
-AEL<-user(0.03846154)
+AEL<-user()
 # Egg mortality rate
-dE<-1/(AEL*12)
+dE<-user()
 # Egg production rate
-delta<-user(960000)
+delta<-user()
 # Egg to human transmission parameter
 theta<-(bH+eta*(SHC0+IHC0)-dH*(SH0+IH0))/((SH0*E0)+((1+RR)*IH0*E0))
 
 # Disease
 # Taeniasis prevalence in human population
-TPrev<-user(0.02)
+TPrev<-user()
 # Cysticercosis prevalence in human population
-CPrev<-user(0.07)
+CPrev<-user()
 # Cysticercosis prevalence in pig population
-PTPrev<-user(0.2)
+PTPrev<-user()
 # Proportion of infected pigs with low-intensity cyst burden
-phi<-user(0.8)
+phi<-user()
 # Average lifespan of the adult tapeworm (years)
-ATL<-user(2)
+ATL<-user()
 # Average duration of Cysticercosis infection in human (years)
-ADI<-user(50)
+ADI<-user()
 # Human recovery rate from Taeniasis
-alpha<-1/(ATL*12)
+alpha<-user()
 # Human recovery rate from Cysticercosis
-eta<-1/(ADI*12)
+eta<-user()
 # Low intensity infected pig -> human contact rate
-pil<-user(0.5)
+pil<-user()
 # Low intensity infected pig -> human infection probability
-chil<-Beta/(pil*phi+(2*pih*(1-phi)))
+chil<-user()
 # High intensity infected pig -> human contact rate
-pih<-user(1)
+pih<-user()
 # High intensity infected pig -> human infection probability
-chih<-2*chil
+chih<-user()
 # Pig rate of loss of naturally aquired immunity
 epsilon<-user(0.01)
 # Risk multiplier for Cysticercosis if human has Taeniasis
 RR=1
-# Pork to human tranmission parameter
-Beta<-(alpha*(IH0+IHC0)+eta*IHC0+dH*(IH0+IHC0))/((IP0/PPS)*(SH0+SHC0))
+
