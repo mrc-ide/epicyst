@@ -69,6 +69,6 @@
       .Call("cyst_generator_contents", self$ptr, PACKAGE = "deCyst")
     }
   ))
-cyst_generator <- function(LEH = NULL, LEP = NULL, HPS = NULL, PPS = NULL, AEL = NULL, delta = NULL, TPrev = NULL, CPrev = NULL, PTPrev = NULL, phi = NULL, ATL = NULL, ADI = NULL, pil = NULL, pih = NULL, epsilon = NULL, user = list(LEH = LEH, LEP = LEP, HPS = HPS, PPS = PPS, AEL = AEL, delta = delta, TPrev = TPrev, CPrev = CPrev, PTPrev = PTPrev, phi = phi, ATL = ATL, ADI = ADI, pil = pil, pih = pih, epsilon = epsilon), use_dde = FALSE) {
+cyst_generator <- function(E0, IP0, SP0, tau, SHC0, IHC0, SH0, IH0, LEH, LEP, HPS, PPS, dH, dP, AEL, dE, delta, TPrev, CPrev, PTPrev, phi, ATL, ADI, alpha, eta, pil, chil, pih, chih, epsilon = NULL, user = list(E0 = E0, IP0 = IP0, SP0 = SP0, tau = tau, SHC0 = SHC0, IHC0 = IHC0, SH0 = SH0, IH0 = IH0, LEH = LEH, LEP = LEP, HPS = HPS, PPS = PPS, dH = dH, dP = dP, AEL = AEL, dE = dE, delta = delta, TPrev = TPrev, CPrev = CPrev, PTPrev = PTPrev, phi = phi, ATL = ATL, ADI = ADI, alpha = alpha, eta = eta, pil = pil, chil = chil, pih = pih, chih = chih, epsilon = epsilon), use_dde = FALSE) {
   .R6_cyst_generator$new(user = user, use_dde = use_dde)
 }
