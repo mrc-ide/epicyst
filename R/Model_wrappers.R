@@ -1,6 +1,5 @@
-testgit<-function(){
-  1+1
-}
+
+
 # This function will produce two lists, parameters and initial state variables
 Set_up<-function(LEP=1, delta=960000, HPS=10000, PPS=2000, TPrev=0.02, CPrev=0.07, PTPrev=0.2, AEL=0.03846154,
                          pil_bl=0.5, pih_bl=1, ATL=2, ADI=50, LEH=54, phi=0.8){
