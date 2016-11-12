@@ -1,0 +1,101 @@
+
+#' @title
+#' Equilibrium Eggs
+#' @description
+#' Calculate the number of eggs in the environment at equlibrium
+#'
+#' @param delta Egg production rate (per month)
+#' @param HPS Human population size
+#' @param TPrev Taeniasis prevalence in human population
+#' @param CPrev Cysticercosis prevalence in human population
+#' @param dE The egg mortlality/removal rate (per month)
+#'
+#' @return The Equilbirum number of eggs in the environment
+E0_equilibrium<-function(delta, HPS, TPrev, CPrev, dE){
+  ((delta*HPS*TPrev*(1-CPrev))+(delta*HPS*TPrev*CPrev))/dE
+}
+
+#' @title
+#' Egg to pig transmission paramter
+#' @description
+#' Calculate the transmission parameter (egg->pig) at equiliberium
+#'
+#' @param dP Pig mortality rate (per month)
+#' @param IP0 Initial number of infected pigs
+#' @param SP0 Intitial number of susceptible pigs
+#' @param E0 The equilibrium number of eggs in the environment
+#'
+#' @return The equilibrium egg to pig transmission parameter
+tau_equilibrium<-function(dP, IP0, SP0, E0){
+  (dP*IP0)/(SP0*E0)
+}
+
+#' @title
+#' Pig to human transmission paramter
+#' @description
+#' Calculate the transmission parameter (pig->human) at equiliberium
+#'
+#' @param alpha Human recovery rate from Taenisasis (per month)
+#' @param IH0 Initial number of Human: T+ C-
+#' @param IHC0 Initial number of Human: T+ C+
+#' @param eta Human recovery rate from Cysticercosis (oer month)
+#' @param dH Human mortality rate (per month)
+#' @param IP0 Initial number of infected pigs
+#' @param PPS Pig popultion size
+#' @param SH0 Initial number of Human: susceptible
+#' @param SHC0 Initial number of Human: T- C+
+#'
+#' @return The equilibrium pig to human transmission parameter
+Beta_equilibrium<-function(alpha, IH0, IHC0, eta, dH, IP0, PPS, SH0, SHC0){
+  (alpha*(IH0+IHC0)+eta*IHC0+dH*(IH0+IHC0))/((IP0/PPS)*(SH0+SHC0))
+}
+
+#' @title
+#' Low intensity infected pig -> human infection probability
+#' @description
+#' Calculate the transmission probability between a low intensity infected pig and human at equiliberium
+#'
+#' @param Beta Pork to human tranmission parameter
+#' @param pil Low intensity infected pig -> human contact rate (per month)
+#' @param phi Proportion of infected pigs with low-intensity cyst burden
+#' @param pih High intensity infected pig -> human contact rate (per month)
+#'
+#' @return The equilibrium transmission probability between a low intesnisty infected pig and human
+# chil_equilibrium<-function(Beta, pil, phi, pih){
+#   Beta/(pil*phi+(2*pih*(1-phi)))
+# }
+
+#' @title
+#' Low intensity infected pig -> human infection probability
+#' @description
+#' Calculate the transmission probability between a low intensity infected pork meal and human at equiliberium
+#'
+#' @param Beta Pork to human tranmission parameter
+#' @param chi rate of eating a pork meal (per month)
+#' @param phi Proportion of infected pigs with low-intensity cyst burden
+#'
+#' @return The equilibrium transmission probability between a low intesnisty infected pig and human
+pil_equilibrium<-function(beta, chi, phi){
+  chil<-chi*phi
+  chih<-chi*(1-phi)
+
+  pil<-beta/(chil +2*chih)
+
+  return(pil)
+}
+
+#' @title
+#' Monthly rate
+#' @description
+#' Converts an average duration (years) into a monthly rate
+#'
+#' @param dur Average duration (years)
+#'
+#' @return Monthly rate
+month_rate<-function(dur){
+  1/(dur*12)
+}
+
+
+
+

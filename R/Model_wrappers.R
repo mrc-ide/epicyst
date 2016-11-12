@@ -1,49 +1,62 @@
 
-
 # This function will produce two lists, parameters and initial state variables
 Set_up<-function(LEP=1, delta=960000, HPS=10000, PPS=2000, TPrev=0.02, CPrev=0.07, PTPrev=0.2, AEL=0.03846154,
-                         pil_bl=0.5, pih_bl=1, ATL=2, ADI=50, LEH=54, phi=0.8){
+                         ATL=2, ADI=50, LEH=54, phi=0.8, chi=0.5){
 
-
+  browser()
   # Pig mortality rate
-  dP<-1/(LEP*12)
+  dP<-month_rate(LEP)
   # Egg mortality rate
-  dE<-1/(AEL*12)
+  dE<-month_rate(AEL)
   # Intitial number of infected pigs
   IP0<-PPS*PTPrev
   # Intitial number of susceptible pigs
   SP0<-PPS-IP0
-  # Egg production rate
-  delta<-delta_bl
   # Initial egg number (at equilibrium)
-  E0<-((delta*HPS*TPrev*(1-CPrev))+(delta*HPS*TPrev*CPrev))/dE
+  E0<-E0_equilibrium(delta, HPS, TPrev, CPrev, dE)
   # Egg to pig transmission parameter
-  tau<-(dP*IP0)/(SP0*E0)
+  tau<-tau_equilibrium(dP, IP0, SP0, E0)
   # Human recovery rate from Taeniasis
-  alpha<-1/(ATL*12)
+  alpha<-month_rate(ATL)
   # Initial number of Human: T+ C-
   IH0<-HPS*TPrev*(1-CPrev)
   # Initial number of Human: T+ C+
   IHC0<-HPS*TPrev*CPrev
   # Human recovery rate from Cysticercosis
-  eta<-1/(ADI*12)
+  eta<-month_rate(ADI)
   # Human mortality rate
-  dH<-1/(LEH*12)
+  dH<-month_rate(LEH)
   # Initial number of Human: susceptible
   SH0<-HPS*(1-TPrev)*(1-CPrev)
   # Initial number of Human: T- C+
   SHC0<-HPS*(1-TPrev)*CPrev
-  # Low intensity infected pig -> human contact rate
-  pil<-pil_bl
-  # High intensity infected pig -> human contact rate
-  pih<-pih_bl
+
+
+  #### THis section has been reworked:
+    # Literature review = pork consumption rate of 0.5 meals per month (1 meal every two months), therefore
+    # rate of contacting pork (chi) = 0.5
+    # rate of contacting low intensity infected pork (chil) = 0.5 * 0.8
+    # rate of contacting high intensity infected pork (chih) = 0.5 * 0.2
 
   # Pork to human tranmission parameter
-  Beta<-(alpha*(IH0+IHC0)+eta*IHC0+dH*(IH0+IHC0))/((IP0/PPS)*(SH0+SHC0))
+  beta<-Beta_equilibrium(alpha, IH0, IHC0, eta, dH, IP0, PPS, SH0, SHC0)
+
+  pil<-pil_equilibrium(beta, chi, phi)
+  pih<-2*pil
   # Low intensity infected pig -> human infection probability
-  chil<-Beta/(pil*phi+(2*pih*(1-phi)))
+  #chil<-chil_equilibrium(beta, pil, phi, pih)
   # High intensity infected pig -> human infection probability
-  chih<-2*chil
+  #chih<-2*chil
+
+  # Number of infected pigs with low cyst burden at time 0
+  IPL0<-(PPS-SP0) * phi
+  # Number of infected pigs with high cyst burden at time 0
+  IPH0<-(PPS-SP0) * (1-phi)
+  # Recovered pigs at time 0
+  RP0<-0
+  # Vaccinated pigs at time 0
+  VP0<-0
+
 
   params<-list(tau=tau,
                LEH=LEH,
@@ -76,14 +89,13 @@ Set_up<-function(LEP=1, delta=960000, HPS=10000, PPS=2000, TPrev=0.02, CPrev=0.0
                IHC0=IHC0,
                SH0=SH0,
                IH0=IH0,
-               IPL0=IPL0
-               IPH0=IPH0
-               RP0=RP0
+               IPL0=IPL0,
+               IPH0=IPH0,
+               RP0=RP0,
                VP0=VP0)
 
   return(list(params, states))
 }
-
 
 
 #' @title
@@ -92,86 +104,11 @@ Set_up<-function(LEP=1, delta=960000, HPS=10000, PPS=2000, TPrev=0.02, CPrev=0.0
 #' Runs a single implementation of the ODE Cysticercosis model
 #'
 #' @param tt vector of times
-#' @param LEP Average life expectancy of a pig (years)
-#' @param delta_bl Egg production rate (per month)
-#' @param HPS Human population size
-#' @param PPS Pig population size
-#' @param TPrev Taeniasis prevalence in human population
-#' @param CPrev Cysticercosis prevalence in human population
-#' @param PTPrev Cysticercosis prevalence in pig population
-#' @param AEL Average egg survival (years)
-#' @param pil_bl Low intensity infected pig -> human contact rate
-#' @param pih_bl High intensity infected pig -> human contact rate
-#' @param ATL Average lifespan of the adult tapeworm (years)
-#' @param ADI Average duration of Cysticercosis infection in human (years)
-#' @param LEH Average life expectancy of a human (years)
-#' @param phi Proportion of infected pigs with low-intensity cyst burden
-#' @param Husbandry_effect 1-proportion reduction to egg to pig transmission parameter (tau)
-#' @param Sanitation_effect 1-proportion reduction to egg production rate (delta)
-#' @param Inspection_effect_low 1-proportion reduction to low intensity infected pig -> human contact rate (pil)
-#' @param Inspection_effect_high 1-proportion reduction to high intensity infected pig -> human contact rate (pih)
-Single_run<-function(tt, LEP=1,delta_bl=960000,HPS=10000,PPS=2000,TPrev=0.02,CPrev=0.07,PTPrev=0.2,AEL=0.03846154,
-                        pil_bl=0.5, pih_bl=1, ATL=2, ADI=50, LEH=54, phi=0.8, Husbandry_effect=1, Sanitation_effect=1,
-                        Inspection_effect_low=1, Inspection_effect_high=1){
+#' @param params list of parameters
+#' @param states list of states
+Single_run<-function(tt, params, states){
 
-  # Pig mortality rate
-  dP<-1/(LEP*12)
-  # Egg mortality rate
-  dE<-1/(AEL*12)
-  # Intitial number of infected pigs
-  IP0<-PPS*PTPrev
-  # Intitial number of susceptible pigs
-  SP0<-PPS-IP0
-  # Egg production rate
-  delta<-delta_bl
-  # Initial egg number (at equilibrium)
-  E0<-((delta*HPS*TPrev*(1-CPrev))+(delta*HPS*TPrev*CPrev))/dE
-  # Egg to pig transmission parameter
-  tau<-(dP*IP0)/(SP0*E0)
-  # Human recovery rate from Taeniasis
-  alpha<-1/(ATL*12)
-  # Initial number of Human: T+ C-
-  IH0<-HPS*TPrev*(1-CPrev)
-  # Initial number of Human: T+ C+
-  IHC0<-HPS*TPrev*CPrev
-  # Human recovery rate from Cysticercosis
-  eta<-1/(ADI*12)
-  # Human mortality rate
-  dH<-1/(LEH*12)
-  # Initial number of Human: susceptible
-  SH0<-HPS*(1-TPrev)*(1-CPrev)
-  # Initial number of Human: T- C+
-  SHC0<-HPS*(1-TPrev)*CPrev
-  # Low intensity infected pig -> human contact rate
-  pil<-pil_bl
-  # High intensity infected pig -> human contact rate
-  pih<-pih_bl
-
-  # Pork to human tranmission parameter
-  Beta<-(alpha*(IH0+IHC0)+eta*IHC0+dH*(IH0+IHC0))/((IP0/PPS)*(SH0+SHC0))
-  # Low intensity infected pig -> human infection probability
-  chil<-Beta/(pil*phi+(2*pih*(1-phi)))
-  # High intensity infected pig -> human infection probability
-  chih<-2*chil
-
-  # Inteventions:
-  tau<-tau*Husbandry_effect
-  delta<-delta*Sanitation_effect
-  pil<-pil*Inspection_effect_low
-  pih<-pih*Inspection_effect_high
-
-  pars<-list(E0=E0, IP0=IP0, SP0=SP0, tau=tau, SHC0=SHC0, IHC0=IHC0, SH0=SH0,
-             IH0=IH0, LEH=LEH, LEP=LEP, HPS=HPS, PPS=PPS, dH=dH, dP=dP,
-             AEL=AEL, dE=dE, delta=delta, TPrev=TPrev, CPrev=CPrev, PTPrev=PTPrev,
-             phi=phi, ATL=ATL, ADI=ADI, alpha=alpha, eta=eta, pil=pil, chil=chil,
-             pih=pih, chih=chih)
-
-  #Mod<-cyst_generator(user=pars)
-  Mod<-cyst_generator(E0=E0, IP0=IP0, SP0=SP0, tau=tau, SHC0=SHC0, IHC0=IHC0, SH0=SH0,
-                      IH0=IH0, LEH=LEH, LEP=LEP, HPS=HPS, PPS=PPS, dH=dH, dP=dP,
-                      AEL=AEL, dE=dE, delta=delta, TPrev=TPrev, CPrev=CPrev, PTPrev=PTPrev,
-                      phi=phi, ATL=ATL, ADI=ADI, alpha=alpha, eta=eta, pil=pil, chil=chil,
-                      pih=pih, chih=chih)
+  Mod<-cyst_generator(c(params, states))
 
   y<-Mod$run(tt)
 
@@ -184,24 +121,57 @@ Single_run<-function(tt, LEP=1,delta_bl=960000,HPS=10000,PPS=2000,TPrev=0.02,CPr
 #' @description
 #' Runs the ODE Cysticercosis model
 #'
+#' @param Params List of model parameters
+#' @param Initial_states List of intitial state values
 #' @param Time The numebr of years to run the model for (from equilibrium)
-#' @param LEP Average life expectancy of a pig (years)
-Run_model<-function(Time, Intervention, Intervention_time, Intervention_effect, step=1/30){
-  tt1<-seq(0, Intervention_time*12, step)
-  tt2<-seq(Intervention_time+step, Time*12, step)
+#' @param Intervention A vector of interventions to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat
+#' @param Intervention_effect A list of intervention effect sizes, see \code{Intervention_effect_size} for details
+#' @param step Time step (months)
+Run_model<-function(PArams, Initial_states, Time, Intervention, Intervention_time, Intervention_effect=Intervention_effect_size(), step=1/30){
 
+  # Checks
+  Check_interventions(Intervention)
+  Check_effect(Intervention_effect)
 
-  eq_state<-calc_equilibrium(params)  # This function will calculate state starting variables (at equilibirum) given params
-  BL<-Single_run(tt1, params, State=eq_state) # Single run modified to take times, params and States
-
-  # Alter params
-  if(intervention=='Sanitation'){
-    delta<-delta*0.8
+  # Set time vectors for pre- and pos-intervention
+  tt1<-seq(0, (Intervention_time*12)-step, step)
+  # Set yearly times for interention period
+  splits<-seq((Intervention_time*12), Time*12, 12)
+  tt2<-list()
+  for(i in 1:(length(splits)-1)){
+    tt2[[i]]<-seq(splits[i]+step, splits[i+1], step)
   }
 
-  Post<-SIngle_run(tt2, altered_params, State=End state of BL)
+  # Calculate parmaters and initial state variables
+  Initialise<-Set_up()
+  Params<-Intialise[[1]]
+  Initial_states<-Intialise[[2]]
+
+  # Run the pre-intervention period
+  BL<-Single_run(tt1, params=Params, State=Initial_states)
+
+  Runs<-list()
+  Runs[[1]]<-BL
+
+  for(i in 1:length(tt2)){
+    # Pull the 'end' state values from previous run
+    Tail_states<-tail(Runs[[i]])
+    # Alter states/params for single interventions
+    if(i==1){
+      Params<-Intervention_event_param(Params=Params, Intervention, Intervention_effect)
+    }
+
+    # Alter states/params for repeat interventions
+    States<-Intervention_event_state(States=Tail_states, Intervention, Intervention_effect)
 
 
+    # Do the next run
+    Runs[[i+1]]<-Single_run(tt2[[1]], Params, State=States)
+  }
+
+  Runs<-do.call('cbind', Runs)
+
+  return(Runs)
 }
 
 
