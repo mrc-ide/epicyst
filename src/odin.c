@@ -200,7 +200,7 @@ void cyst_generator_deriv(cyst_generator_pars *cyst_generator_p, double t, doubl
   dstatedt[6] = cyst_generator_p->phi * cyst_generator_p->tau * SP * E - cyst_generator_p->dP * IPL;
   dstatedt[7] = (1 - cyst_generator_p->phi) * cyst_generator_p->tau * SP * E - cyst_generator_p->dP * IPH;
   dstatedt[8] = -cyst_generator_p->epsilon * RP - cyst_generator_p->dP * RP;
-  dstatedt[9] = cyst_generator_p->dP * VP;
+  dstatedt[9] = -cyst_generator_p->dP * VP;
   if (output != NULL) {
     output[0] = IH + IHC;
     output[1] = SHC + IHC;

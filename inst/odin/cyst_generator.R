@@ -21,7 +21,7 @@ deriv(IPH)<-(1-phi)*tau*SP*E-dP*IPH
 # Pigs: Recovered/Immune
 deriv(RP)<- -epsilon*RP-dP*RP
 # Pigs: Vaccinated
-deriv(VP)<-dP*VP
+deriv(VP)<- -dP*VP
 
 
 ### Initial conditions ###

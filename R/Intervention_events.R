@@ -70,14 +70,14 @@ Intervention_event_param<-function(Params, Intervention, Intervention_effect){
   }
 
   if('Sanitation' %in% Intervention){
-    effect<-Intervention_effect[[Sanitation]]
+    effect<-Intervention_effect[['Sanitation']]
     Params<-Replace_param(params=Params, param_name='delta', effect_size=effect)
   }
 
   if('Inspection' %in% Intervention){
     effect<-Intervention_effect[['Inspection']]
-    Params<-Replace_param(params=Params, param_name='chil', effect_size=effect[1])
-    Params<-Replace_param(params=Params, param_name='chih', effect_size=effect[2])
+    Params<-Replace_param(params=Params, param_name='pil', effect_size=effect[1])
+    Params<-Replace_param(params=Params, param_name='pih', effect_size=effect[2])
   }
 
   return(Params)
@@ -94,8 +94,8 @@ Intervention_event_param<-function(Params, Intervention, Intervention_effect){
 #' @param to The name of the state variable that individuals will be moved in to
 #' @param proportion The propotion of individuals in from that get moved into to
 Move_state<-function(States, from, to, proportion){
-  States[from]<-States[from]*(1-propoition)
-  States[to]<-States[to] + States[from]*proportion
+  States[[from]]<-States[[from]]*(1-proportion)
+  States[[to]]<-States[[to]] + States[[from]]*proportion
 
   return(States)
 }
@@ -111,21 +111,21 @@ Move_state<-function(States, from, to, proportion){
 Intervention_event_state<-function(States, Intervention, Intervention_effect){
 
   if('Pig_MDA' %in% Intervention){
-    proportion<-Intervention_effect['Pig_MDA']
-    States<-Move_state(States, from='IPL', to='SP', proportion=proportion[1]*proportion[2])
-    States<-Move_state(States, from='IPL', to='RP', proportion=proportion[1]*(1-proportion[2]))
-    States<-Move_state(States, from='IPH', to='SP', proportion=proportion[1]*proportion[2])
-    States<-Move_state(States, from='IPH', to='RP', proportion=proportion[1]*(1-proportion[2]))
+    proportion<-Intervention_effect[['Pig_MDA']]
+    States<-Move_state(States, from='IPL0', to='SP0', proportion=proportion[1]*proportion[2])
+    States<-Move_state(States, from='IPL0', to='RP0', proportion=proportion[1]*(1-proportion[2]))
+    States<-Move_state(States, from='IPH0', to='SP0', proportion=proportion[1]*proportion[2])
+    States<-Move_state(States, from='IPH0', to='RP0', proportion=proportion[1]*(1-proportion[2]))
   }
 
   if('Pig_vaccine' %in% Intervention){
-    proportion<-Intervention_effect['Pig_vaccine']
-    States<-Move_state(States, from='SP', to='VP', proportion=proportion)
+    proportion<-Intervention_effect[['Pig_vaccine']]
+    States<-Move_state(States, from='SP0', to='VP0', proportion=proportion)
   }
 
   if('Human_test_and_treat' %in% Intervention){
-    proportion<-Intervention_effect['Human_test_and_treat']
-    States<-Move_state(States, from='IH', to='SH', proportion=proportion)
+    proportion<-Intervention_effect[['Human_test_and_treat']]
+    States<-Move_state(States, from='IH0', to='SH0', proportion=proportion)
   }
 
   return(States)
