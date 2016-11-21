@@ -4,10 +4,13 @@
 \alias{Run_model}
 \title{Run Cysticercosis model with interventions}
 \usage{
-Run_model(PArams, Initial_states, Time, Intervention, Intervention_time,
+Run_model(Params = NULL, Initial_states = NULL, Time, Intervention = NULL,
+  Intervention_time = NULL,
   Intervention_effect = Intervention_effect_size(), step = 1/30)
 }
 \arguments{
+\item{Params}{List of model parameters}
+
 \item{Initial_states}{List of intitial state values}
 
 \item{Time}{The numebr of years to run the model for (from equilibrium)}
@@ -17,8 +20,6 @@ Run_model(PArams, Initial_states, Time, Intervention, Intervention_time,
 \item{Intervention_effect}{A list of intervention effect sizes, see \code{Intervention_effect_size} for details}
 
 \item{step}{Time step (months)}
-
-\item{Params}{List of model parameters}
 }
 \description{
 Runs the ODE Cysticercosis model

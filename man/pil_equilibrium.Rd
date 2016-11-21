@@ -4,12 +4,14 @@
 \alias{pil_equilibrium}
 \title{Low intensity infected pig -> human infection probability}
 \usage{
-pil_equilibrium(beta, chi, phi)
+pil_equilibrium(beta, chi, phi, CRR)
 }
 \arguments{
-\item{chi}{rate of eating a pork meal (per month)}
+\item{chi}{rate of aquiring a pork meal (per month)}
 
 \item{phi}{Proportion of infected pigs with low-intensity cyst burden}
+
+\item{CRR}{Combined reltive risk for high cyst burden pork (increased RR of infection * decreased RR of consumption)}
 
 \item{Beta}{Pork to human tranmission parameter}
 

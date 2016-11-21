@@ -1,115 +1,4 @@
 
-# This function will produce two lists, parameters and initial state variables
-Set_up<-function(LEP=1, delta=960000, HPS=10000, PPS=2000, TPrev=0.02, CPrev=0.07, PTPrev=0.2, AEL=0.03846154,
-                         ATL=2, ADI=50, LEH=54, phi=0.8, chi=0.5, RR=1, epsilon=0.01){
-
-  # Pig mortality rate
-  dP<-month_rate(LEP)
-  # Egg mortality rate
-  dE<-month_rate(AEL)
-  # Intitial number of infected pigs
-  IP0<-PPS*PTPrev
-  # Intitial number of susceptible pigs
-  SP0<-PPS-IP0
-  # Initial egg number (at equilibrium)
-  E0<-E0_equilibrium(delta, HPS, TPrev, CPrev, dE)
-  # Egg to pig transmission parameter
-  tau<-tau_equilibrium(dP, IP0, SP0, E0)
-  # Human recovery rate from Taeniasis
-  alpha<-month_rate(ATL)
-  # Initial number of Human: T+ C-
-  IH0<-HPS*TPrev*(1-CPrev)
-  # Initial number of Human: T+ C+
-  IHC0<-HPS*TPrev*CPrev
-  # Human recovery rate from Cysticercosis
-  eta<-month_rate(ADI)
-  # Human mortality rate
-  dH<-month_rate(LEH)
-  # Initial number of Human: susceptible
-  SH0<-HPS*(1-TPrev)*(1-CPrev)
-  # Initial number of Human: T- C+
-  SHC0<-HPS*(1-TPrev)*CPrev
-
-
-  #### THis section has been reworked:
-    # Literature review = pork consumption rate of 0.5 meals per month (1 meal every two months), therefore
-    # rate of contacting pork (chi) = 0.5
-    # rate of contacting low intensity infected pork (chil) = 0.5 * 0.8
-    # rate of contacting high intensity infected pork (chih) = 0.5 * 0.2
-
-  # Pork to human tranmission parameter
-  beta<-Beta_equilibrium(alpha, IH0, IHC0, eta, dH, IP0, PPS, SH0, SHC0)
-
-  pil<-pil_equilibrium(beta, chi, phi)
-  pih<-2*pil
-  # Low intensity infected pig -> human infection probability
-  #chil<-chil_equilibrium(beta, pil, phi, pih)
-  # High intensity infected pig -> human infection probability
-  #chih<-2*chil
-
-  # Number of infected pigs with low cyst burden at time 0
-  IPL0<-(PPS-SP0) * phi
-  # Number of infected pigs with high cyst burden at time 0
-  IPH0<-(PPS-SP0) * (1-phi)
-  # Recovered pigs at time 0
-  RP0<-0
-  # Vaccinated pigs at time 0
-  VP0<-0
-
-  # Birth of humans
-  bH<-HPS*dH
-
-  # Birth of pigs
-  bP<-PPS*dP
-
-  theta<-theta_equilibrium(bH, eta, SHC0, IHC0, dH, SH0, IH0, E0, RR)
-
-
-  params<-list(tau=tau,
-               #LEH=LEH,
-               #LEP=LEP,
-               PPS=PPS,
-               HPS=HPS,
-               bH=bH,
-               bP=bP,
-               PPS=PPS,
-               dH=dH,
-               dP=dP,
-               #AEL=AEL,
-               dE=dE,
-               delta=delta,
-               #TPrev=TPrev,
-               #CPrev=CPrev,
-               #PTPrev=PTPrev,
-               phi=phi,
-               #ATL=ATL,
-               #ADI=ADI,
-               theta=theta,
-               alpha=alpha,
-               eta=eta,
-               chi=chi,
-               pil=pil,
-               pih=pih,
-               epsilon=epsilon,
-               RR=RR
-  )
-
-  states<-list(E0=E0,
-               #IP0=IP0,
-               SP0=SP0,
-               SHC0=SHC0,
-               IHC0=IHC0,
-               SH0=SH0,
-               IH0=IH0,
-               IPL0=IPL0,
-               IPH0=IPH0,
-               RP0=RP0,
-               VP0=VP0)
-
-  return(list(params, states))
-}
-
-
 #' @title
 #' Run Cysticercosis model ODE
 #' @description
@@ -141,7 +30,7 @@ Single_run<-function(tt, params, states){
 #' @param step Time step (months)
 Run_model<-function(Params=NULL, Initial_states=NULL, Time, Intervention=NULL, Intervention_time=NULL, Intervention_effect=Intervention_effect_size(), step=1/30){
 
-  # Calculate parmaters and initial state variables
+  # Calculate parmaters and initial state variables (if not provided)
   Initialise<-Set_up()
   if(is.null(Params)){
     Params<-Initialise[[1]]
@@ -150,17 +39,17 @@ Run_model<-function(Params=NULL, Initial_states=NULL, Time, Intervention=NULL, I
     Initial_states<-Initialise[[2]]
   }
 
-
+  # Run with no interventions (if none specified)
   if(is.null(Intervention)){
     Run<-Single_run(seq(0, Time*12, step), Params, Initial_states)
     Run<-as.data.frame(Run)
     return(Run)
   }
 
-  # Checks
+  # Checks on intervention inputs
   Check_interventions(Intervention)
   Check_effect(Intervention_effect)
-  #browser()
+
   # Set time vectors for pre- and pos-intervention
   tt1<-seq(0, (Intervention_time*12)-step, step)
   # Set yearly times for interention period

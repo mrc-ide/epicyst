@@ -125,3 +125,4 @@ output(Pigs_Cysticercosis)<-IPH+IPL
 output(Human_Taeniasis_prev)<-(IH+IHC)/HPS
 output(Human_Cysticercosis_prev)<-(SHC+IHC)/HPS
 output(Pig_Cysticercosis_prev)<-(IPH+IPL)/PPS
+
