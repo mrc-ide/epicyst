@@ -8,5 +8,6 @@ Description: Contains ODEs for Cysticercosis/Pork tapeworm model.
 License: What license is it under?
 LazyData: TRUE
 Imports:
-    odin
+    odin,
+    lhs
 RoxygenNote: 5.0.1
