@@ -10,6 +10,8 @@
     ## Cache:
     init = NULL,
     variable_order = NULL,
+    output_order = NULL,
+    output_length = NULL,
     names = NULL,
     transform_variables = NULL,
     ## Methods:
@@ -31,6 +33,7 @@
 
     update_cache = function() {
       self$variable_order <- .Call("cyst_generator_variable_order", self$ptr, PACKAGE = "deCyst")
+      self$output_order <- .Call("cyst_generator_output_order", self$ptr, PACKAGE = "deCyst")
       odin_prepare(self, FALSE)
     },
 
@@ -49,12 +52,12 @@
       if (self$use_dde) {
         ret <- dde::dopri(y, t, "cyst_generator_deriv_dde", self$ptr,
                           dllname="deCyst",
-                          parms_are_real=FALSE,
-                          by_column=TRUE, return_initial=TRUE,
-                          return_time=TRUE, return_output_with_y=TRUE, ...)
+                          n_out=self$output_length, output="cyst_generator_output_dde",
+                          parms_are_real=FALSE, ynames = FALSE, ...)
       } else {
         ret <- deSolve::ode(y, t, "cyst_generator_deriv_ds", self$ptr,
                             initfunc = "cyst_generator_initmod_ds", dllname = "deCyst",
+                            nout = self$output_length,
                             ...)
       }
       if (use_names) {
@@ -69,6 +72,6 @@
       .Call("cyst_generator_contents", self$ptr, PACKAGE = "deCyst")
     }
   ))
-cyst_generator <- function(E0, IP0, SP0, tau, SHC0, IHC0, SH0, IH0, LEH, LEP, HPS, PPS, dH, dP, AEL, dE, delta, TPrev, CPrev, PTPrev, phi, ATL, ADI, alpha, eta, pil, chil, pih, chih, epsilon = NULL, user = list(E0 = E0, IP0 = IP0, SP0 = SP0, tau = tau, SHC0 = SHC0, IHC0 = IHC0, SH0 = SH0, IH0 = IH0, LEH = LEH, LEP = LEP, HPS = HPS, PPS = PPS, dH = dH, dP = dP, AEL = AEL, dE = dE, delta = delta, TPrev = TPrev, CPrev = CPrev, PTPrev = PTPrev, phi = phi, ATL = ATL, ADI = ADI, alpha = alpha, eta = eta, pil = pil, chil = chil, pih = pih, chih = chih, epsilon = epsilon), use_dde = FALSE) {
+cyst_generator <- function(E0, IPH0, IPL0, SP0, RP0, VP0, tau, SHC0, IHC0, SH0, IH0, HPS, PPS, dH, dP, bH, bP, dE, delta, theta, phi, alpha, eta, pil, chi, pih, epsilon, RR, user = list(E0 = E0, IPH0 = IPH0, IPL0 = IPL0, SP0 = SP0, RP0 = RP0, VP0 = VP0, tau = tau, SHC0 = SHC0, IHC0 = IHC0, SH0 = SH0, IH0 = IH0, HPS = HPS, PPS = PPS, dH = dH, dP = dP, bH = bH, bP = bP, dE = dE, delta = delta, theta = theta, phi = phi, alpha = alpha, eta = eta, pil = pil, chi = chi, pih = pih, epsilon = epsilon, RR = RR), use_dde = FALSE) {
   .R6_cyst_generator$new(user = user, use_dde = use_dde)
 }

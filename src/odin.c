@@ -9,38 +9,34 @@
 // required to run the model in a struct.
 typedef struct cyst_generator_pars {
   int odin_use_dde;
-  double initial_RP;
-  double RR;
   double E0;
-  double IP0;
+  double IPH0;
+  double IPL0;
   double SP0;
+  double RP0;
+  double VP0;
   double tau;
   double SHC0;
   double IHC0;
   double SH0;
   double IH0;
-  double LEH;
-  double LEP;
   double HPS;
   double PPS;
   double dH;
   double dP;
-  double AEL;
+  double bH;
+  double bP;
   double dE;
   double delta;
-  double TPrev;
-  double CPrev;
-  double PTPrev;
+  double theta;
   double phi;
-  double ATL;
-  double ADI;
   double alpha;
   double eta;
   double pil;
-  double chil;
+  double chi;
   double pih;
-  double chih;
   double epsilon;
+  double RR;
   double initial_SH;
   double initial_IH;
   double initial_SHC;
@@ -49,9 +45,8 @@ typedef struct cyst_generator_pars {
   double initial_SP;
   double initial_IPL;
   double initial_IPH;
-  double bH;
-  double bP;
-  double theta;
+  double initial_RP;
+  double initial_VP;
 } cyst_generator_pars;
 cyst_generator_pars* cyst_generator_get_pointer(SEXP cyst_generator_ptr, int closed_error);
 SEXP cyst_generator_set_user(cyst_generator_pars *cyst_generator_p, SEXP user);
@@ -66,37 +61,34 @@ SEXP get_list_element(SEXP list, const char *name);
 static void cyst_generator_finalize(SEXP cyst_generator_ptr);
 SEXP cyst_generator_create(SEXP user, SEXP odin_use_dde) {
   cyst_generator_pars *cyst_generator_p = (cyst_generator_pars*) Calloc(1, cyst_generator_pars);
-  cyst_generator_p->RR = 1;
   cyst_generator_p->E0 = NA_REAL;
-  cyst_generator_p->IP0 = NA_REAL;
+  cyst_generator_p->IPH0 = NA_REAL;
+  cyst_generator_p->IPL0 = NA_REAL;
   cyst_generator_p->SP0 = NA_REAL;
+  cyst_generator_p->RP0 = NA_REAL;
+  cyst_generator_p->VP0 = NA_REAL;
   cyst_generator_p->tau = NA_REAL;
   cyst_generator_p->SHC0 = NA_REAL;
   cyst_generator_p->IHC0 = NA_REAL;
   cyst_generator_p->SH0 = NA_REAL;
   cyst_generator_p->IH0 = NA_REAL;
-  cyst_generator_p->LEH = NA_REAL;
-  cyst_generator_p->LEP = NA_REAL;
   cyst_generator_p->HPS = NA_REAL;
   cyst_generator_p->PPS = NA_REAL;
   cyst_generator_p->dH = NA_REAL;
   cyst_generator_p->dP = NA_REAL;
-  cyst_generator_p->AEL = NA_REAL;
+  cyst_generator_p->bH = NA_REAL;
+  cyst_generator_p->bP = NA_REAL;
   cyst_generator_p->dE = NA_REAL;
   cyst_generator_p->delta = NA_REAL;
-  cyst_generator_p->TPrev = NA_REAL;
-  cyst_generator_p->CPrev = NA_REAL;
-  cyst_generator_p->PTPrev = NA_REAL;
+  cyst_generator_p->theta = NA_REAL;
   cyst_generator_p->phi = NA_REAL;
-  cyst_generator_p->ATL = NA_REAL;
-  cyst_generator_p->ADI = NA_REAL;
   cyst_generator_p->alpha = NA_REAL;
   cyst_generator_p->eta = NA_REAL;
   cyst_generator_p->pil = NA_REAL;
-  cyst_generator_p->chil = NA_REAL;
+  cyst_generator_p->chi = NA_REAL;
   cyst_generator_p->pih = NA_REAL;
-  cyst_generator_p->chih = NA_REAL;
-  cyst_generator_p->epsilon = 0.01;
+  cyst_generator_p->epsilon = NA_REAL;
+  cyst_generator_p->RR = NA_REAL;
   SEXP cyst_generator_ptr = PROTECT(R_MakeExternalPtr(cyst_generator_p, R_NilValue, R_NilValue));
   R_RegisterCFinalizer(cyst_generator_ptr, cyst_generator_finalize);
   cyst_generator_set_user(cyst_generator_p, user);
@@ -108,38 +100,33 @@ SEXP cyst_generator_create(SEXP user, SEXP odin_use_dde) {
 // Set user-supplied parameter values.
 SEXP cyst_generator_set_user(cyst_generator_pars *cyst_generator_p, SEXP user) {
   cyst_generator_p->E0 = get_user_double(user, "E0", cyst_generator_p->E0);
-  cyst_generator_p->IP0 = get_user_double(user, "IP0", cyst_generator_p->IP0);
+  cyst_generator_p->IPH0 = get_user_double(user, "IPH0", cyst_generator_p->IPH0);
+  cyst_generator_p->IPL0 = get_user_double(user, "IPL0", cyst_generator_p->IPL0);
   cyst_generator_p->SP0 = get_user_double(user, "SP0", cyst_generator_p->SP0);
+  cyst_generator_p->RP0 = get_user_double(user, "RP0", cyst_generator_p->RP0);
+  cyst_generator_p->VP0 = get_user_double(user, "VP0", cyst_generator_p->VP0);
   cyst_generator_p->tau = get_user_double(user, "tau", cyst_generator_p->tau);
   cyst_generator_p->SHC0 = get_user_double(user, "SHC0", cyst_generator_p->SHC0);
   cyst_generator_p->IHC0 = get_user_double(user, "IHC0", cyst_generator_p->IHC0);
   cyst_generator_p->SH0 = get_user_double(user, "SH0", cyst_generator_p->SH0);
   cyst_generator_p->IH0 = get_user_double(user, "IH0", cyst_generator_p->IH0);
-  cyst_generator_p->LEH = get_user_double(user, "LEH", cyst_generator_p->LEH);
-  cyst_generator_p->LEP = get_user_double(user, "LEP", cyst_generator_p->LEP);
   cyst_generator_p->HPS = get_user_double(user, "HPS", cyst_generator_p->HPS);
   cyst_generator_p->PPS = get_user_double(user, "PPS", cyst_generator_p->PPS);
   cyst_generator_p->dH = get_user_double(user, "dH", cyst_generator_p->dH);
   cyst_generator_p->dP = get_user_double(user, "dP", cyst_generator_p->dP);
-  cyst_generator_p->AEL = get_user_double(user, "AEL", cyst_generator_p->AEL);
+  cyst_generator_p->bH = get_user_double(user, "bH", cyst_generator_p->bH);
+  cyst_generator_p->bP = get_user_double(user, "bP", cyst_generator_p->bP);
   cyst_generator_p->dE = get_user_double(user, "dE", cyst_generator_p->dE);
   cyst_generator_p->delta = get_user_double(user, "delta", cyst_generator_p->delta);
-  cyst_generator_p->TPrev = get_user_double(user, "TPrev", cyst_generator_p->TPrev);
-  cyst_generator_p->CPrev = get_user_double(user, "CPrev", cyst_generator_p->CPrev);
-  cyst_generator_p->PTPrev = get_user_double(user, "PTPrev", cyst_generator_p->PTPrev);
+  cyst_generator_p->theta = get_user_double(user, "theta", cyst_generator_p->theta);
   cyst_generator_p->phi = get_user_double(user, "phi", cyst_generator_p->phi);
-  cyst_generator_p->ATL = get_user_double(user, "ATL", cyst_generator_p->ATL);
-  cyst_generator_p->ADI = get_user_double(user, "ADI", cyst_generator_p->ADI);
   cyst_generator_p->alpha = get_user_double(user, "alpha", cyst_generator_p->alpha);
   cyst_generator_p->eta = get_user_double(user, "eta", cyst_generator_p->eta);
   cyst_generator_p->pil = get_user_double(user, "pil", cyst_generator_p->pil);
-  cyst_generator_p->chil = get_user_double(user, "chil", cyst_generator_p->chil);
+  cyst_generator_p->chi = get_user_double(user, "chi", cyst_generator_p->chi);
   cyst_generator_p->pih = get_user_double(user, "pih", cyst_generator_p->pih);
-  cyst_generator_p->chih = get_user_double(user, "chih", cyst_generator_p->chih);
   cyst_generator_p->epsilon = get_user_double(user, "epsilon", cyst_generator_p->epsilon);
-  cyst_generator_p->bH = cyst_generator_p->HPS * cyst_generator_p->dH;
-  cyst_generator_p->bP = cyst_generator_p->PPS * cyst_generator_p->dP;
-  cyst_generator_p->theta = (cyst_generator_p->bH + cyst_generator_p->eta * (cyst_generator_p->SHC0 + cyst_generator_p->IHC0) - cyst_generator_p->dH * (cyst_generator_p->SH0 + cyst_generator_p->IH0)) / ((cyst_generator_p->SH0 * cyst_generator_p->E0) + ((1 + cyst_generator_p->RR) * cyst_generator_p->IH0 * cyst_generator_p->E0));
+  cyst_generator_p->RR = get_user_double(user, "RR", cyst_generator_p->RR);
   return R_NilValue;
 }
 // Wrapper around this for use from R.
@@ -163,16 +150,17 @@ void cyst_generator_finalize(SEXP cyst_generator_ptr) {
 
 SEXP cyst_generator_initialise(SEXP cyst_generator_ptr, SEXP t_ptr) {
   cyst_generator_pars *cyst_generator_p = cyst_generator_get_pointer(cyst_generator_ptr, 1);
-  cyst_generator_p->initial_RP = 0;
   cyst_generator_p->initial_SH = cyst_generator_p->SH0;
   cyst_generator_p->initial_IH = cyst_generator_p->IH0;
   cyst_generator_p->initial_SHC = cyst_generator_p->SHC0;
   cyst_generator_p->initial_IHC = cyst_generator_p->IHC0;
   cyst_generator_p->initial_E = cyst_generator_p->E0;
   cyst_generator_p->initial_SP = cyst_generator_p->SP0;
-  cyst_generator_p->initial_IPL = cyst_generator_p->IP0 * cyst_generator_p->phi;
-  cyst_generator_p->initial_IPH = cyst_generator_p->IP0 * (1 - cyst_generator_p->phi);
-  SEXP state = PROTECT(allocVector(REALSXP, 9));
+  cyst_generator_p->initial_IPL = cyst_generator_p->IPL0;
+  cyst_generator_p->initial_IPH = cyst_generator_p->IPH0;
+  cyst_generator_p->initial_RP = cyst_generator_p->RP0;
+  cyst_generator_p->initial_VP = cyst_generator_p->VP0;
+  SEXP state = PROTECT(allocVector(REALSXP, 10));
   REAL(state)[0] = cyst_generator_p->initial_SH;
   REAL(state)[1] = cyst_generator_p->initial_IH;
   REAL(state)[2] = cyst_generator_p->initial_SHC;
@@ -182,6 +170,8 @@ SEXP cyst_generator_initialise(SEXP cyst_generator_ptr, SEXP t_ptr) {
   REAL(state)[6] = cyst_generator_p->initial_IPL;
   REAL(state)[7] = cyst_generator_p->initial_IPH;
   REAL(state)[8] = cyst_generator_p->initial_RP;
+  REAL(state)[9] = cyst_generator_p->initial_VP;
+  setAttrib(state, install("output_len"), ScalarInteger(6));
   UNPROTECT(1);
   return state;
 }
@@ -200,15 +190,39 @@ void cyst_generator_deriv(cyst_generator_pars *cyst_generator_p, double t, doubl
   double IPL = state[6];
   double IPH = state[7];
   double RP = state[8];
+  double VP = state[9];
+  dstatedt[0] = cyst_generator_p->bH + cyst_generator_p->alpha * IH + cyst_generator_p->eta * SHC + cyst_generator_p->eta * IHC - (cyst_generator_p->pil * cyst_generator_p->chi) * SH * IPL / cyst_generator_p->PPS - (cyst_generator_p->pih * cyst_generator_p->chi) * SH * IPH / cyst_generator_p->PPS - cyst_generator_p->theta * SH * E - cyst_generator_p->dH * SH;
+  dstatedt[1] = (cyst_generator_p->pil * cyst_generator_p->chi) * SH * IPL / cyst_generator_p->PPS + (cyst_generator_p->pih * cyst_generator_p->chi) * SH * IPH / cyst_generator_p->PPS - cyst_generator_p->alpha * IH - cyst_generator_p->theta * (1 + cyst_generator_p->RR) * IH * E - cyst_generator_p->dH * IH;
+  dstatedt[2] = cyst_generator_p->theta * SH * E + cyst_generator_p->alpha * IHC - (cyst_generator_p->pil * cyst_generator_p->chi) * SHC * IPL / cyst_generator_p->PPS - (cyst_generator_p->pih * cyst_generator_p->chi) * SHC * IPH / cyst_generator_p->PPS - cyst_generator_p->eta * SHC - cyst_generator_p->dH * SHC;
+  dstatedt[3] = (cyst_generator_p->pil * cyst_generator_p->chi) * SHC * IPL / cyst_generator_p->PPS + (cyst_generator_p->pih * cyst_generator_p->chi) * SHC * IPH / cyst_generator_p->PPS + cyst_generator_p->theta * (1 + cyst_generator_p->RR) * IH * E - cyst_generator_p->alpha * IHC - cyst_generator_p->eta * IHC - cyst_generator_p->dH * IHC;
   dstatedt[4] = cyst_generator_p->delta * IH + cyst_generator_p->delta * IHC - cyst_generator_p->dE * E;
+  dstatedt[5] = cyst_generator_p->bP + cyst_generator_p->epsilon * RP - cyst_generator_p->phi * cyst_generator_p->tau * SP * E - (1 - cyst_generator_p->phi) * cyst_generator_p->tau * SP * E - cyst_generator_p->dP * SP;
   dstatedt[6] = cyst_generator_p->phi * cyst_generator_p->tau * SP * E - cyst_generator_p->dP * IPL;
   dstatedt[7] = (1 - cyst_generator_p->phi) * cyst_generator_p->tau * SP * E - cyst_generator_p->dP * IPH;
   dstatedt[8] = -cyst_generator_p->epsilon * RP - cyst_generator_p->dP * RP;
-  dstatedt[5] = cyst_generator_p->bP + cyst_generator_p->epsilon * RP - cyst_generator_p->phi * cyst_generator_p->tau * SP * E - (1 - cyst_generator_p->phi) * cyst_generator_p->tau * SP * E - cyst_generator_p->dP * SP;
-  dstatedt[0] = cyst_generator_p->bH + cyst_generator_p->alpha * IH + cyst_generator_p->eta * SHC + cyst_generator_p->eta * IHC - (cyst_generator_p->pil * cyst_generator_p->chil) * SH * IPL / cyst_generator_p->PPS - (cyst_generator_p->pih * cyst_generator_p->chih) * SH * IPH / cyst_generator_p->PPS - cyst_generator_p->theta * SH * E - cyst_generator_p->dH * SH;
-  dstatedt[1] = (cyst_generator_p->pil * cyst_generator_p->chil) * SH * IPL / cyst_generator_p->PPS + (cyst_generator_p->pih * cyst_generator_p->chih) * SH * IPH / cyst_generator_p->PPS - cyst_generator_p->alpha * IH - cyst_generator_p->theta * (1 + cyst_generator_p->RR) * IH * E - cyst_generator_p->dH * IH;
-  dstatedt[2] = cyst_generator_p->theta * SH * E + cyst_generator_p->alpha * IHC - (cyst_generator_p->pil * cyst_generator_p->chil) * SHC * IPL / cyst_generator_p->PPS - (cyst_generator_p->pih * cyst_generator_p->chih) * SHC * IPH / cyst_generator_p->PPS - cyst_generator_p->eta * SHC - cyst_generator_p->dH * SHC;
-  dstatedt[3] = (cyst_generator_p->pil * cyst_generator_p->chil) * SHC * IPL / cyst_generator_p->PPS + (cyst_generator_p->pih * cyst_generator_p->chih) * SHC * IPH / cyst_generator_p->PPS + cyst_generator_p->theta * (1 + cyst_generator_p->RR) * IH * E - cyst_generator_p->alpha * IHC - cyst_generator_p->eta * IHC - cyst_generator_p->dH * IHC;
+  dstatedt[9] = cyst_generator_p->dP * VP;
+  if (output != NULL) {
+    output[0] = IH + IHC;
+    output[1] = SHC + IHC;
+    output[2] = IPH + IPL;
+    output[3] = (IH + IHC) / cyst_generator_p->HPS;
+    output[4] = (SHC + IHC) / cyst_generator_p->HPS;
+    output[5] = (IPH + IPL) / cyst_generator_p->PPS;
+  }
+}
+
+void cyst_generator_output(cyst_generator_pars *cyst_generator_p, double t, double *state, double *output) {
+  double IH = state[1];
+  double SHC = state[2];
+  double IHC = state[3];
+  double IPL = state[6];
+  double IPH = state[7];
+  output[0] = IH + IHC;
+  output[1] = SHC + IHC;
+  output[2] = IPH + IPL;
+  output[3] = (IH + IHC) / cyst_generator_p->HPS;
+  output[4] = (SHC + IHC) / cyst_generator_p->HPS;
+  output[5] = (IPH + IPL) / cyst_generator_p->PPS;
 }
 
 // deSolve interface
@@ -229,12 +243,19 @@ void cyst_generator_deriv_dde(size_t n_eq, double t, double *state,
   cyst_generator_deriv((cyst_generator_pars*)cyst_generator_p, t, state, dstatedt, NULL);
 }
 
+void cyst_generator_output_dde(size_t n_eq, double t, double *state,
+                               size_t dim_output, double *output, void *cyst_generator_p) {
+  cyst_generator_output((cyst_generator_pars*)cyst_generator_p, t, state, output);
+}
+
 SEXP cyst_generator_deriv_r(SEXP cyst_generator_ptr, SEXP t, SEXP state) {
   SEXP dstatedt = PROTECT(allocVector(REALSXP, LENGTH(state)));
   cyst_generator_pars *cyst_generator_p = cyst_generator_get_pointer(cyst_generator_ptr, 1);
-  double *output = NULL;
+  SEXP output_ptr = PROTECT(allocVector(REALSXP, 6));
+  setAttrib(dstatedt, install("output"), output_ptr);
+  double *output = REAL(output_ptr);
   cyst_generator_deriv(cyst_generator_p, REAL(t)[0], REAL(state), REAL(dstatedt), output);
-  UNPROTECT(1);
+  UNPROTECT(2);
   return dstatedt;
 }
 
@@ -242,96 +263,86 @@ SEXP cyst_generator_deriv_r(SEXP cyst_generator_ptr, SEXP t, SEXP state) {
 // This will mostly be useful for debugging.
 SEXP cyst_generator_contents(SEXP cyst_generator_ptr) {
   cyst_generator_pars *cyst_generator_p = cyst_generator_get_pointer(cyst_generator_ptr, 1);
-  SEXP state = PROTECT(allocVector(VECSXP, 44));
+  SEXP state = PROTECT(allocVector(VECSXP, 39));
   SET_VECTOR_ELT(state, 0, ScalarInteger(cyst_generator_p->odin_use_dde));
-  SET_VECTOR_ELT(state, 1, ScalarReal(cyst_generator_p->initial_RP));
-  SET_VECTOR_ELT(state, 2, ScalarReal(cyst_generator_p->RR));
-  SET_VECTOR_ELT(state, 3, ScalarReal(cyst_generator_p->E0));
-  SET_VECTOR_ELT(state, 4, ScalarReal(cyst_generator_p->IP0));
-  SET_VECTOR_ELT(state, 5, ScalarReal(cyst_generator_p->SP0));
-  SET_VECTOR_ELT(state, 6, ScalarReal(cyst_generator_p->tau));
-  SET_VECTOR_ELT(state, 7, ScalarReal(cyst_generator_p->SHC0));
-  SET_VECTOR_ELT(state, 8, ScalarReal(cyst_generator_p->IHC0));
-  SET_VECTOR_ELT(state, 9, ScalarReal(cyst_generator_p->SH0));
-  SET_VECTOR_ELT(state, 10, ScalarReal(cyst_generator_p->IH0));
-  SET_VECTOR_ELT(state, 11, ScalarReal(cyst_generator_p->LEH));
-  SET_VECTOR_ELT(state, 12, ScalarReal(cyst_generator_p->LEP));
-  SET_VECTOR_ELT(state, 13, ScalarReal(cyst_generator_p->HPS));
-  SET_VECTOR_ELT(state, 14, ScalarReal(cyst_generator_p->PPS));
-  SET_VECTOR_ELT(state, 15, ScalarReal(cyst_generator_p->dH));
-  SET_VECTOR_ELT(state, 16, ScalarReal(cyst_generator_p->dP));
-  SET_VECTOR_ELT(state, 17, ScalarReal(cyst_generator_p->AEL));
+  SET_VECTOR_ELT(state, 1, ScalarReal(cyst_generator_p->E0));
+  SET_VECTOR_ELT(state, 2, ScalarReal(cyst_generator_p->IPH0));
+  SET_VECTOR_ELT(state, 3, ScalarReal(cyst_generator_p->IPL0));
+  SET_VECTOR_ELT(state, 4, ScalarReal(cyst_generator_p->SP0));
+  SET_VECTOR_ELT(state, 5, ScalarReal(cyst_generator_p->RP0));
+  SET_VECTOR_ELT(state, 6, ScalarReal(cyst_generator_p->VP0));
+  SET_VECTOR_ELT(state, 7, ScalarReal(cyst_generator_p->tau));
+  SET_VECTOR_ELT(state, 8, ScalarReal(cyst_generator_p->SHC0));
+  SET_VECTOR_ELT(state, 9, ScalarReal(cyst_generator_p->IHC0));
+  SET_VECTOR_ELT(state, 10, ScalarReal(cyst_generator_p->SH0));
+  SET_VECTOR_ELT(state, 11, ScalarReal(cyst_generator_p->IH0));
+  SET_VECTOR_ELT(state, 12, ScalarReal(cyst_generator_p->HPS));
+  SET_VECTOR_ELT(state, 13, ScalarReal(cyst_generator_p->PPS));
+  SET_VECTOR_ELT(state, 14, ScalarReal(cyst_generator_p->dH));
+  SET_VECTOR_ELT(state, 15, ScalarReal(cyst_generator_p->dP));
+  SET_VECTOR_ELT(state, 16, ScalarReal(cyst_generator_p->bH));
+  SET_VECTOR_ELT(state, 17, ScalarReal(cyst_generator_p->bP));
   SET_VECTOR_ELT(state, 18, ScalarReal(cyst_generator_p->dE));
   SET_VECTOR_ELT(state, 19, ScalarReal(cyst_generator_p->delta));
-  SET_VECTOR_ELT(state, 20, ScalarReal(cyst_generator_p->TPrev));
-  SET_VECTOR_ELT(state, 21, ScalarReal(cyst_generator_p->CPrev));
-  SET_VECTOR_ELT(state, 22, ScalarReal(cyst_generator_p->PTPrev));
-  SET_VECTOR_ELT(state, 23, ScalarReal(cyst_generator_p->phi));
-  SET_VECTOR_ELT(state, 24, ScalarReal(cyst_generator_p->ATL));
-  SET_VECTOR_ELT(state, 25, ScalarReal(cyst_generator_p->ADI));
-  SET_VECTOR_ELT(state, 26, ScalarReal(cyst_generator_p->alpha));
-  SET_VECTOR_ELT(state, 27, ScalarReal(cyst_generator_p->eta));
-  SET_VECTOR_ELT(state, 28, ScalarReal(cyst_generator_p->pil));
-  SET_VECTOR_ELT(state, 29, ScalarReal(cyst_generator_p->chil));
-  SET_VECTOR_ELT(state, 30, ScalarReal(cyst_generator_p->pih));
-  SET_VECTOR_ELT(state, 31, ScalarReal(cyst_generator_p->chih));
-  SET_VECTOR_ELT(state, 32, ScalarReal(cyst_generator_p->epsilon));
-  SET_VECTOR_ELT(state, 33, ScalarReal(cyst_generator_p->initial_SH));
-  SET_VECTOR_ELT(state, 34, ScalarReal(cyst_generator_p->initial_IH));
-  SET_VECTOR_ELT(state, 35, ScalarReal(cyst_generator_p->initial_SHC));
-  SET_VECTOR_ELT(state, 36, ScalarReal(cyst_generator_p->initial_IHC));
-  SET_VECTOR_ELT(state, 37, ScalarReal(cyst_generator_p->initial_E));
-  SET_VECTOR_ELT(state, 38, ScalarReal(cyst_generator_p->initial_SP));
-  SET_VECTOR_ELT(state, 39, ScalarReal(cyst_generator_p->initial_IPL));
-  SET_VECTOR_ELT(state, 40, ScalarReal(cyst_generator_p->initial_IPH));
-  SET_VECTOR_ELT(state, 41, ScalarReal(cyst_generator_p->bH));
-  SET_VECTOR_ELT(state, 42, ScalarReal(cyst_generator_p->bP));
-  SET_VECTOR_ELT(state, 43, ScalarReal(cyst_generator_p->theta));
-  SEXP state_names = PROTECT(allocVector(STRSXP, 44));
+  SET_VECTOR_ELT(state, 20, ScalarReal(cyst_generator_p->theta));
+  SET_VECTOR_ELT(state, 21, ScalarReal(cyst_generator_p->phi));
+  SET_VECTOR_ELT(state, 22, ScalarReal(cyst_generator_p->alpha));
+  SET_VECTOR_ELT(state, 23, ScalarReal(cyst_generator_p->eta));
+  SET_VECTOR_ELT(state, 24, ScalarReal(cyst_generator_p->pil));
+  SET_VECTOR_ELT(state, 25, ScalarReal(cyst_generator_p->chi));
+  SET_VECTOR_ELT(state, 26, ScalarReal(cyst_generator_p->pih));
+  SET_VECTOR_ELT(state, 27, ScalarReal(cyst_generator_p->epsilon));
+  SET_VECTOR_ELT(state, 28, ScalarReal(cyst_generator_p->RR));
+  SET_VECTOR_ELT(state, 29, ScalarReal(cyst_generator_p->initial_SH));
+  SET_VECTOR_ELT(state, 30, ScalarReal(cyst_generator_p->initial_IH));
+  SET_VECTOR_ELT(state, 31, ScalarReal(cyst_generator_p->initial_SHC));
+  SET_VECTOR_ELT(state, 32, ScalarReal(cyst_generator_p->initial_IHC));
+  SET_VECTOR_ELT(state, 33, ScalarReal(cyst_generator_p->initial_E));
+  SET_VECTOR_ELT(state, 34, ScalarReal(cyst_generator_p->initial_SP));
+  SET_VECTOR_ELT(state, 35, ScalarReal(cyst_generator_p->initial_IPL));
+  SET_VECTOR_ELT(state, 36, ScalarReal(cyst_generator_p->initial_IPH));
+  SET_VECTOR_ELT(state, 37, ScalarReal(cyst_generator_p->initial_RP));
+  SET_VECTOR_ELT(state, 38, ScalarReal(cyst_generator_p->initial_VP));
+  SEXP state_names = PROTECT(allocVector(STRSXP, 39));
   SET_STRING_ELT(state_names, 0, mkChar("odin_use_dde"));
-  SET_STRING_ELT(state_names, 1, mkChar("initial_RP"));
-  SET_STRING_ELT(state_names, 2, mkChar("RR"));
-  SET_STRING_ELT(state_names, 3, mkChar("E0"));
-  SET_STRING_ELT(state_names, 4, mkChar("IP0"));
-  SET_STRING_ELT(state_names, 5, mkChar("SP0"));
-  SET_STRING_ELT(state_names, 6, mkChar("tau"));
-  SET_STRING_ELT(state_names, 7, mkChar("SHC0"));
-  SET_STRING_ELT(state_names, 8, mkChar("IHC0"));
-  SET_STRING_ELT(state_names, 9, mkChar("SH0"));
-  SET_STRING_ELT(state_names, 10, mkChar("IH0"));
-  SET_STRING_ELT(state_names, 11, mkChar("LEH"));
-  SET_STRING_ELT(state_names, 12, mkChar("LEP"));
-  SET_STRING_ELT(state_names, 13, mkChar("HPS"));
-  SET_STRING_ELT(state_names, 14, mkChar("PPS"));
-  SET_STRING_ELT(state_names, 15, mkChar("dH"));
-  SET_STRING_ELT(state_names, 16, mkChar("dP"));
-  SET_STRING_ELT(state_names, 17, mkChar("AEL"));
+  SET_STRING_ELT(state_names, 1, mkChar("E0"));
+  SET_STRING_ELT(state_names, 2, mkChar("IPH0"));
+  SET_STRING_ELT(state_names, 3, mkChar("IPL0"));
+  SET_STRING_ELT(state_names, 4, mkChar("SP0"));
+  SET_STRING_ELT(state_names, 5, mkChar("RP0"));
+  SET_STRING_ELT(state_names, 6, mkChar("VP0"));
+  SET_STRING_ELT(state_names, 7, mkChar("tau"));
+  SET_STRING_ELT(state_names, 8, mkChar("SHC0"));
+  SET_STRING_ELT(state_names, 9, mkChar("IHC0"));
+  SET_STRING_ELT(state_names, 10, mkChar("SH0"));
+  SET_STRING_ELT(state_names, 11, mkChar("IH0"));
+  SET_STRING_ELT(state_names, 12, mkChar("HPS"));
+  SET_STRING_ELT(state_names, 13, mkChar("PPS"));
+  SET_STRING_ELT(state_names, 14, mkChar("dH"));
+  SET_STRING_ELT(state_names, 15, mkChar("dP"));
+  SET_STRING_ELT(state_names, 16, mkChar("bH"));
+  SET_STRING_ELT(state_names, 17, mkChar("bP"));
   SET_STRING_ELT(state_names, 18, mkChar("dE"));
   SET_STRING_ELT(state_names, 19, mkChar("delta"));
-  SET_STRING_ELT(state_names, 20, mkChar("TPrev"));
-  SET_STRING_ELT(state_names, 21, mkChar("CPrev"));
-  SET_STRING_ELT(state_names, 22, mkChar("PTPrev"));
-  SET_STRING_ELT(state_names, 23, mkChar("phi"));
-  SET_STRING_ELT(state_names, 24, mkChar("ATL"));
-  SET_STRING_ELT(state_names, 25, mkChar("ADI"));
-  SET_STRING_ELT(state_names, 26, mkChar("alpha"));
-  SET_STRING_ELT(state_names, 27, mkChar("eta"));
-  SET_STRING_ELT(state_names, 28, mkChar("pil"));
-  SET_STRING_ELT(state_names, 29, mkChar("chil"));
-  SET_STRING_ELT(state_names, 30, mkChar("pih"));
-  SET_STRING_ELT(state_names, 31, mkChar("chih"));
-  SET_STRING_ELT(state_names, 32, mkChar("epsilon"));
-  SET_STRING_ELT(state_names, 33, mkChar("initial_SH"));
-  SET_STRING_ELT(state_names, 34, mkChar("initial_IH"));
-  SET_STRING_ELT(state_names, 35, mkChar("initial_SHC"));
-  SET_STRING_ELT(state_names, 36, mkChar("initial_IHC"));
-  SET_STRING_ELT(state_names, 37, mkChar("initial_E"));
-  SET_STRING_ELT(state_names, 38, mkChar("initial_SP"));
-  SET_STRING_ELT(state_names, 39, mkChar("initial_IPL"));
-  SET_STRING_ELT(state_names, 40, mkChar("initial_IPH"));
-  SET_STRING_ELT(state_names, 41, mkChar("bH"));
-  SET_STRING_ELT(state_names, 42, mkChar("bP"));
-  SET_STRING_ELT(state_names, 43, mkChar("theta"));
+  SET_STRING_ELT(state_names, 20, mkChar("theta"));
+  SET_STRING_ELT(state_names, 21, mkChar("phi"));
+  SET_STRING_ELT(state_names, 22, mkChar("alpha"));
+  SET_STRING_ELT(state_names, 23, mkChar("eta"));
+  SET_STRING_ELT(state_names, 24, mkChar("pil"));
+  SET_STRING_ELT(state_names, 25, mkChar("chi"));
+  SET_STRING_ELT(state_names, 26, mkChar("pih"));
+  SET_STRING_ELT(state_names, 27, mkChar("epsilon"));
+  SET_STRING_ELT(state_names, 28, mkChar("RR"));
+  SET_STRING_ELT(state_names, 29, mkChar("initial_SH"));
+  SET_STRING_ELT(state_names, 30, mkChar("initial_IH"));
+  SET_STRING_ELT(state_names, 31, mkChar("initial_SHC"));
+  SET_STRING_ELT(state_names, 32, mkChar("initial_IHC"));
+  SET_STRING_ELT(state_names, 33, mkChar("initial_E"));
+  SET_STRING_ELT(state_names, 34, mkChar("initial_SP"));
+  SET_STRING_ELT(state_names, 35, mkChar("initial_IPL"));
+  SET_STRING_ELT(state_names, 36, mkChar("initial_IPH"));
+  SET_STRING_ELT(state_names, 37, mkChar("initial_RP"));
+  SET_STRING_ELT(state_names, 38, mkChar("initial_VP"));
   setAttrib(state, R_NamesSymbol, state_names);
   UNPROTECT(2);
   return state;
@@ -341,8 +352,8 @@ SEXP cyst_generator_contents(SEXP cyst_generator_ptr) {
 // The reported information includes position and length of each
 // variable, from which offset, etc, can be worked out.
 SEXP cyst_generator_variable_order(SEXP cyst_generator_ptr) {
-  SEXP state_len = PROTECT(allocVector(VECSXP, 9));
-  SEXP state_names = PROTECT(allocVector(STRSXP, 9));
+  SEXP state_len = PROTECT(allocVector(VECSXP, 10));
+  SEXP state_names = PROTECT(allocVector(STRSXP, 10));
   SET_VECTOR_ELT(state_len, 0, R_NilValue);
   SET_STRING_ELT(state_names, 0, mkChar("SH"));
   SET_VECTOR_ELT(state_len, 1, R_NilValue);
@@ -361,6 +372,30 @@ SEXP cyst_generator_variable_order(SEXP cyst_generator_ptr) {
   SET_STRING_ELT(state_names, 7, mkChar("IPH"));
   SET_VECTOR_ELT(state_len, 8, R_NilValue);
   SET_STRING_ELT(state_names, 8, mkChar("RP"));
+  SET_VECTOR_ELT(state_len, 9, R_NilValue);
+  SET_STRING_ELT(state_names, 9, mkChar("VP"));
+  setAttrib(state_len, R_NamesSymbol, state_names);
+  UNPROTECT(2);
+  return state_len;
+}
+
+// Report back to R information on output variable ordering
+// Like the variable order above, but for any output vars
+SEXP cyst_generator_output_order(SEXP cyst_generator_ptr) {
+  SEXP state_len = PROTECT(allocVector(VECSXP, 6));
+  SEXP state_names = PROTECT(allocVector(STRSXP, 6));
+  SET_VECTOR_ELT(state_len, 0, R_NilValue);
+  SET_STRING_ELT(state_names, 0, mkChar("Humans_Taeniasis"));
+  SET_VECTOR_ELT(state_len, 1, R_NilValue);
+  SET_STRING_ELT(state_names, 1, mkChar("Humans_Cysticercosis"));
+  SET_VECTOR_ELT(state_len, 2, R_NilValue);
+  SET_STRING_ELT(state_names, 2, mkChar("Pigs_Cysticercosis"));
+  SET_VECTOR_ELT(state_len, 3, R_NilValue);
+  SET_STRING_ELT(state_names, 3, mkChar("Human_Taeniasis_prev"));
+  SET_VECTOR_ELT(state_len, 4, R_NilValue);
+  SET_STRING_ELT(state_names, 4, mkChar("Human_Cysticercosis_prev"));
+  SET_VECTOR_ELT(state_len, 5, R_NilValue);
+  SET_STRING_ELT(state_names, 5, mkChar("Pig_Cysticercosis_prev"));
   setAttrib(state_len, R_NamesSymbol, state_names);
   UNPROTECT(2);
   return state_len;

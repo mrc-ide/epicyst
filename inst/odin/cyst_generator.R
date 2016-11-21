@@ -1,13 +1,13 @@
 
 ### ODEs ###
 # Human: susceptible
-deriv(SH)<-bH+alpha*IH+eta*SHC+eta*IHC-(pil*chil)*SH*IPL/PPS-(pih*chih)*SH*IPH/PPS-theta*SH*E-dH*SH
+deriv(SH)<-bH+alpha*IH+eta*SHC+eta*IHC-(pil*chi)*SH*IPL/PPS-(pih*chi)*SH*IPH/PPS-theta*SH*E-dH*SH
 # Human: T+ C-
-deriv(IH)<-(pil*chil)*SH*IPL/PPS+(pih*chih)*SH*IPH/PPS-alpha*IH-theta*(1+RR)*IH*E-dH*IH
+deriv(IH)<-(pil*chi)*SH*IPL/PPS+(pih*chi)*SH*IPH/PPS-alpha*IH-theta*(1+RR)*IH*E-dH*IH
 # Human: T- C+
-deriv(SHC)<-theta*SH*E+alpha*IHC-(pil*chil)*SHC*IPL/PPS-(pih*chih)*SHC*IPH/PPS-eta*SHC-dH*SHC
+deriv(SHC)<-theta*SH*E+alpha*IHC-(pil*chi)*SHC*IPL/PPS-(pih*chi)*SHC*IPH/PPS-eta*SHC-dH*SHC
 # Human: T+ C+
-deriv(IHC)<-(pil*chil)*SHC*IPL/PPS+(pih*chih)*SHC*IPH/PPS+theta*(1+RR)*IH*E-alpha*IHC-eta*IHC-dH*IHC
+deriv(IHC)<-(pil*chi)*SHC*IPL/PPS+(pih*chi)*SHC*IPH/PPS+theta*(1+RR)*IH*E-alpha*IHC-eta*IHC-dH*IHC
 
 # Eggs
 deriv(E)<-delta*IH+delta*IHC-dE*E
@@ -20,6 +20,8 @@ deriv(IPL)<-phi*tau*SP*E-dP*IPL
 deriv(IPH)<-(1-phi)*tau*SP*E-dP*IPH
 # Pigs: Recovered/Immune
 deriv(RP)<- -epsilon*RP-dP*RP
+# Pigs: Vaccinated
+deriv(VP)<-dP*VP
 
 
 ### Initial conditions ###
@@ -29,16 +31,23 @@ initial(SHC)<-SHC0
 initial(IHC)<-IHC0
 initial(E)<-E0
 initial(SP)<-SP0
-initial(IPL)<-IP0*phi
-initial(IPH)<-IP0*(1-phi)
-initial(RP)<-0
+initial(IPL)<-IPL0
+initial(IPH)<-IPH0
+initial(RP)<-RP0
+initial(VP)<-VP0
 
 # Initial egg number (at equilibrium)
 E0<-user()
-# Intitial number of infected pigs
-IP0<-user()
+# Intitial number of infected pigs (high cyst burden)
+IPH0<-user()
+# Intitial number of infected pigs (low cyst burden)
+IPL0<-user()
 # Intitial number of susceptible pigs
 SP0<-user()
+# Intial number of recovered pigs
+RP0<-user()
+# Initial number of vaccinated pigs
+VP0<-user()
 # Egg to pig transmission parameter
 tau<-user()
 #tau<-if(t<100) tau0 else tau0/2
@@ -55,9 +64,9 @@ IH0<-user()
 ### Parameters ###
 # Demographic:
 # Human life expectancy (years)
-LEH<-user()
+#LEH<-user()
 # Pig life expectancy (years)
-LEP<-user()
+#LEP<-user()
 # Human population size
 HPS<-user()
 # Pig population size
@@ -68,47 +77,51 @@ dH<-user()
 # Pig mortality rate
 dP<-user()
 # Human births (per month):
-bH<-HPS*dH
+bH<-user()
 # Pig births (per month):
-bP<-PPS*dP
+bP<-user()
 
 # Taenia
 # Average egg survival (years)
-AEL<-user()
+#AEL<-user()
 # Egg mortality rate
 dE<-user()
 # Egg production rate
 delta<-user()
 # Egg to human transmission parameter
-theta<-(bH+eta*(SHC0+IHC0)-dH*(SH0+IH0))/((SH0*E0)+((1+RR)*IH0*E0))
+theta<-user()
 
 # Disease
 # Taeniasis prevalence in human population
-TPrev<-user()
+#TPrev<-user()
 # Cysticercosis prevalence in human population
-CPrev<-user()
+#CPrev<-user()
 # Cysticercosis prevalence in pig population
-PTPrev<-user()
+#PTPrev<-user()
 # Proportion of infected pigs with low-intensity cyst burden
 phi<-user()
 # Average lifespan of the adult tapeworm (years)
-ATL<-user()
+#ATL<-user()
 # Average duration of Cysticercosis infection in human (years)
-ADI<-user()
+#ADI<-user()
 # Human recovery rate from Taeniasis
 alpha<-user()
 # Human recovery rate from Cysticercosis
 eta<-user()
 # Low intensity infected pig -> human contact rate
 pil<-user()
-# Low intensity infected pig -> human infection probability
-chil<-user()
+# Pork consumption rate
+chi<-user()
 # High intensity infected pig -> human contact rate
 pih<-user()
-# High intensity infected pig -> human infection probability
-chih<-user()
 # Pig rate of loss of naturally aquired immunity
-epsilon<-user(0.01)
+epsilon<-user()
 # Risk multiplier for Cysticercosis if human has Taeniasis
-RR=1
+RR<-user()
 
+output(Humans_Taeniasis)<-IH+IHC
+output(Humans_Cysticercosis)<-SHC+IHC
+output(Pigs_Cysticercosis)<-IPH+IPL
+output(Human_Taeniasis_prev)<-(IH+IHC)/HPS
+output(Human_Cysticercosis_prev)<-(SHC+IHC)/HPS
+output(Pig_Cysticercosis_prev)<-(IPH+IPL)/PPS

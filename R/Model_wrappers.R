@@ -1,9 +1,8 @@
 
 # This function will produce two lists, parameters and initial state variables
 Set_up<-function(LEP=1, delta=960000, HPS=10000, PPS=2000, TPrev=0.02, CPrev=0.07, PTPrev=0.2, AEL=0.03846154,
-                         ATL=2, ADI=50, LEH=54, phi=0.8, chi=0.5){
+                         ATL=2, ADI=50, LEH=54, phi=0.8, chi=0.5, RR=1, epsilon=0.01){
 
-  browser()
   # Pig mortality rate
   dP<-month_rate(LEP)
   # Egg mortality rate
@@ -57,33 +56,46 @@ Set_up<-function(LEP=1, delta=960000, HPS=10000, PPS=2000, TPrev=0.02, CPrev=0.0
   # Vaccinated pigs at time 0
   VP0<-0
 
+  # Birth of humans
+  bH<-HPS*dH
+
+  # Birth of pigs
+  bP<-PPS*dP
+
+  theta<-theta_equilibrium(bH, eta, SHC0, IHC0, dH, SH0, IH0, E0, RR)
+
 
   params<-list(tau=tau,
-               LEH=LEH,
-               LEP=LEP,
+               #LEH=LEH,
+               #LEP=LEP,
+               PPS=PPS,
                HPS=HPS,
+               bH=bH,
+               bP=bP,
                PPS=PPS,
                dH=dH,
                dP=dP,
-               AEL=AEL,
+               #AEL=AEL,
                dE=dE,
                delta=delta,
-               TPrev=TPrev,
-               CPrev=CPrev,
-               PTPrev=PTPrev,
+               #TPrev=TPrev,
+               #CPrev=CPrev,
+               #PTPrev=PTPrev,
                phi=phi,
-               ATL=ATL,
-               ADI=ADI,
+               #ATL=ATL,
+               #ADI=ADI,
+               theta=theta,
                alpha=alpha,
                eta=eta,
+               chi=chi,
                pil=pil,
-               chil=chil,
                pih=pih,
-               chih=chih
+               epsilon=epsilon,
+               RR=RR
   )
 
   states<-list(E0=E0,
-               IP0=IP0,
+               #IP0=IP0,
                SP0=SP0,
                SHC0=SHC0,
                IHC0=IHC0,
@@ -108,7 +120,7 @@ Set_up<-function(LEP=1, delta=960000, HPS=10000, PPS=2000, TPrev=0.02, CPrev=0.0
 #' @param states list of states
 Single_run<-function(tt, params, states){
 
-  Mod<-cyst_generator(c(params, states))
+  Mod<-cyst_generator(user=c(params, states))
 
   y<-Mod$run(tt)
 
@@ -127,12 +139,28 @@ Single_run<-function(tt, params, states){
 #' @param Intervention A vector of interventions to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat
 #' @param Intervention_effect A list of intervention effect sizes, see \code{Intervention_effect_size} for details
 #' @param step Time step (months)
-Run_model<-function(PArams, Initial_states, Time, Intervention, Intervention_time, Intervention_effect=Intervention_effect_size(), step=1/30){
+Run_model<-function(Params=NULL, Initial_states=NULL, Time, Intervention=NULL, Intervention_time=NULL, Intervention_effect=Intervention_effect_size(), step=1/30){
+
+  # Calculate parmaters and initial state variables
+  Initialise<-Set_up()
+  if(is.null(Params)){
+    Params<-Initialise[[1]]
+  }
+  if(is.null(Initial_states)){
+    Initial_states<-Initialise[[2]]
+  }
+
+
+  if(is.null(Intervention)){
+    Run<-Single_run(seq(0, Time*12, step), Params, Initial_states)
+    Run<-as.data.frame(Run)
+    return(Run)
+  }
 
   # Checks
   Check_interventions(Intervention)
   Check_effect(Intervention_effect)
-
+  #browser()
   # Set time vectors for pre- and pos-intervention
   tt1<-seq(0, (Intervention_time*12)-step, step)
   # Set yearly times for interention period
@@ -142,20 +170,19 @@ Run_model<-function(PArams, Initial_states, Time, Intervention, Intervention_tim
     tt2[[i]]<-seq(splits[i]+step, splits[i+1], step)
   }
 
-  # Calculate parmaters and initial state variables
-  Initialise<-Set_up()
-  Params<-Intialise[[1]]
-  Initial_states<-Intialise[[2]]
+
 
   # Run the pre-intervention period
-  BL<-Single_run(tt1, params=Params, State=Initial_states)
+  BL<-Single_run(tt1, params=Params, states=Initial_states)
 
   Runs<-list()
   Runs[[1]]<-BL
 
   for(i in 1:length(tt2)){
     # Pull the 'end' state values from previous run
-    Tail_states<-tail(Runs[[i]])
+    Tail_states<-as.list(tail(Runs[[i]],1))
+    names(Tail_states)<-paste(colnames(Runs[[i]]), '0', sep='')
+
     # Alter states/params for single interventions
     if(i==1){
       Params<-Intervention_event_param(Params=Params, Intervention, Intervention_effect)
@@ -166,10 +193,11 @@ Run_model<-function(PArams, Initial_states, Time, Intervention, Intervention_tim
 
 
     # Do the next run
-    Runs[[i+1]]<-Single_run(tt2[[1]], Params, State=States)
+    Runs[[i+1]]<-Single_run(tt2[[i]], Params, states=States)
   }
 
-  Runs<-do.call('cbind', Runs)
+  Runs<-do.call('rbind', Runs)
+  Runs<-as.data.frame(Runs)
 
   return(Runs)
 }

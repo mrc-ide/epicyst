@@ -61,21 +61,21 @@ Replace_param<-function(params, param_name, effect_size){
 #' @param Intevention Vector of one or more parameter interventions
 #' @param Intervention_effect a list of intervention effect sizes
 Intervention_event_param<-function(Params, Intervention, Intervention_effect){
-  Check_interventions(Intervention)
-  Check_effect(Intervention_effect)
+  #Check_interventions(Intervention)
+  #Check_effect(Intervention_effect)
 
   if('Husbandry' %in% Intervention){
-    effect<-Intervention_effect['Husbandry']
+    effect<-Intervention_effect[['Husbandry']]
     Params<-Replace_param(params=Params, param_name='tau', effect_size=effect)
   }
 
   if('Sanitation' %in% Intervention){
-    effect<-Intervention_effect[Sanitation]
+    effect<-Intervention_effect[[Sanitation]]
     Params<-Replace_param(params=Params, param_name='delta', effect_size=effect)
   }
 
   if('Inspection' %in% Intervention){
-    effect<-Intervention_effect['Inspection']
+    effect<-Intervention_effect[['Inspection']]
     Params<-Replace_param(params=Params, param_name='chil', effect_size=effect[1])
     Params<-Replace_param(params=Params, param_name='chih', effect_size=effect[2])
   }

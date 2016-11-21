@@ -51,6 +51,26 @@ Beta_equilibrium<-function(alpha, IH0, IHC0, eta, dH, IP0, PPS, SH0, SHC0){
 }
 
 #' @title
+#' Egg to human transmission paramter
+#' @description
+#' Calculate the transmission parameter (egg->human) at equiliberium
+#'
+#' @param bH Births of humans (net)
+#' @param eta Human recovery rate from Cysticercosis (oer month)
+#' @param SHC0 Initial number of Human: T- C+
+#' @param IHC0 Initial number of Human: T+ C+
+#' @param dH Human mortality rate (per month)
+#' @param SH0 Initial number of Human: susceptible
+#' @param IH0 Initial number of Human: T+ C-
+#' @param E0 The equilibrium number of eggs in the environment
+#' @param RR Risk multiplier for Cysticercosis if human has Taeniasis
+#'
+#' @return The equilibrium egg to human transmission parameter
+theta_equilibrium<-function(bH, eta, SHC0, IHC0, dH, SH0, IH0, E0, RR) {
+  (bH+eta*(SHC0+IHC0)-dH*(SH0+IH0))/((SH0*E0)+((1+RR)*IH0*E0))
+}
+
+#' @title
 #' Low intensity infected pig -> human infection probability
 #' @description
 #' Calculate the transmission probability between a low intensity infected pig and human at equiliberium
