@@ -4,52 +4,16 @@
 \alias{Single_run}
 \title{Run Cysticercosis model ODE}
 \usage{
-Single_run(tt, LEP = 1, delta_bl = 960000, HPS = 10000, PPS = 2000,
-  TPrev = 0.02, CPrev = 0.07, PTPrev = 0.2, AEL = 0.03846154,
-  pil_bl = 0.5, pih_bl = 1, ATL = 2, ADI = 50, LEH = 54, phi = 0.8,
-  Husbandry_effect = 1, Sanitation_effect = 1, Inspection_effect_low = 1,
-  Inspection_effect_high = 1)
+Single_run(tt, params, states)
 }
 \arguments{
 \item{tt}{vector of times}
 
-\item{LEP}{Average life expectancy of a pig (years)}
+\item{params}{list of parameters}
 
-\item{delta_bl}{Egg production rate (per month)}
-
-\item{HPS}{Human population size}
-
-\item{PPS}{Pig population size}
-
-\item{TPrev}{Taeniasis prevalence in human population}
-
-\item{CPrev}{Cysticercosis prevalence in human population}
-
-\item{PTPrev}{Cysticercosis prevalence in pig population}
-
-\item{AEL}{Average egg survival (years)}
-
-\item{pil_bl}{Low intensity infected pig -> human contact rate}
-
-\item{pih_bl}{High intensity infected pig -> human contact rate}
-
-\item{ATL}{Average lifespan of the adult tapeworm (years)}
-
-\item{ADI}{Average duration of Cysticercosis infection in human (years)}
-
-\item{LEH}{Average life expectancy of a human (years)}
-
-\item{phi}{Proportion of infected pigs with low-intensity cyst burden}
-
-\item{Husbandry_effect}{1-proportion reduction to egg to pig transmission parameter (tau)}
-
-\item{Sanitation_effect}{1-proportion reduction to egg production rate (delta)}
-
-\item{Inspection_effect_low}{1-proportion reduction to low intensity infected pig -> human contact rate (pil)}
-
-\item{Inspection_effect_high}{1-proportion reduction to high intensity infected pig -> human contact rate (pih)}
+\item{states}{list of states}
 }
 \description{
-Runs the ODE Cysticercosis model
+Runs a single implementation of the ODE Cysticercosis model
 }
 

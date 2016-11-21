@@ -60,7 +60,7 @@ Replace_param<-function(params, param_name, effect_size){
 #' @param Params List of model parameters
 #' @param Intevention Vector of one or more parameter interventions
 #' @param Intervention_effect a list of intervention effect sizes
-Intervention_event_param(Params, Intervention, Intervention_effect){
+Intervention_event_param<-function(Params, Intervention, Intervention_effect){
   Check_interventions(Intervention)
   Check_effect(Intervention_effect)
 
@@ -108,7 +108,7 @@ Move_state<-function(States, from, to, proportion){
 #' @param States List of model states
 #' @param Intevention Vector of one or more parameter interventions
 #' @param Intervention_effect a list of intervention effect sizes
-Intervention_event_state(States, Intervention, Intervention_effect){
+Intervention_event_state<-function(States, Intervention, Intervention_effect){
 
   if('Pig_MDA' %in% Intervention){
     proportion<-Intervention_effect['Pig_MDA']
