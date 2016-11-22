@@ -67,9 +67,9 @@ Sensitivity_intervention<-function(N){
   for(i in 1:N){
     sens_int[[i]]<-bl
 
-    sens_int[[i]]$Husbandry<-triangle::rtriangle(1, 0.5, 0.9, sens_int[[i]]$Husbandry)
-    sens_int[[i]]$Sanitation<-triangle::rtriangle(1, 0.5, 0.9, sens_int[[i]]$Sanitation)
-    sens_int[[i]]$Inspection[1]<-triangle::rtriangle(1, 0.5, 0.9, sens_int[[i]]$Inspection[1])
+    sens_int[[i]]$Husbandry<-triangle::rtriangle(1, 0.425, 0.9, sens_int[[i]]$Husbandry)
+    sens_int[[i]]$Sanitation<-triangle::rtriangle(1, 0.425, 0.9, sens_int[[i]]$Sanitation)
+    sens_int[[i]]$Inspection[1]<-triangle::rtriangle(1, 0.425, 0.9, sens_int[[i]]$Inspection[1])
     sens_int[[i]]$Inspection[2]<-triangle::rtriangle(1, 0.55, 0.95, sens_int[[i]]$Inspection[2])
 
     sens_int[[i]]$Pig_MDA[1]<-triangle::rtriangle(1, 0.375, 1, sens_int[[i]]$Pig_MDA[1])
