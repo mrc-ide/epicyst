@@ -72,6 +72,6 @@
       .Call("cyst_generator_contents", self$ptr, PACKAGE = "deCyst")
     }
   ))
-cyst_generator <- function(E0, IPH0, IPL0, SP0, RP0, VP0, tau, SHC0, IHC0, SH0, IH0, HPS, PPS, dH, dP, bH, bP, dE, delta, theta, phi, alpha, eta, pil, chi, pih, epsilon, RR, user = list(E0 = E0, IPH0 = IPH0, IPL0 = IPL0, SP0 = SP0, RP0 = RP0, VP0 = VP0, tau = tau, SHC0 = SHC0, IHC0 = IHC0, SH0 = SH0, IH0 = IH0, HPS = HPS, PPS = PPS, dH = dH, dP = dP, bH = bH, bP = bP, dE = dE, delta = delta, theta = theta, phi = phi, alpha = alpha, eta = eta, pil = pil, chi = chi, pih = pih, epsilon = epsilon, RR = RR), use_dde = FALSE) {
+cyst_generator <- function(E0, IPH0, IPL0, SP0, RP0, VP0, tau, SHC0, IHC0, SH0, IH0, CCC0, CTC0, HPS, PPS, dH, dP, bH, bP, dE, delta, theta, phi, alpha, eta, pil, chi, pih, epsilon, RR_cysticercosis, user = list(E0 = E0, IPH0 = IPH0, IPL0 = IPL0, SP0 = SP0, RP0 = RP0, VP0 = VP0, tau = tau, SHC0 = SHC0, IHC0 = IHC0, SH0 = SH0, IH0 = IH0, CCC0 = CCC0, CTC0 = CTC0, HPS = HPS, PPS = PPS, dH = dH, dP = dP, bH = bH, bP = bP, dE = dE, delta = delta, theta = theta, phi = phi, alpha = alpha, eta = eta, pil = pil, chi = chi, pih = pih, epsilon = epsilon, RR_cysticercosis = RR_cysticercosis), use_dde = FALSE) {
   .R6_cyst_generator$new(user = user, use_dde = use_dde)
 }

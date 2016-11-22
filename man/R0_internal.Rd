@@ -2,10 +2,10 @@
 % Please edit documentation in R/R0.R
 \name{R0_internal}
 \alias{R0_internal}
-\title{R0 wrapper}
+\title{R0 internal}
 \usage{
-R0_internal(delta, tau, phi, alpha, dH, dE, dP, RR, theta, eta, chi, pih, pil,
-  HPS, ...)
+R0_internal(delta, tau, phi, alpha, dH, dE, dP, RR_cysticercosis, theta, eta,
+  chi, pih, pil, HPS, ...)
 }
 \arguments{
 \item{delta}{Egg production rate (per month)}
@@ -22,7 +22,7 @@ R0_internal(delta, tau, phi, alpha, dH, dE, dP, RR, theta, eta, chi, pih, pil,
 
 \item{dP}{Pig mortality rate (per month)}
 
-\item{RR}{Risk multiplier for Cysticercosis if human has Taeniasis}
+\item{RR_cysticercosis}{Risk multiplier for Cysticercosis if human has Taeniasis}
 
 \item{theta}{Egg to human transmission paramter}
 
@@ -37,6 +37,6 @@ R0_internal(delta, tau, phi, alpha, dH, dE, dP, RR, theta, eta, chi, pih, pil,
 \item{HPS}{Human population size}
 }
 \description{
-A wrapper function to faciloitate the R0 function being called with a list of parameters
+Calculate R0
 }
 

@@ -3,11 +3,11 @@
 # Human: susceptible
 deriv(SH)<-bH+alpha*IH+eta*SHC+eta*IHC-(pil*chi)*SH*IPL/PPS-(pih*chi)*SH*IPH/PPS-theta*SH*E-dH*SH
 # Human: T+ C-
-deriv(IH)<-(pil*chi)*SH*IPL/PPS+(pih*chi)*SH*IPH/PPS-alpha*IH-theta*(1+RR)*IH*E-dH*IH
+deriv(IH)<-(pil*chi)*SH*IPL/PPS+(pih*chi)*SH*IPH/PPS-alpha*IH-theta*(1+RR_cysticercosis)*IH*E-dH*IH
 # Human: T- C+
 deriv(SHC)<-theta*SH*E+alpha*IHC-(pil*chi)*SHC*IPL/PPS-(pih*chi)*SHC*IPH/PPS-eta*SHC-dH*SHC
 # Human: T+ C+
-deriv(IHC)<-(pil*chi)*SHC*IPL/PPS+(pih*chi)*SHC*IPH/PPS+theta*(1+RR)*IH*E-alpha*IHC-eta*IHC-dH*IHC
+deriv(IHC)<-(pil*chi)*SHC*IPL/PPS+(pih*chi)*SHC*IPH/PPS+theta*(1+RR_cysticercosis)*IH*E-alpha*IHC-eta*IHC-dH*IHC
 
 # Eggs
 deriv(E)<-delta*IH+delta*IHC-dE*E
@@ -23,6 +23,12 @@ deriv(RP)<- -epsilon*RP-dP*RP
 # Pigs: Vaccinated
 deriv(VP)<- -dP*VP
 
+# Cumulative measures
+# Cumulative Cysticercosis cases
+deriv(CCC)<-theta*(1+RR_cysticercosis)*IH*E+theta*SH*E
+# Cumulative Taeniasis cases
+deriv(CTC)<-(pil*chi)*SH*IPL/PPS+(pil*chi)*SHC*IPL/PPS+(pih*chi)*SH*IPH/PPS+(pih*chi)*SHC*IPH/PPS
+
 
 ### Initial conditions ###
 initial(SH)<-SH0
@@ -35,6 +41,8 @@ initial(IPL)<-IPL0
 initial(IPH)<-IPH0
 initial(RP)<-RP0
 initial(VP)<-VP0
+initial(CCC)<-CCC0
+initial(CTC)<-CTC0
 
 # Initial egg number (at equilibrium)
 E0<-user()
@@ -60,6 +68,10 @@ IHC0<-user()
 SH0<-user()
 # Initial number of Human: T+ C-
 IH0<-user()
+# Initial number of cumulative cysticercosis cases
+CCC0<-user()
+# Initial number of cumulative taeniasis cases
+CTC0<-user()
 
 ### Parameters ###
 # Demographic:
@@ -117,7 +129,7 @@ pih<-user()
 # Pig rate of loss of naturally aquired immunity
 epsilon<-user()
 # Risk multiplier for Cysticercosis if human has Taeniasis
-RR<-user()
+RR_cysticercosis<-user()
 
 output(Humans_Taeniasis)<-IH+IHC
 output(Humans_Cysticercosis)<-SHC+IHC

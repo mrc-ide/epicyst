@@ -140,13 +140,15 @@ Intervention_event_state<-function(States, Intervention, Intervention_effect){
 #'
 #' @return A list Intervention effects
 Intervention_effect_size<-function(){
+  pars<-Set_up()[[1]]
+  states<-Set_up()[[2]]
   list(
     Husbandry=0.8,
     Sanitation=0.8,
     Inspection=c(Proportion_low_burden_mean=0.8, Proportion_high_burden_meat=0.6),
 
     Pig_MDA=c(Proportion_sucess_treated=0.9*0.99,Proportion_no_immunity=0.1), # Succesfully treated = the assumed therapeutic coverage (0.9) × the anthelmintic efficacy (0.99).
-    Pig_vaccine=0.93, # Assumed coverage (0.9) * vaccine efficacy (0.99)
+    Pig_vaccine=0.9*(0.99-(0.99*pars$tau*states$E0*3)), # Assumed coverage (0.9) * vaccine efficacy (0.99-(0.99*tau*E*3)
     Human_test_and_treat=0.9*0.97*0.98*0.99 # Proportion of people tested that are T+ and C- (Assumed therapeutic coverage (0.9) * Taeniasis sensitivity (0.97) * Cysticercosis specificity (0.98)) * drug efficacy (0.99)
   )
 

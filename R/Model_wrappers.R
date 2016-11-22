@@ -7,6 +7,7 @@
 #' @param tt vector of times
 #' @param params list of parameters
 #' @param states list of states
+#' @export
 Single_run<-function(tt, params, states){
 
   Mod<-cyst_generator(user=c(params, states))
@@ -28,6 +29,8 @@ Single_run<-function(tt, params, states){
 #' @param Intervention A vector of interventions to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat
 #' @param Intervention_effect A list of intervention effect sizes, see \code{Intervention_effect_size} for details
 #' @param step Time step (months)
+#'
+#' @export
 Run_model<-function(Params=NULL, Initial_states=NULL, Time, Intervention=NULL, Intervention_time=NULL, Intervention_effect=Intervention_effect_size(), step=1/30){
 
   # Calculate parmaters and initial state variables (if not provided)

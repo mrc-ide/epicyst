@@ -18,7 +18,7 @@ month_rate<-function(dur){
 #' Caculates internal parameters and equilbirum staring values for state variables
 #'
 #' @param LEP Pig life expectancy (years)
-#' @param delta
+#' @param delta Egg production rate (per month)
 #' @param HPS Human population size
 #' @param PPS Pig population size
 #' @param TPrev Taeniasis prevalence
@@ -30,7 +30,7 @@ month_rate<-function(dur){
 #' @param LEH Average life expectancy of a human (years)
 #' @param phi Proportion of infected pigs with low-intensity cyst burden
 #' @param chi Average number of pork meals (200g portion) per person per month
-#' @param RR Risk multiplier for Cysticercosis if human has Taeniasis
+#' @param RR_cysticercosis Risk multiplier for Cysticercosis if human has Taeniasis
 #' @param epsilon Pig rate of loss of naturally aquired immunity
 #' @param RR_infection Increased RR of infection given consumption of high cyct burden pork, compared with low cyst burden
 #' @param RR_consumption Decreased RR of consumption of high cyst burden pork, compared with low cyst burden pork
@@ -38,7 +38,7 @@ month_rate<-function(dur){
 #' @return Two lists of parameters and state variable values
 #' @export
 Set_up<-function(LEP=1, delta=960000, HPS=10000, PPS=2000, TPrev=0.02, CPrev=0.07, PCPrev=0.2, AEL=2,
-                 ATL=2, ADI=50, LEH=54, phi=0.8, chi=0.5, RR=1, epsilon=0.01, RR_infection=2, RR_consumption=0.75){
+                 ATL=2, ADI=50, LEH=54, phi=0.8, chi=0.5, RR_cysticercosis=1, epsilon=0.01, RR_infection=2, RR_consumption=0.75){
 
   # Pig mortality rate
   dP<-month_rate(LEP)
@@ -66,6 +66,10 @@ Set_up<-function(LEP=1, delta=960000, HPS=10000, PPS=2000, TPrev=0.02, CPrev=0.0
   SH0<-HPS*(1-TPrev)*(1-CPrev)
   # Initial number of Human: T- C+
   SHC0<-HPS*(1-TPrev)*CPrev
+  # Initial number of cumulative cysticercosis cases
+  CCC0<-0
+  # Initial number of cumulative taeniasis cases
+  CTC0<-0
 
   # Combined raltive risk for high-cyst burden meat (increased RR of infection * decreased RR of consumption)
   CRR<-RR_infection*RR_consumption
@@ -92,7 +96,7 @@ Set_up<-function(LEP=1, delta=960000, HPS=10000, PPS=2000, TPrev=0.02, CPrev=0.0
   # Birth of pigs
   bP<-PPS*dP
   # Egg to human transmission paramter
-  theta<-theta_equilibrium(bH, eta, SHC0, IHC0, dH, SH0, IH0, E0, RR)
+  theta<-theta_equilibrium(bH, eta, SHC0, IHC0, dH, SH0, IH0, E0, RR_cysticercosis)
 
 
   params<-list(tau=tau,
@@ -113,7 +117,7 @@ Set_up<-function(LEP=1, delta=960000, HPS=10000, PPS=2000, TPrev=0.02, CPrev=0.0
                pil=pil,
                pih=pih,
                epsilon=epsilon,
-               RR=RR
+               RR_cysticercosis=RR_cysticercosis
   )
 
   states<-list(E0=E0,
@@ -125,7 +129,9 @@ Set_up<-function(LEP=1, delta=960000, HPS=10000, PPS=2000, TPrev=0.02, CPrev=0.0
                IPL0=IPL0,
                IPH0=IPH0,
                RP0=RP0,
-               VP0=VP0)
+               VP0=VP0,
+               CCC0=CCC0,
+               CTC0=CTC0)
 
   return(list(params, states))
 }
