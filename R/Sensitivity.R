@@ -32,7 +32,7 @@ Sensitivity_params<-function(N){
     sens_params[[i]]$theta<-qunif(x[i,7],p1$theta*0.25,p1$theta*4, sens_params[[i]]$theta) # Egg -> human transmission
 
     sens_params[[i]]$alpha<-triangle::qtriangle(x[i,8], 0.017, 0.17, sens_params[[i]]$alpha)            # Human recovery rate from taeniasis
-    sens_params[[i]]$eta<-triangle::qtriangle(x[i,9], 0.00083, 0.0083, sens_params[[i]]$eta)          # Human recovery rate from cysticercosis
+    sens_params[[i]]$eta<-triangle::qtriangle(x[i,9], 0.001666667, 0.08333333, sens_params[[i]]$eta)          # Human recovery rate from cysticercosis
 
     sens_params[[i]]$chi<-triangle::qtriangle(x[i,10], 0.083, 0.680, sens_params[[i]]$chi)            # Pork consumption rate
     sens_params[[i]]$pil<-qunif(x[i,11],p1$pil*0.25,p1$pil*4,sens_params[[i]]$pil)      # Pork low cyst-burden -> human infection prob
