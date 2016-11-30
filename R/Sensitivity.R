@@ -17,7 +17,7 @@ Sensitivity_params<-function(N){
   for(i in 1:N){
     sens_params[[i]]<-p1
 
-    sens_params[[i]]$tau<-triangle::qtriangle(x[i,1],p1$tau*0.5,p1$tau*2,sens_params[[i]]$tau)       # Egg -> pig transmission coefficient
+    sens_params[[i]]$tau<-qunif(x[i,1],p1$tau*0.25,p1$tau*4,sens_params[[i]]$tau)       # Egg -> pig transmission coefficient
 
     sens_params[[i]]$dH<-triangle::qtriangle(x[i,2], 0.0013, 0.018, sens_params[[i]]$dH)	            # Human death rate
     sens_params[[i]]$bh<-p1$HPS*sens_params[[i]]$dH	              # Recallibrate human birth rate to ensure stable population size
@@ -25,20 +25,20 @@ Sensitivity_params<-function(N){
     sens_params[[i]]$dP<-triangle::qtriangle(x[i,3], 0.042, 0.17, sens_params[[i]]$dP)	              # Pig death rate
     sens_params[[i]]$bP<-p1$PPS*sens_params[[i]]$dP	              # Recallibrate pig birth rate to ensure stable population size
 
-    sens_params[[i]]$dE<-triangle::qtriangle(x[i,4], 0.083, 4, sens_params[[i]]$dE)	                # Egg removal rate
+    sens_params[[i]]$dE<-qunif(x[i,4], 0.083, 4, sens_params[[i]]$dE)	                # Egg removal rate
     sens_params[[i]]$delta<-triangle::qtriangle(x[i,5], 640000, 1800000, sens_params[[i]]$delta)        # Egg production rate
 
     sens_params[[i]]$phi<-triangle::qtriangle(x[i,6], 0.1, 0.9,  sens_params[[i]]$phi)                 # Proportion of pigs with low cyst burden
-    sens_params[[i]]$theta<-triangle::qtriangle(x[i,7],p1$theta*0.5,p1$theta*2, sens_params[[i]]$theta) # Egg -> human transmission
+    sens_params[[i]]$theta<-qunif(x[i,7],p1$theta*0.25,p1$theta*4, sens_params[[i]]$theta) # Egg -> human transmission
 
     sens_params[[i]]$alpha<-triangle::qtriangle(x[i,8], 0.017, 0.17, sens_params[[i]]$alpha)            # Human recovery rate from taeniasis
     sens_params[[i]]$eta<-triangle::qtriangle(x[i,9], 0.00083, 0.0083, sens_params[[i]]$eta)          # Human recovery rate from cysticercosis
 
     sens_params[[i]]$chi<-triangle::qtriangle(x[i,10], 0.083, 0.680, sens_params[[i]]$chi)            # Pork consumption rate
-    sens_params[[i]]$pil<-triangle::qtriangle(x[i,11],p1$pil*0.5,p1$pil*2,sens_params[[i]]$pil)      # Pork low cyst-burden -> human infection prob
+    sens_params[[i]]$pil<-qunif(x[i,11],p1$pil*0.25,p1$pil*4,sens_params[[i]]$pil)      # Pork low cyst-burden -> human infection prob
 
     sens_params[[i]]$rr_infection<-triangle::qtriangle(x[i,12], 1, 3, 2)
-    sens_params[[i]]$rr_consumption<-triangle::qtriangle(x[i,13], 0.33, 1, 0.75)
+    sens_params[[i]]$rr_consumption<-triangle::qtriangle(x[i,13], 1/3, 1, 0.75)
     sens_params[[i]]$pih<-sens_params[[i]]$pil*
       sens_params[[i]]$rr_infection*
       sens_params[[i]]$rr_consumption     # Pork high cyst-burden -> human infection prob
@@ -67,15 +67,15 @@ Sensitivity_intervention<-function(N){
   for(i in 1:N){
     sens_int[[i]]<-bl
 
-    sens_int[[i]]$Husbandry<-triangle::rtriangle(1, 0.425, 0.9, sens_int[[i]]$Husbandry)
-    sens_int[[i]]$Sanitation<-triangle::rtriangle(1, 0.425, 0.9, sens_int[[i]]$Sanitation)
-    sens_int[[i]]$Inspection[1]<-triangle::rtriangle(1, 0.425, 0.9, sens_int[[i]]$Inspection[1])
-    sens_int[[i]]$Inspection[2]<-triangle::rtriangle(1, 0.55, 0.95, sens_int[[i]]$Inspection[2])
+    sens_int[[i]]$Husbandry<-triangle::rtriangle(1, 0.5, 0.9, sens_int[[i]]$Husbandry)
+    sens_int[[i]]$Sanitation<-triangle::rtriangle(1, 0.5, 0.9, sens_int[[i]]$Sanitation)
+    sens_int[[i]]$Inspection[1]<-triangle::rtriangle(1, 0.5, 0.9, sens_int[[i]]$Inspection[1])
+    sens_int[[i]]$Inspection[2]<-triangle::rtriangle(1, 0.2, 0.8, sens_int[[i]]$Inspection[2])
 
     sens_int[[i]]$Pig_MDA[1]<-triangle::rtriangle(1, 0.375, 1, sens_int[[i]]$Pig_MDA[1])
-    sens_int[[i]]$Pig_MDA[2]<-triangle::rtriangle(1, 0.0001, 1, sens_int[[i]]$Pig_MDA[2])
+    sens_int[[i]]$Pig_MDA[2]<-triangle::rtriangle(1, 0, 1, sens_int[[i]]$Pig_MDA[2])
     sens_int[[i]]$Pig_vaccine<-triangle::rtriangle(1, 0.375, 1, sens_int[[i]]$Pig_vaccine)
-    sens_int[[i]]$Human_test_and_treat<-triangle::rtriangle(1, 0.375, 1, sens_int[[i]]$Human_test_and_treat)
+    sens_int[[i]]$Human_test_and_treat<-triangle::rtriangle(1, 0.32, 1, sens_int[[i]]$Human_test_and_treat)
   }
 
   return(sens_int)
@@ -126,3 +126,4 @@ PRCC_sig<-function(prcc_values, N, N_par){
   T_value<-prcc_values*sqrt((((N-2-(N_par-1))/(1-(prcc_values^2)))))				# Calculate the T value
   2*pt(abs(T_value),df=N-2-(N_par-1),lower.tail=FALSE)			# Corresponding p-value
 }
+
