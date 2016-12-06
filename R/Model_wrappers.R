@@ -25,13 +25,13 @@ Single_run<-function(tt, params, states){
 #'
 #' @param Params List of model parameters
 #' @param Initial_states List of intitial state values
-#' @param Time The numebr of years to run the model for (from equilibrium)
+#' @param Time The numebr of years to run the model for (from equilibrium). Default is at the halfway point.
 #' @param Intervention A vector of interventions to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat
 #' @param Intervention_effect A list of intervention effect sizes, see \code{Intervention_effect_size} for details
 #' @param step Time step (months)
 #'
 #' @export
-Run_model<-function(Params=NULL, Initial_states=NULL, Time, Intervention=NULL, Intervention_time=NULL, Intervention_effect=Intervention_effect_size(), step=1/30){
+Run_model<-function(Params=NULL, Initial_states=NULL, Time, Intervention=NULL, Intervention_time=Time/2, Intervention_effect=Intervention_effect_size(), step=1/30){
 
   # Calculate parmaters and initial state variables (if not provided)
   Initialise<-Set_up()
