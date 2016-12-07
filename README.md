@@ -1,5 +1,5 @@
 # EPICYST
 
-![alt tag](https://raw.githubusercontent.com/pwinskill/EPICYST/EPICYST.png)
+![Alt text](/EPICYST_logo.png?raw=true "Title")
 
 Cysticercosis modelling project
