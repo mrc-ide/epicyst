@@ -53,9 +53,7 @@
         ret <- dde::dopri(y, t, "cyst_generator_deriv_dde", self$ptr,
                           dllname="EPICYST",
                           n_out=self$output_length, output="cyst_generator_output_dde",
-                          parms_are_real=FALSE,
-                          by_column=TRUE, return_initial=TRUE,
-                          return_time=TRUE, return_output_with_y=TRUE, ...)
+                          parms_are_real=FALSE, ynames = FALSE, ...)
       } else {
         ret <- deSolve::ode(y, t, "cyst_generator_deriv_ds", self$ptr,
                             initfunc = "cyst_generator_initmod_ds", dllname = "EPICYST",
