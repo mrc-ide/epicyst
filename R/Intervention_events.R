@@ -139,6 +139,7 @@ Intervention_event_state<-function(States, Intervention, Intervention_effect){
 #' Provides preset intervention effect
 #'
 #' @return A list Intervention effects
+#' @export
 Intervention_effect_size<-function(){
   pars<-Set_up()[[1]]
   states<-Set_up()[[2]]

@@ -5,7 +5,7 @@
 \title{Run Cysticercosis model with interventions}
 \usage{
 Run_model(Params = NULL, Initial_states = NULL, Time, Intervention = NULL,
-  Intervention_time = NULL,
+  Intervention_time = Time/2,
   Intervention_effect = Intervention_effect_size(), step = 1/30)
 }
 \arguments{
@@ -13,7 +13,7 @@ Run_model(Params = NULL, Initial_states = NULL, Time, Intervention = NULL,
 
 \item{Initial_states}{List of intitial state values}
 
-\item{Time}{The numebr of years to run the model for (from equilibrium)}
+\item{Time}{The numebr of years to run the model for (from equilibrium). Default is at the halfway point.}
 
 \item{Intervention}{A vector of interventions to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat}
 
