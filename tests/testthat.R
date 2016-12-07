@@ -1,4 +1,4 @@
 library(testthat)
-library(deCyst)
+library(EPICYST)
 
-test_check("deCyst")
+test_check("EPICYST")

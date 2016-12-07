@@ -1,3 +1,3 @@
 #' @import odin
-#' @useDynLib deCyst
+#' @useDynLib EPICYST
 NULL

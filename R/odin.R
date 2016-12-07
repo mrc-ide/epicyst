@@ -16,9 +16,9 @@
     transform_variables = NULL,
     ## Methods:
     initialize = function(user = NULL, use_dde = FALSE) {
-      self$ptr <- .Call("cyst_generator_create", user, use_dde, PACKAGE = "deCyst")
+      self$ptr <- .Call("cyst_generator_create", user, use_dde, PACKAGE = "EPICYST")
       self$use_dde <- use_dde
-      self$init <- .Call("cyst_generator_initialise", self$ptr, NA_real_, PACKAGE = "deCyst")
+      self$init <- .Call("cyst_generator_initialise", self$ptr, NA_real_, PACKAGE = "EPICYST")
       if (use_dde) {
         loadNamespace("dde")
       }
@@ -26,19 +26,19 @@
     },
 
     set_user = function(..., user = list(...)) {
-      .Call("r_cyst_generator_set_user", self$ptr, user, PACKAGE = "deCyst")
-      self$init <- .Call("cyst_generator_initialise", self$ptr, NA_real_, PACKAGE = "deCyst")
+      .Call("r_cyst_generator_set_user", self$ptr, user, PACKAGE = "EPICYST")
+      self$init <- .Call("cyst_generator_initialise", self$ptr, NA_real_, PACKAGE = "EPICYST")
       invisible(self$init)
     },
 
     update_cache = function() {
-      self$variable_order <- .Call("cyst_generator_variable_order", self$ptr, PACKAGE = "deCyst")
-      self$output_order <- .Call("cyst_generator_output_order", self$ptr, PACKAGE = "deCyst")
+      self$variable_order <- .Call("cyst_generator_variable_order", self$ptr, PACKAGE = "EPICYST")
+      self$output_order <- .Call("cyst_generator_output_order", self$ptr, PACKAGE = "EPICYST")
       odin_prepare(self, FALSE)
     },
 
     deriv = function(t, y) {
-      .Call("cyst_generator_deriv_r", self$ptr, t, y, PACKAGE = "deCyst")
+      .Call("cyst_generator_deriv_r", self$ptr, t, y, PACKAGE = "EPICYST")
     },
 
     initial = function(t) {
@@ -51,12 +51,14 @@
       }
       if (self$use_dde) {
         ret <- dde::dopri(y, t, "cyst_generator_deriv_dde", self$ptr,
-                          dllname="deCyst",
+                          dllname="EPICYST",
                           n_out=self$output_length, output="cyst_generator_output_dde",
-                          parms_are_real=FALSE, ynames = FALSE, ...)
+                          parms_are_real=FALSE,
+                          by_column=TRUE, return_initial=TRUE,
+                          return_time=TRUE, return_output_with_y=TRUE, ...)
       } else {
         ret <- deSolve::ode(y, t, "cyst_generator_deriv_ds", self$ptr,
-                            initfunc = "cyst_generator_initmod_ds", dllname = "deCyst",
+                            initfunc = "cyst_generator_initmod_ds", dllname = "EPICYST",
                             nout = self$output_length,
                             ...)
       }
@@ -69,7 +71,7 @@
     },
 
     contents = function() {
-      .Call("cyst_generator_contents", self$ptr, PACKAGE = "deCyst")
+      .Call("cyst_generator_contents", self$ptr, PACKAGE = "EPICYST")
     }
   ))
 cyst_generator <- function(E0, IPH0, IPL0, SP0, RP0, VP0, tau, SHC0, IHC0, SH0, IH0, CCC0, CTC0, HPS, PPS, dH, dP, bH, bP, dE, delta, theta, phi, alpha, eta, pil, chi, pih, epsilon, RR_cysticercosis, user = list(E0 = E0, IPH0 = IPH0, IPL0 = IPL0, SP0 = SP0, RP0 = RP0, VP0 = VP0, tau = tau, SHC0 = SHC0, IHC0 = IHC0, SH0 = SH0, IH0 = IH0, CCC0 = CCC0, CTC0 = CTC0, HPS = HPS, PPS = PPS, dH = dH, dP = dP, bH = bH, bP = bP, dE = dE, delta = delta, theta = theta, phi = phi, alpha = alpha, eta = eta, pil = pil, chi = chi, pih = pih, epsilon = epsilon, RR_cysticercosis = RR_cysticercosis), use_dde = FALSE) {
