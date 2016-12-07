@@ -26,19 +26,4 @@ The package ODEs are all driven by the odin package More information is availabl
 (https://github.com/richfitz/odin/).
 
 ## Using the model
-Details of model functionality and use may be found on the [Wiki Page]
-
-### Call and view basic parameters and equilirbium solutions
-ABC
-### Run the model with no interventions
-ABC
-### Call and view intervention effects
-ABC
-### Run the model with a single intervention
-ABC
-### Run the model with multiple interventions
-ABC
-### Sensitivity
-ABC
-### R0
-ABC
+Details of model functionality and use may be found on the [Wiki Page] (https://github.com/pwinskill/EPICYST/wiki)
