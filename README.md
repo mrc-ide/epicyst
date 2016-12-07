@@ -25,7 +25,9 @@ You will need an appropriate compiler installed:
 The package ODEs are all driven by the odin package More information is available at:
 (https://github.com/richfitz/odin/).
 
-## Overview of model functions
+## Using the model
+Details of model functionality and use may be found on the [Wiki Page]
+
 ### Call and view basic parameters and equilirbium solutions
 ABC
 ### Run the model with no interventions
