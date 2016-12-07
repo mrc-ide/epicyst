@@ -1,0 +1,2 @@
+# EPICYST
+Cysticercosis modelling project
