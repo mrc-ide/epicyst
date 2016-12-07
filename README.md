@@ -12,7 +12,7 @@ For full model deatials please see:
 
 Available at:
 
-Parasites and Vectors (https://parasitesandvectors.biomedcentral.com/).
+[Parasites and Vectors] (https://parasitesandvectors.biomedcentral.com/).
 
 ## Installation
 To use the package, please install package devtools and install EPICYST:
