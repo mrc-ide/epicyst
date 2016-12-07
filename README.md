@@ -24,3 +24,19 @@ You will need an appropriate compiler installed:
 
 The package ODEs are all driven by the odin package More information is available at:
 (https://github.com/richfitz/odin/).
+
+## Overview of model functions
+### Call and view basic parameters and equilirbium solutions
+ABC
+### Run the model with no interventions
+ABC
+### Call and view intervention effects
+ABC
+### Run the model with a single intervention
+ABC
+### Run the model with multiple interventions
+ABC
+### Sensitivity
+ABC
+### R0
+ABC
