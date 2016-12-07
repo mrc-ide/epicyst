@@ -12,3 +12,4 @@ Imports:
     lhs,
     triangle
 RoxygenNote: 5.0.1
+Suggests: testthat
