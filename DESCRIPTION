@@ -3,9 +3,9 @@ Type: Package
 Title: Cysticercosis ODE and Intervention model
 Version: 0.1.0
 Author: Peter Winskill
-Maintainer: Who to complain to <yourfault@somewhere.net>
+Maintainer: Peter Winskill <p.winskill@imeprial.ac.uk>
 Description: Contains ODEs for Cysticercosis/Pork tapeworm model.
-License: What license is it under?
+License: MIT
 LazyData: TRUE
 Imports:
     odin,
