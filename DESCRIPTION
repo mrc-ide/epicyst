@@ -5,7 +5,7 @@ Version: 0.1.0
 Author: Peter Winskill
 Maintainer: Who to complain to <yourfault@somewhere.net>
 Description: Contains ODEs for Cysticercosis/Pork tapeworm model.
-License: What license is it under?
+License: MIT + file LICENSE
 LazyData: TRUE
 Imports:
     odin,
