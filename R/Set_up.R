@@ -38,7 +38,7 @@ month_rate<-function(dur){
 #' @return Two lists of parameters and state variable values
 #' @export
 Set_up<-function(LEP=1, delta=960000, HPS=10000, PPS=2000, TPrev=0.02, CPrev=0.07, PCPrev=0.2, AEL=2,
-                 ATL=2, ADI=3, LEH=54, phi=0.8, chi=0.5, RR_cysticercosis=1, epsilon=0.01, RR_infection=2, RR_consumption=0.75){
+                 ATL=2, ADI=3, LEH=54, phi=0.8, chi=0.5, RR_cysticercosis=1, epsilon=0.01, RR_infection=1, RR_consumption=-0.25){
 
   # Pig mortality rate
   dP<-month_rate(LEP)
@@ -72,7 +72,7 @@ Set_up<-function(LEP=1, delta=960000, HPS=10000, PPS=2000, TPrev=0.02, CPrev=0.0
   CTC0<-0
 
   # Combined raltive risk for high-cyst burden meat (increased RR of infection * decreased RR of consumption)
-  CRR<-RR_infection*RR_consumption
+  CRR<-1+RR_infection+RR_consumption
 
   # Pork to human tranmission parameter
   beta<-Beta_equilibrium(alpha, IH0, IHC0, eta, dH, IP0, PPS, SH0, SHC0)
