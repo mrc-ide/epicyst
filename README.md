@@ -4,7 +4,7 @@
 ### Imperial College London
 
 ## Overview
-A detrminstic compartmental model of the Cysticercosis disease system.
+A detrminstic, compartmental model of the Cysticercosis disease system.
 
 For full model deatials please see:
 
