@@ -49,9 +49,13 @@ Run_model<-function(Params=NULL, Initial_states=NULL, Time, Intervention=NULL, I
     return(Run)
   }
 
-  # Checks on intervention inputs
+  # Checks on inputs
   Check_interventions(Intervention)
   Check_effect(Intervention_effect)
+  stopifnot(is.numeric(Time), is.numeric(Intervention_time), is.numeric(step),
+            length(Time)==1, length(Intervention_time)==1, length(step)==1,
+            Time>0, Intervention_time<=Time, Intervention_time>0, is.list(Params),
+            is.list(Initial_states))
 
   # Set time vectors for pre- and pos-intervention
   tt1<-seq(0, (Intervention_time*12)-step, step)
