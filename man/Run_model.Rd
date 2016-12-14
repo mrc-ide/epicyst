@@ -6,30 +6,37 @@
 \usage{
 Run_model(Params = NULL, Initial_states = NULL, Time, Intervention = NULL,
   Intervention_time = Time/2,
-  Intervention_effect = Intervention_effect_size(), step = 1/30)
+  Intervention_effect = Intervention_effect_size(), step = 1/30,
+  Burn_in = 0)
 }
 \arguments{
 \item{Params}{List of model parameters}
 
 \item{Initial_states}{List of intitial state values}
 
-\item{Time}{The numebr of years to run the model for (from equilibrium). Default is at the halfway point.}
+\item{Time}{The number of years to run the model for (from equilibrium). Default is at the halfway point.}
 
 \item{Intervention}{A vector of interventions to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat}
 
 \item{Intervention_effect}{A list of intervention effect sizes, see \code{Intervention_effect_size} for details}
 
 \item{step}{Time step (months)}
+
+\item{Burn_in}{A burn in period run before model run (years)}
 }
 \description{
 Runs the ODE Cysticercosis model
 }
 \examples{
+# Run the baseline model:
 M1<-Run_model(Time=75)
-plot(M1$t/12, M1$Humans_Cysticercosis, t='l', ylim=c(0,1000), ylab='Humans with Cysticercosis', xlab='Time')
+plot(M1$t/12, M1$Humans_Cysticercosis, t='l', ylim=c(0,1000), ylab='Humans with Cysticercosis', xlab='Time (years)')
+
+# Run the model with a single intevention:
 M2<-Run_model(Time=75, Intervention='Sanitation', Intervention_time=50)
-head(M2)
 lines(M2$t/12, M2$Humans_Cysticercosis, col='red')
+
+# Run the model with multiple interventions:
 M3<-Run_model(Time=75, Intervention=c('Human_test_and_treat', 'Pig_MDA'), Intervention_time=50)
 lines(M3$t/12, M3$Humans_Cysticercosis, col='green')
 legend('topright', c('Baseline','Sanitation','Human test & treat and Pig MDA'), lty=c(1,1,1), col=c('black','red', 'green'))

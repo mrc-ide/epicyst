@@ -104,7 +104,7 @@ test_that("Move states tests", {
 
 test_that("PRCC tests", {
   # Create a set of sensitivity parameters
-  sens_params<-Sensitivity_params(2)
+  sens_params<-Sensitivity_params(50)
   # Run the model for each draw, recording the cumulative enumebr of cysticercosis cases in humans
   out<-rep(NA, length(sens_params))
   for(i in 1:length(sens_params)){
@@ -116,9 +116,11 @@ test_that("PRCC tests", {
   sens_params_df<-as.data.frame(t(matrix(unlist(sens_params), nrow=length(unlist(sens_params[1])))))
   colnames(sens_params_df)<-names(sens_params[[1]])
   
-  expect_is(PRCC(out, sens_params_df), 'numeric')
-  expect_length(PRCC(out, sens_params_df), length(sens_params[[1]]))
-  expect_is(PRCC_sig(prcc, 2, 15), 'numeric')
-  expect_length(PRCC_sig(prcc, 2, 15), length(sens_params[[1]]))
+  prcc<-PRCC(out, sens_params_df)
+  expect_is(prcc, 'numeric')
+  expect_length(prcc, length(sens_params[[1]]))
+  prcc_sig<-PRCC_sig(prcc, 50, 22)
+  expect_is(prcc_sig, 'numeric')
+  expect_length(prcc_sig, length(sens_params[[1]]))
 })
   

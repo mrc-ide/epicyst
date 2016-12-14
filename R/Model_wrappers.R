@@ -25,10 +25,11 @@ Single_run<-function(tt, params, states){
 #'
 #' @param Params List of model parameters
 #' @param Initial_states List of intitial state values
-#' @param Time The numebr of years to run the model for (from equilibrium). Default is at the halfway point.
+#' @param Time The number of years to run the model for (from equilibrium). Default is at the halfway point.
 #' @param Intervention A vector of interventions to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat
 #' @param Intervention_effect A list of intervention effect sizes, see \code{Intervention_effect_size} for details
 #' @param step Time step (months)
+#' @param Burn_in A burn in period run before model run (years)
 #' @examples
 #' # Run the baseline model:
 #' M1<-Run_model(Time=75)
@@ -44,8 +45,8 @@ Single_run<-function(tt, params, states){
 #' legend('topright', c('Baseline','Sanitation','Human test & treat and Pig MDA'), lty=c(1,1,1), col=c('black','red', 'green'))
 #' 
 #' @export
-Run_model<-function(Params=NULL, Initial_states=NULL, Time, Intervention=NULL, Intervention_time=Time/2, Intervention_effect=Intervention_effect_size(), step=1/30){
-
+Run_model<-function(Params=NULL, Initial_states=NULL, Time, Intervention=NULL, Intervention_time=Time/2, Intervention_effect=Intervention_effect_size(), step=1/30, Burn_in=0){
+  
   # Calculate parmaters and initial state variables (if not provided)
   Initialise<-Set_up()
   if(is.null(Params)){
@@ -55,6 +56,14 @@ Run_model<-function(Params=NULL, Initial_states=NULL, Time, Intervention=NULL, I
     Initial_states<-Initialise[[2]]
   }
 
+  # Run burn in period
+  if(Burn_in>0){
+    tt_burn<-seq(0, (Burn_in*12), step)
+    Burn<-Single_run(tt_burn, params=Params, states=Initial_states)
+    Initial_states<-as.list(tail(Burn,1))
+    names(Initial_states)<-paste(colnames(Burn), '0', sep='')
+  }
+  
   # Run with no interventions (if none specified)
   if(is.null(Intervention)){
     Run<-Single_run(seq(0, Time*12, step), Params, Initial_states)
@@ -68,7 +77,7 @@ Run_model<-function(Params=NULL, Initial_states=NULL, Time, Intervention=NULL, I
   stopifnot(is.numeric(Time), is.numeric(Intervention_time), is.numeric(step),
             length(Time)==1, length(Intervention_time)==1, length(step)==1,
             Time>0, Intervention_time<=Time, Intervention_time>0, is.list(Params),
-            is.list(Initial_states))
+            is.list(Initial_states), is.numeric(Burn_in), Burn_in>=0)
 
   # Set time vectors for pre- and pos-intervention
   tt1<-seq(0, (Intervention_time*12)-step, step)
@@ -78,8 +87,6 @@ Run_model<-function(Params=NULL, Initial_states=NULL, Time, Intervention=NULL, I
   for(i in 1:(length(splits)-1)){
     tt2[[i]]<-seq(splits[i]+step, splits[i+1], step)
   }
-
-
 
   # Run the pre-intervention period
   BL<-Single_run(tt1, params=Params, states=Initial_states)
