@@ -29,7 +29,16 @@ Single_run<-function(tt, params, states){
 #' @param Intervention A vector of interventions to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat
 #' @param Intervention_effect A list of intervention effect sizes, see \code{Intervention_effect_size} for details
 #' @param step Time step (months)
-#'
+#' @examples
+#' M1<-Run_model(Time=500)
+#' plot(M1$Humans_Cysticercosis~M1$t, t='l', ylim=c(0,1000), ylab='Humans with Cysticercosis', xlab='Time')
+#' M2<-Run_model(Time=50, Intervention='Sanitation', Intervention_time=25)
+#' head(M2)
+#' lines(M2$Humans_Cysticercosis~M2$t, col='red')
+#' M3<-Run_model(Time=50, Intervention=c('Human_test_and_treat', 'Pig_MDA'), Intervention_time=25)
+#' lines(M3$Humans_Cysticercosis~M3$t, col='green')
+#' legend('topright', c('Baseline','Sanitation','Human test & treat and Pig MDA'), lty=c(1,1,1), col=c('black','red', 'green'))
+#' 
 #' @export
 Run_model<-function(Params=NULL, Initial_states=NULL, Time, Intervention=NULL, Intervention_time=Time/2, Intervention_effect=Intervention_effect_size(), step=1/30){
 
