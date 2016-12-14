@@ -30,15 +30,15 @@ Single_run<-function(tt, params, states){
 #' @param Intervention_effect A list of intervention effect sizes, see \code{Intervention_effect_size} for details
 #' @param step Time step (months)
 #' @examples
-#' # Run the baseline model
+#' # Run the baseline model:
 #' M1<-Run_model(Time=75)
 #' plot(M1$t/12, M1$Humans_Cysticercosis, t='l', ylim=c(0,1000), ylab='Humans with Cysticercosis', xlab='Time (years)')
 #' 
-#' # Run the model with a single intevention
+#' # Run the model with a single intevention:
 #' M2<-Run_model(Time=75, Intervention='Sanitation', Intervention_time=50)
 #' lines(M2$t/12, M2$Humans_Cysticercosis, col='red')
 #' 
-#' # Run the model with multiple interventions
+#' # Run the model with multiple interventions:
 #' M3<-Run_model(Time=75, Intervention=c('Human_test_and_treat', 'Pig_MDA'), Intervention_time=50)
 #' lines(M3$t/12, M3$Humans_Cysticercosis, col='green')
 #' legend('topright', c('Baseline','Sanitation','Human test & treat and Pig MDA'), lty=c(1,1,1), col=c('black','red', 'green'))
