@@ -35,7 +35,7 @@ Single_run<-function(tt, params, states){
 #' M1<-Run_model(Time=50, Burn_in=50)
 #' plot(M1$t/12, M1$Humans_Cysticercosis, t='l', ylim=c(0,1000), ylab='Humans with Cysticercosis', xlab='Time (years)')
 #' 
-#' # Run the model with a single intevention:
+#' # Run the model with a single intervention:
 #' M2<-Run_model(Time=50, Intervention='Sanitation', Intervention_time=20, Burn_in=50)
 #' lines(M2$t/12, M2$Humans_Cysticercosis, col='red')
 #' 
