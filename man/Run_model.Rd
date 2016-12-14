@@ -25,13 +25,13 @@ Run_model(Params = NULL, Initial_states = NULL, Time, Intervention = NULL,
 Runs the ODE Cysticercosis model
 }
 \examples{
-M1<-Run_model(Time=50)
-plot(M1$Humans_Cysticercosis~M1$t, t='l', ylim=c(0,1000), ylab='Humans with Cysticercosis', xlab='Time')
-M2<-Run_model(Time=50, Intervention='Sanitation', Intervention_time=25)
+M1<-Run_model(Time=75)
+plot(M1$t/12, M1$Humans_Cysticercosis, t='l', ylim=c(0,1000), ylab='Humans with Cysticercosis', xlab='Time')
+M2<-Run_model(Time=75, Intervention='Sanitation', Intervention_time=50)
 head(M2)
-lines(M2$Humans_Cysticercosis~M2$t, col='red')
-M3<-Run_model(Time=50, Intervention=c('Human_test_and_treat', 'Pig_MDA'), Intervention_time=25)
-lines(M3$Humans_Cysticercosis~M3$t, col='green')
+lines(M2$t/12, M2$Humans_Cysticercosis, col='red')
+M3<-Run_model(Time=75, Intervention=c('Human_test_and_treat', 'Pig_MDA'), Intervention_time=50)
+lines(M3$t/12, M3$Humans_Cysticercosis, col='green')
 legend('topright', c('Baseline','Sanitation','Human test & treat and Pig MDA'), lty=c(1,1,1), col=c('black','red', 'green'))
 
 }

@@ -30,13 +30,17 @@ Single_run<-function(tt, params, states){
 #' @param Intervention_effect A list of intervention effect sizes, see \code{Intervention_effect_size} for details
 #' @param step Time step (months)
 #' @examples
-#' M1<-Run_model(Time=500)
-#' plot(M1$Humans_Cysticercosis~M1$t, t='l', ylim=c(0,1000), ylab='Humans with Cysticercosis', xlab='Time')
-#' M2<-Run_model(Time=50, Intervention='Sanitation', Intervention_time=25)
-#' head(M2)
-#' lines(M2$Humans_Cysticercosis~M2$t, col='red')
-#' M3<-Run_model(Time=50, Intervention=c('Human_test_and_treat', 'Pig_MDA'), Intervention_time=25)
-#' lines(M3$Humans_Cysticercosis~M3$t, col='green')
+#' # Run the baseline model
+#' M1<-Run_model(Time=75)
+#' plot(M1$t/12, M1$Humans_Cysticercosis, t='l', ylim=c(0,1000), ylab='Humans with Cysticercosis', xlab='Time (years)')
+#' 
+#' # Run the model with a single intevention
+#' M2<-Run_model(Time=75, Intervention='Sanitation', Intervention_time=50)
+#' lines(M2$t/12, M2$Humans_Cysticercosis, col='red')
+#' 
+#' # Run the model with multiple interventions
+#' M3<-Run_model(Time=75, Intervention=c('Human_test_and_treat', 'Pig_MDA'), Intervention_time=50)
+#' lines(M3$t/12, M3$Humans_Cysticercosis, col='green')
 #' legend('topright', c('Baseline','Sanitation','Human test & treat and Pig MDA'), lty=c(1,1,1), col=c('black','red', 'green'))
 #' 
 #' @export
