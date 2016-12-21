@@ -2,15 +2,19 @@ Package: EPICYST
 Type: Package
 Title: Cysticercosis ODE and Intervention model
 Version: 0.1.0
+Authors@R: person("Peter", "Winskill", role = c("aut", "cre"),
+                     email = "p.winskill@imperial.ac.uk")
 Author: Peter Winskill
 Maintainer: Peter Winskill <p.winskill@imeprial.ac.uk>
 Description: Contains ODEs for Cysticercosis/Pork tapeworm model.
 License: MIT + file LICENSE
-License: MIT
 LazyData: TRUE
 Imports:
     odin,
     lhs,
     triangle
 RoxygenNote: 5.0.1
-Suggests: testthat
+Suggests: testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

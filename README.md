@@ -1,10 +1,10 @@
-![Alt text](/EPICYST_logo.png?raw=true)
+![Alt text](https://github.com/pwinskill/EPICYST/blob/master/EPICYST_logo.png)
 
 ## **A deterministic *Taenia solium* and Cysticercosis dynamic model**
 ### Imperial College London
 
 ## Overview
-A detrminstic, compartmental model of the Cysticercosis disease system.
+A determinstic, compartmental model of the Cysticercosis disease system.
 
 For full model deatials please see:
 
@@ -25,5 +25,4 @@ You will need an appropriate compiler installed:
 The package ODEs are all driven by the odin package More information is available at:
 (https://github.com/richfitz/odin/).
 
-## Using the model
-Details of model functionality and use may be found on the [Wiki Page] (https://github.com/pwinskill/EPICYST/wiki)
+

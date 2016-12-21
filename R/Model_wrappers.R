@@ -37,12 +37,12 @@ Single_run<-function(tt, params, states){
 #' 
 #' # Run the model with a single intervention:
 #' M2<-Run_model(Time=50, Intervention='Sanitation', Intervention_time=20, Burn_in=50)
-#' lines(M2$t/12, M2$Humans_Cysticercosis, col='red')
+#' lines(M2$t/12, M2$Humans_Cysticercosis, col='deeppink')
 #' 
 #' # Run the model with multiple interventions:
 #' M3<-Run_model(Time=50, Intervention=c('Human_test_and_treat', 'Pig_MDA'), Intervention_time=20, Burn_in=50)
-#' lines(M3$t/12, M3$Humans_Cysticercosis, col='green')
-#' legend('topright', c('Baseline','Sanitation','Human test & treat and Pig MDA'), lty=c(1,1,1), col=c('black','red', 'green'))
+#' lines(M3$t/12, M3$Humans_Cysticercosis, col='dodgerblue')
+#' legend('topright', c('Baseline','Sanitation','Human test & treat and Pig MDA'), lty=c(1,1,1), col=c('black','deeppink', 'dodgerblue'))
 #' 
 #' @export
 Run_model<-function(Params=NULL, Initial_states=NULL, Time, Intervention=NULL, Intervention_time=Time/2, Intervention_effect=Intervention_effect_size(), step=1/30, Burn_in=0){

@@ -1,0 +1,24 @@
+reference:
+  - title: "Set up"
+    desc: >
+      Functions for setting parameters, equilibrium solutions and intervention effects
+    contents: 
+      - Set_up
+      - Intervention_effect_size
+  - title: "Running the Model"
+    desc: >
+      Functions for installing Spark components and managing
+      connections to Spark
+    contents: 
+      - Run_model
+  - title: "R0"
+    desc: "Function for calcualting R0"
+    contents:
+      - R0
+  - title: "Sensitivity"
+    desc: "Functions for sensitivity analyses"
+    contents:
+      - Sensitivity_params
+      - Sensitivity_intervention
+      - PRCC
+      - PRCC_sig
