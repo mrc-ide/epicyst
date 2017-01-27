@@ -26,7 +26,7 @@ To use the package, please install package devtools and install EPICYST:
 You will need an appropriate compiler installed:
 (https://cran.r-project.org/bin/windows/Rtools/)
 
-The package ODEs are all driven by the odin package More information is available at:
+The package ODEs are all driven by the odin package. More information is available at:
 (https://github.com/richfitz/odin/).
     
 -----
