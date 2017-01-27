@@ -30,8 +30,4 @@ The package ODEs are all driven by the odin package More information is availabl
 (https://github.com/richfitz/odin/).
     
 -----
-  
-### Use
-Details on the model functionality and use can be found on the [EPICYST Webpage](https://pwinskill.github.io/EPICYST/)
-
 
