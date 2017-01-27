@@ -1,3 +1,7 @@
+templates:
+  params:
+    bootswatch: flatly
+
 reference:
   - title: "Set up"
     desc: >
