@@ -6,9 +6,9 @@
 -----
   
 ### Overview
-A determinstic, compartmental model of the Cysticercosis disease system.
+A deterministic, compartmental model of the Cysticercosis disease system.
 
-For full model deatials please see:
+For full model details please see:
 
 > Winskill, P., Harrison, W.E., French, M. D., Dixon, M., Abela-Ridder, B. & Basáñez, M.-G. (2017) Assessing the impact of intervention strategies against Taenia solium cysticercosis using the EPICYST transmission model. Parasites & Vectors, In Press
 
