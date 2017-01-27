@@ -8,7 +8,8 @@ A determinstic, compartmental model of the Cysticercosis disease system.
 
 For full model deatials please see:
 
-> Winskill, P. ..... Paper details
+> Winskill, P., Harrison, W.E., French, M. D., Dixon, M., Abela-Ridder, B. & Basáñez, M.-G. (2017) Assessing the impact of intervention strategies against Taenia solium cysticercosis using the EPICYST transmission model. Parasites & Vectors, In Press
+
 
 Available at:
 
@@ -24,5 +25,8 @@ You will need an appropriate compiler installed:
 
 The package ODEs are all driven by the odin package More information is available at:
 (https://github.com/richfitz/odin/).
+
+## Use
+Details on the model functionality and use can be found on the [EPICYST Webpage](https://pwinskill.github.io/EPICYST/)
 
 
