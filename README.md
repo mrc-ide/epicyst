@@ -1,4 +1,4 @@
-![Alt text](https://github.com/pwinskill/EPICYST/blob/master/EPICYST_logo.png)
+<img src="https://github.com/pwinskill/EPICYST/blob/master/EPICYST_logo.png?raw=true" alt="Drawing" style="width: 500px;"/>
 
 ### A deterministic *Taenia solium* and Cysticercosis dynamic model
 ### Imperial College London
