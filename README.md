@@ -31,3 +31,13 @@ The package ODEs are all driven by the odin package. More information is availab
     
 -----
 
+### Use
+
+For a detailed practical guide please see the [EPICYST introduction vignette](https://pwinskill.github.io/EPICYST/articles)
+  
+----
+  
+Details on the model functionality and use can be found on the [EPICYST Webpage](https://pwinskill.github.io/EPICYST/)  
+Source code is available from the [EPICYST Github](https://github.com/pwinskill/EPICYST/)  
+[Report a bug](https://github.com/pwinskill/EPICYST/issues)
+
