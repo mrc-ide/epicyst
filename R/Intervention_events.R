@@ -94,11 +94,32 @@ Intervention_event_param<-function(Params, Intervention, Intervention_effect){
 #' @param to The name of the state variable that individuals will be moved in to
 #' @param proportion The propotion of individuals in from that get moved into to
 Move_state<-function(States, from, to, proportion){
+  prior_state_from<-States[[from]]
   States[[from]]<-States[[from]]*(1-proportion)
-  States[[to]]<-States[[to]] + States[[from]]*proportion
+  States[[to]]<-States[[to]] + prior_state_from*proportion
 
   return(States)
 }
+
+#' @title
+#' Move individuals between state variables two flows
+#' @description
+#' Moves a propotions of individuals from one state compartemnt to two others
+#'
+#' @param States List of state variable
+#' @param from The name of the state variabe individuals will be moved out of
+#' @param to The name of the state variable that individuals will be moved in to
+#' @param proportion The propotion of individuals in from that get moved into to
+Move_state_double<-function(States, from, to_1, to_2, proportion_1, proportion_2){
+  prior_state_from <- States[[from]]
+  States_reduce <- prior_state_from * (proportion_1) + prior_state_from * (proportion_2)
+  States[[from]] <- States[[from]] - States_reduce
+  States[[to_1]] <- States[[to_1]] + prior_state_from * proportion_1
+  States[[to_2]] <- States[[to_2]] + prior_state_from * proportion_2
+  
+  return(States)
+}
+
 
 #' @title
 #' Implement parameter intervention
@@ -112,10 +133,12 @@ Intervention_event_state<-function(States, Intervention, Intervention_effect){
 
   if('Pig_MDA' %in% Intervention){
     proportion<-Intervention_effect[['Pig_MDA']]
-    States<-Move_state(States, from='IPL0', to='SP0', proportion=proportion[1]*proportion[2])
-    States<-Move_state(States, from='IPL0', to='RP0', proportion=proportion[1]*(1-proportion[2]))
-    States<-Move_state(States, from='IPH0', to='SP0', proportion=proportion[1]*proportion[2])
-    States<-Move_state(States, from='IPH0', to='RP0', proportion=proportion[1]*(1-proportion[2]))
+    States <- Move_state_double(States, from = 'IPL0', to_1 = "SP0", to_2 = "RP0",
+                      proportion_1 = proportion[1] * proportion[2],
+                      proportion_2  = proportion[1] * (1 - proportion[2]))
+    States <- Move_state_double(States, from = 'IPH0', to_1 = "SP0", to_2 = "RP0",
+                      proportion_1 = proportion[1] * proportion[2],
+                      proportion_2  = proportion[1] * (1 - proportion[2]))
   }
 
   if('Pig_vaccine' %in% Intervention){
