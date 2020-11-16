@@ -17,6 +17,7 @@
 #' @param pih High intensity infected pig -> human contact rate (per month)
 #' @param pil Low intensity infected pig -> human contact rate (per month)
 #' @param HPS Human population size
+#' @param ... Additional (unused) parameters
 #' @export
 R0_internal<-function(delta,tau,phi,alpha,dH,dE,dP,RR_cysticercosis,theta,eta,chi,pih, pil, HPS, ...){
   betah=chi*pih
@@ -27,7 +28,7 @@ R0_internal<-function(delta,tau,phi,alpha,dH,dE,dP,RR_cysticercosis,theta,eta,ch
 #' @title
 #' R0 wrapper
 #' @description
-#' A wrapper function to faciloitate the R0 function being called with a list of parameters
+#' A wrapper function to facilitate the R0 function being called with a list of parameters
 #'
 #' @param Params A list of model parameters: see \code{\link{R0_internal}} for list
 #' @export

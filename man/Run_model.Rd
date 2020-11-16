@@ -24,6 +24,8 @@ Run_model(
 
 \item{Intervention}{A vector of interventions to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat}
 
+\item{Intervention_time}{Timing of intervention}
+
 \item{Intervention_effect}{A list of intervention effect sizes, see \code{Intervention_effect_size} for details}
 
 \item{step}{Time step (months)}

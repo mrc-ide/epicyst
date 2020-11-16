@@ -7,11 +7,11 @@
 Replace_param(params, param_name, effect_size)
 }
 \arguments{
+\item{params}{List of model parameters}
+
 \item{param_name}{The name of the parameter to be changed}
 
 \item{effect_size}{The intervention effect size. Where the new parameter value = old value multiplied by the effect size.}
-
-\item{Params}{List of model parameters}
 }
 \description{
 Replaces a paramter with an aletred values after a parameter event

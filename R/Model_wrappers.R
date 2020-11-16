@@ -28,6 +28,7 @@ Single_run<-function(tt, params, states){
 #' @param Time The number of years to run the model for (from equilibrium). Default is at the halfway point.
 #' @param Intervention A vector of interventions to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat
 #' @param Intervention_effect A list of intervention effect sizes, see \code{Intervention_effect_size} for details
+#' @param Intervention_time Timing of intervention
 #' @param step Time step (months)
 #' @param Burn_in A burn in period run before model run (years)
 #' @examples

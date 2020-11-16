@@ -7,7 +7,7 @@
 Check_interventions(Intervention)
 }
 \arguments{
-\item{Intevention}{Vector of one or more parameter interventions}
+\item{Intervention}{Vector of one or more parameter interventions}
 }
 \description{
 Checks that the interventions input are correct

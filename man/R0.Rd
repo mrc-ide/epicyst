@@ -10,5 +10,5 @@ R0(Params)
 \item{Params}{A list of model parameters: see \code{\link{R0_internal}} for list}
 }
 \description{
-A wrapper function to faciloitate the R0 function being called with a list of parameters
+A wrapper function to facilitate the R0 function being called with a list of parameters
 }

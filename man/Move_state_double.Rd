@@ -11,9 +11,13 @@ Move_state_double(States, from, to_1, to_2, proportion_1, proportion_2)
 
 \item{from}{The name of the state variabe individuals will be moved out of}
 
-\item{to}{The name of the state variable that individuals will be moved in to}
+\item{to_1}{The name of the state variable that individuals will be moved in to}
 
-\item{proportion}{The propotion of individuals in from that get moved into to}
+\item{to_2}{The name of the state variable that individuals will be moved in to}
+
+\item{proportion_1}{The propotion of individuals in from that get moved into to}
+
+\item{proportion_2}{The propotion of individuals in from that get moved into to}
 }
 \description{
 Moves a propotions of individuals from one state compartemnt to two others

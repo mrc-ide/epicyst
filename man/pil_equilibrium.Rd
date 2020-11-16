@@ -7,13 +7,13 @@
 pil_equilibrium(beta, chi, phi, CRR)
 }
 \arguments{
+\item{beta}{Pork to human tranmission parameter}
+
 \item{chi}{rate of aquiring a pork meal (per month)}
 
 \item{phi}{Proportion of infected pigs with low-intensity cyst burden}
 
 \item{CRR}{Combined reltive risk for high cyst burden pork (increased RR of infection * decreased RR of consumption)}
-
-\item{Beta}{Pork to human tranmission parameter}
 }
 \value{
 The equilibrium transmission probability between a low intesnisty infected pig and human

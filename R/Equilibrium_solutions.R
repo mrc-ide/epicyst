@@ -75,7 +75,7 @@ theta_equilibrium<-function(bH, eta, SHC0, IHC0, dH, SH0, IH0, E0, RR) {
 #' @description
 #' Calculate the transmission probability between a low intensity infected pork meal and human at equiliberium
 #'
-#' @param Beta Pork to human tranmission parameter
+#' @param beta Pork to human tranmission parameter
 #' @param chi rate of aquiring a pork meal (per month)
 #' @param phi Proportion of infected pigs with low-intensity cyst burden
 #' @param CRR Combined reltive risk for high cyst burden pork (increased RR of infection * decreased RR of consumption)

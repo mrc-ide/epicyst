@@ -4,7 +4,7 @@
 #' @description
 #' Checks that the interventions input are correct
 #'
-#' @param Intevention Vector of one or more parameter interventions
+#' @param Intervention Vector of one or more parameter interventions
 Check_interventions<-function(Intervention){
   param_interventions<-c('Husbandry', 'Sanitation', 'Inspection')
   state_interventions<-c('Pig_MDA', 'Pig_vaccine', 'Human_test_and_treat')
@@ -22,7 +22,7 @@ Check_interventions<-function(Intervention){
 #' @description
 #' Checks that the intervention effect inputs are correct
 #'
-#' @param Intevention Vector of one or more parameter interventions
+#' @param Intervention_effect Vector of one or more parameter interventions
 Check_effect<-function(Intervention_effect){
   param_interventions<-c('Husbandry', 'Sanitation', 'Inspection')
   state_interventions<-c('Pig_MDA', 'Pig_vaccine', 'Human_test_and_treat')
@@ -40,7 +40,7 @@ Check_effect<-function(Intervention_effect){
 #' @description
 #' Replaces a paramter with an aletred values after a parameter event
 #'
-#' @param Params List of model parameters
+#' @param params List of model parameters
 #' @param param_name The name of the parameter to be changed
 #' @param effect_size The intervention effect size. Where the new parameter value = old value multiplied by the effect size.
 Replace_param<-function(params, param_name, effect_size){
@@ -58,7 +58,7 @@ Replace_param<-function(params, param_name, effect_size){
 #' Implements one or more interventions that involve a parameter value being altered
 #'
 #' @param Params List of model parameters
-#' @param Intevention Vector of one or more parameter interventions
+#' @param Intervention Vector of one or more parameter interventions
 #' @param Intervention_effect a list of intervention effect sizes
 Intervention_event_param<-function(Params, Intervention, Intervention_effect){
   #Check_interventions(Intervention)
@@ -108,8 +108,10 @@ Move_state<-function(States, from, to, proportion){
 #'
 #' @param States List of state variable
 #' @param from The name of the state variabe individuals will be moved out of
-#' @param to The name of the state variable that individuals will be moved in to
-#' @param proportion The propotion of individuals in from that get moved into to
+#' @param to_1 The name of the state variable that individuals will be moved in to
+#' @param to_2 The name of the state variable that individuals will be moved in to
+#' @param proportion_1 The propotion of individuals in from that get moved into to
+#' @param proportion_2 The propotion of individuals in from that get moved into to
 Move_state_double<-function(States, from, to_1, to_2, proportion_1, proportion_2){
   prior_state_from <- States[[from]]
   States_reduce <- prior_state_from * (proportion_1) + prior_state_from * (proportion_2)
@@ -127,7 +129,7 @@ Move_state_double<-function(States, from, to_1, to_2, proportion_1, proportion_2
 #' Implements one or more interventions that involve a parameter value being altered
 #'
 #' @param States List of model states
-#' @param Intevention Vector of one or more parameter interventions
+#' @param Intervention Vector of one or more parameter interventions
 #' @param Intervention_effect a list of intervention effect sizes
 Intervention_event_state<-function(States, Intervention, Intervention_effect){
 

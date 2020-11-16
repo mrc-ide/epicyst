@@ -9,9 +9,9 @@ Intervention_event_state(States, Intervention, Intervention_effect)
 \arguments{
 \item{States}{List of model states}
 
-\item{Intervention_effect}{a list of intervention effect sizes}
+\item{Intervention}{Vector of one or more parameter interventions}
 
-\item{Intevention}{Vector of one or more parameter interventions}
+\item{Intervention_effect}{a list of intervention effect sizes}
 }
 \description{
 Implements one or more interventions that involve a parameter value being altered

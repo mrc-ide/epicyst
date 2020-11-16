@@ -50,6 +50,8 @@ R0_internal(
 \item{pil}{Low intensity infected pig -> human contact rate (per month)}
 
 \item{HPS}{Human population size}
+
+\item{...}{Additional (unused) parameters}
 }
 \description{
 Calculate R0
