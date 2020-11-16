@@ -19,10 +19,10 @@
 #' @param HPS Human population size
 #' @param ... Additional (unused) parameters
 #' @export
-R0_internal<-function(delta,tau,phi,alpha,dH,dE,dP,RR_cysticercosis,theta,eta,chi,pih, pil, HPS, ...){
-  betah=chi*pih
-  betal=chi*pil
-  ((((delta*tau)*(betah-(betah*phi)+(betal*phi)))/(dE*dP*((RR_cysticercosis*theta)+dH+alpha)))*(1+((RR_cysticercosis*theta)/(eta+dH+alpha)))*HPS)^(1/3)
+R0_internal<-function(delta, tau, phi, alpha, dH, dE, dP, RR_cysticercosis, theta,eta, chi, pih, pil, HPS, ...){
+  betah = chi * pih
+  betal = chi * pil
+  ((((delta * tau) * (betah - (betah * phi) + (betal * phi))) / (dE * dP * ((RR_cysticercosis * theta) + dH + alpha))) * (1 + ((RR_cysticercosis * theta) / (eta + dH + alpha))) * HPS)^(1 / 3)
 }
 
 #' @title
