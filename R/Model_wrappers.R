@@ -98,7 +98,11 @@ Run_model<-function(Params=NULL, Initial_states=NULL, Time, Intervention=NULL, I
     # Pull the 'end' state values from previous run
     Tail_states<-as.list(tail(Runs[[i]],1))
     names(Tail_states)<-paste(colnames(Runs[[i]]), '0', sep='')
-
+    Tail_states <- Tail_states[!names(Tail_states) %in% c("Humans_Taeniasis0", "Humans_Cysticercosis0", 
+                                                          "Pigs_Cysticercosis0", "Human_Taeniasis_prev0",
+                                                          "Human_Cysticercosis_prev0", "Pig_Cysticercosis_prev0",
+                                                          "t0")]
+    
     # Alter states/params for single interventions
     if(i==1){
       Params<-Intervention_event_param(Params=Params, Intervention, Intervention_effect)

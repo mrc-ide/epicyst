@@ -104,7 +104,6 @@ Set_up<-function(LEP=1, delta=960000, HPS=10000, PPS=2000, TPrev=0.02, CPrev=0.0
                HPS=HPS,
                bH=bH,
                bP=bP,
-               PPS=PPS,
                dH=dH,
                dP=dP,
                dE=dE,
