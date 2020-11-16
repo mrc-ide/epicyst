@@ -1,3 +1,8 @@
+
+<!-- badges: start -->
+[![R build status](https://github.com/pwinskill/EPICYST/workflows/R-CMD-check/badge.svg)](https://github.com/pwinskill/EPICYST/actions)
+<!-- badges: end -->
+
 <img src="https://github.com/pwinskill/EPICYST/blob/master/EPICYST_logo.png?raw=true" alt="Drawing" style="width: 500px;"/>
 
 ### A deterministic *Taenia solium* and Cysticercosis dynamic model
