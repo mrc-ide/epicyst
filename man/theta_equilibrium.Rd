@@ -31,4 +31,3 @@ The equilibrium egg to human transmission parameter
 \description{
 Calculate the transmission parameter (egg->human) at equiliberium
 }
-

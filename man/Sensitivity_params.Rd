@@ -15,4 +15,3 @@ A list of parameter sets
 \description{
 Simulates parameter sets from a Latin Hypercube Sample (uniform distribution)
 }
-

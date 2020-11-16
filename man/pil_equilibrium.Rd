@@ -21,4 +21,3 @@ The equilibrium transmission probability between a low intesnisty infected pig a
 \description{
 Calculate the transmission probability between a low intensity infected pork meal and human at equiliberium
 }
-

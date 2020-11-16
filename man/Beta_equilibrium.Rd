@@ -31,4 +31,3 @@ The equilibrium pig to human transmission parameter
 \description{
 Calculate the transmission parameter (pig->human) at equiliberium
 }
-

@@ -12,4 +12,3 @@ A list Intervention effects
 \description{
 Provides preset intervention effect
 }
-

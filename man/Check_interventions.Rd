@@ -12,4 +12,3 @@ Check_interventions(Intervention)
 \description{
 Checks that the interventions input are correct
 }
-

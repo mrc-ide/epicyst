@@ -16,4 +16,3 @@ Single_run(tt, params, states)
 \description{
 Runs a single implementation of the ODE Cysticercosis model
 }
-

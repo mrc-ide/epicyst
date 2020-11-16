@@ -17,4 +17,3 @@ A vector of PRCC scores, one for each inoput covariate
 \description{
 Calculates the PRCC statistic
 }
-

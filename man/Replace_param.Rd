@@ -16,4 +16,3 @@ Replace_param(params, param_name, effect_size)
 \description{
 Replaces a paramter with an aletred values after a parameter event
 }
-

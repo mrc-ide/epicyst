@@ -15,4 +15,3 @@ A list of intervention effect size sets
 \description{
 Simulates interventions effect sensivities
 }
-

@@ -4,8 +4,23 @@
 \alias{R0_internal}
 \title{R0 internal}
 \usage{
-R0_internal(delta, tau, phi, alpha, dH, dE, dP, RR_cysticercosis, theta, eta,
-  chi, pih, pil, HPS, ...)
+R0_internal(
+  delta,
+  tau,
+  phi,
+  alpha,
+  dH,
+  dE,
+  dP,
+  RR_cysticercosis,
+  theta,
+  eta,
+  chi,
+  pih,
+  pil,
+  HPS,
+  ...
+)
 }
 \arguments{
 \item{delta}{Egg production rate (per month)}
@@ -39,4 +54,3 @@ R0_internal(delta, tau, phi, alpha, dH, dE, dP, RR_cysticercosis, theta, eta,
 \description{
 Calculate R0
 }
-

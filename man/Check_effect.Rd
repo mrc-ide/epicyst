@@ -12,4 +12,3 @@ Check_effect(Intervention_effect)
 \description{
 Checks that the intervention effect inputs are correct
 }
-

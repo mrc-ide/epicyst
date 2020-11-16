@@ -16,4 +16,3 @@ Intervention_event_param(Params, Intervention, Intervention_effect)
 \description{
 Implements one or more interventions that involve a parameter value being altered
 }
-

@@ -23,4 +23,3 @@ The Equilbirum number of eggs in the environment
 \description{
 Calculate the number of eggs in the environment at equlibrium
 }
-

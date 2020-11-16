@@ -4,10 +4,25 @@
 \alias{Set_up}
 \title{Set up}
 \usage{
-Set_up(LEP = 1, delta = 960000, HPS = 10000, PPS = 2000, TPrev = 0.02,
-  CPrev = 0.07, PCPrev = 0.2, AEL = 2, ATL = 2, ADI = 3, LEH = 54,
-  phi = 0.8, chi = 0.5, RR_cysticercosis = 1, epsilon = 0.01,
-  RR_infection = 1, RR_consumption = -0.25)
+Set_up(
+  LEP = 1,
+  delta = 960000,
+  HPS = 10000,
+  PPS = 2000,
+  TPrev = 0.02,
+  CPrev = 0.07,
+  PCPrev = 0.2,
+  AEL = 2,
+  ATL = 2,
+  ADI = 3,
+  LEH = 54,
+  phi = 0.8,
+  chi = 0.5,
+  RR_cysticercosis = 1,
+  epsilon = 0.01,
+  RR_infection = 1,
+  RR_consumption = -0.25
+)
 }
 \arguments{
 \item{LEP}{Pig life expectancy (years)}
@@ -50,4 +65,3 @@ Two lists of parameters and state variable values
 \description{
 Caculates internal parameters and equilbirum staring values for state variables
 }
-
