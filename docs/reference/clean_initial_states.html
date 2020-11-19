@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>r0 wrapper — r0 • epicyst</title>
+<title>Clean initial states — clean_initial_states • epicyst</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="r0 wrapper — r0" />
-<meta property="og:description" content="A wrapper function to facilitate the r0 function being called with a list of parameters" />
+<meta property="og:title" content="Clean initial states — clean_initial_states" />
+<meta property="og:description" content="Clean initial states" />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -123,26 +123,29 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>r0 wrapper</h1>
+    <h1>Clean initial states</h1>
     
-    <div class="hidden name"><code>R0.Rd</code></div>
+    <div class="hidden name"><code>clean_initial_states.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>A wrapper function to facilitate the r0 function being called with a list of parameters</p>
+    <p>Clean initial states</p>
     </div>
 
-    <pre class="usage"><span class='fu'>r0</span><span class='op'>(</span><span class='va'>params</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>clean_initial_states</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>params</th>
-      <td><p>A list of model parameters: see <code><a href='r0_internal.html'>r0_internal</a></code> for list</p></td>
+      <th>x</th>
+      <td><p>dataframe of model output states</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>Initial states formatted for input (without summary columns)</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

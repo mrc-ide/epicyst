@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>r0 wrapper — r0 • epicyst</title>
+<title>Move individuals between state variables two flows — move_state_double • epicyst</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="r0 wrapper — r0" />
-<meta property="og:description" content="A wrapper function to facilitate the r0 function being called with a list of parameters" />
+<meta property="og:title" content="Move individuals between state variables two flows — move_state_double" />
+<meta property="og:description" content="Moves a propotions of individuals from one state compartemnt to two others" />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -123,23 +123,43 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>r0 wrapper</h1>
+    <h1>Move individuals between state variables two flows</h1>
     
-    <div class="hidden name"><code>R0.Rd</code></div>
+    <div class="hidden name"><code>Move_state_double.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>A wrapper function to facilitate the r0 function being called with a list of parameters</p>
+    <p>Moves a propotions of individuals from one state compartemnt to two others</p>
     </div>
 
-    <pre class="usage"><span class='fu'>r0</span><span class='op'>(</span><span class='va'>params</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>move_state_double</span><span class='op'>(</span><span class='va'>states</span>, <span class='va'>from</span>, <span class='va'>to_1</span>, <span class='va'>to_2</span>, <span class='va'>proportion_1</span>, <span class='va'>proportion_2</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>params</th>
-      <td><p>A list of model parameters: see <code><a href='r0_internal.html'>r0_internal</a></code> for list</p></td>
+      <th>states</th>
+      <td><p>List of state variable</p></td>
+    </tr>
+    <tr>
+      <th>from</th>
+      <td><p>The name of the state variabe individuals will be moved out of</p></td>
+    </tr>
+    <tr>
+      <th>to_1</th>
+      <td><p>The name of the state variable that individuals will be moved in to</p></td>
+    </tr>
+    <tr>
+      <th>to_2</th>
+      <td><p>The name of the state variable that individuals will be moved in to</p></td>
+    </tr>
+    <tr>
+      <th>proportion_1</th>
+      <td><p>The propotion of individuals in from that get moved into to</p></td>
+    </tr>
+    <tr>
+      <th>proportion_2</th>
+      <td><p>The propotion of individuals in from that get moved into to</p></td>
     </tr>
     </table>
 
