@@ -15,4 +15,3 @@ Monthly rate
 \description{
 Converts an average duration (years) into a monthly rate
 }
-

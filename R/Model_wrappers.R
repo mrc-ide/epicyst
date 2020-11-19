@@ -1,122 +1,135 @@
 
 #' @title
-#' Run Cysticercosis model ODE
+#' run Cysticercosis model ODE
 #' @description
-#' Runs a single implementation of the ODE Cysticercosis model
+#' runs a single implementation of the ODE Cysticercosis model
 #'
 #' @param tt vector of times
 #' @param params list of parameters
 #' @param states list of states
 #' @export
-Single_run<-function(tt, params, states){
-
-  Mod<-cyst_generator(user=c(params, states))
-
-  y<-Mod$run(tt)
-
+single_run <- function(tt, params, states) {
+  mod <- cyst_generator(user = c(params, states))
+  y <- mod$run(tt)
   return(y)
 }
 
 
 #' @title
-#' Run Cysticercosis model with interventions
+#' run Cysticercosis model with interventions
 #' @description
-#' Runs the ODE Cysticercosis model
+#' runs the ODE Cysticercosis model
 #'
-#' @param Params List of model parameters
-#' @param Initial_states List of intitial state values
-#' @param Time The number of years to run the model for (from equilibrium). Default is at the halfway point.
-#' @param Intervention A vector of interventions to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat
-#' @param Intervention_effect A list of intervention effect sizes, see \code{Intervention_effect_size} for details
-#' @param step Time step (months)
-#' @param Burn_in A burn in period run before model run (years)
+#' @param params List of model parameters
+#' @param initial_states List of intitial state values
+#' @param time The number of years to run the model for (from equilibrium). Default is at the halfway point.
+#' @param intervention A vector of interventions to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat
+#' @param intervention_effect A list of intervention effect sizes, see \code{intervention_effect_size} for details
+#' @param intervention_time Timing of intervention
+#' @param step time step (months)
+#' @param burn_in A burn in period run before model run (years)
 #' @examples
-#' # Run the baseline model:
-#' M1<-Run_model(Time=50, Burn_in=50)
-#' plot(M1$t/12, M1$Humans_Cysticercosis, t='l', ylim=c(0,1000), ylab='Humans with Cysticercosis', xlab='Time (years)')
-#' 
-#' # Run the model with a single intervention:
-#' M2<-Run_model(Time=50, Intervention='Sanitation', Intervention_time=20, Burn_in=50)
-#' lines(M2$t/12, M2$Humans_Cysticercosis, col='deeppink')
-#' 
-#' # Run the model with multiple interventions:
-#' M3<-Run_model(Time=50, Intervention=c('Human_test_and_treat', 'Pig_MDA'), Intervention_time=20, Burn_in=50)
-#' lines(M3$t/12, M3$Humans_Cysticercosis, col='dodgerblue')
-#' legend('topright', c('Baseline','Sanitation','Human test & treat and Pig MDA'), lty=c(1,1,1), col=c('black','deeppink', 'dodgerblue'))
-#' 
+#' # run the baseline model:
+#' M1 <- run_model(time = 50, burn_in = 50)
+#' plot(M1$t / 12, M1$Humans_Cysticercosis, t = "l", ylim = c(0, 1000), ylab = "Humans with Cysticercosis", xlab = "time (years)")
+#'
+#' # run the model with a single intervention:
+#' M2 <- run_model(time = 50, intervention = "Sanitation", intervention_time = 20, burn_in = 50)
+#' lines(M2$t / 12, M2$Humans_Cysticercosis, col = "deeppink")
+#'
+#' # run the model with multiple interventions:
+#' M3 <- run_model(time = 50, intervention = c("Human_test_and_treat", "Pig_MDA"), intervention_time = 20, burn_in = 50)
+#' lines(M3$t / 12, M3$Humans_Cysticercosis, col = "dodgerblue")
+#' legend("topright", c("Baseline", "Sanitation", "Human test & treat and Pig MDA"), lty = c(1, 1, 1), col = c("black", "deeppink", "dodgerblue"))
 #' @export
-Run_model<-function(Params=NULL, Initial_states=NULL, Time, Intervention=NULL, Intervention_time=Time/2, Intervention_effect=Intervention_effect_size(), step=1/30, Burn_in=0){
+run_model <- function(params = NULL, initial_states = NULL, time, intervention = NULL, intervention_time = time / 2, intervention_effect = intervention_effect_size(), step = 1 / 30, burn_in = 0) {
   
   # Calculate parmaters and initial state variables (if not provided)
-  Initialise<-Set_up()
-  if(is.null(Params)){
-    Params<-Initialise[[1]]
+  initialise <- set_up()
+  if (is.null(params)) {
+    params <- initialise[[1]]
   }
-  if(is.null(Initial_states)){
-    Initial_states<-Initialise[[2]]
-  }
-
-  # Run burn in period
-  if(Burn_in>0){
-    tt_burn<-seq(0, (Burn_in*12), step)
-    Burn<-Single_run(tt_burn, params=Params, states=Initial_states)
-    Initial_states<-as.list(tail(Burn,1))
-    names(Initial_states)<-paste(colnames(Burn), '0', sep='')
+  if (is.null(initial_states)) {
+    initial_states <- initialise[[2]]
   }
   
-  # Run with no interventions (if none specified)
-  if(is.null(Intervention)){
-    Run<-Single_run(seq(0, Time*12, step), Params, Initial_states)
-    Run<-as.data.frame(Run)
-    return(Run)
+  # run burn in period
+  if (burn_in > 0) {
+    tt_burn <- seq(0, (burn_in * 12), step)
+    burn <- single_run(tt_burn, params = params, states = initial_states)
+    initial_states <- as.list(utils::tail(burn, 1))
+    names(initial_states) <- paste(colnames(burn), "0", sep = "")
+    initial_states <- clean_initial_states(initial_states)
   }
-
+  
+  # run with no interventions (if none specified)
+  if (is.null(intervention)) {
+    run <- single_run(seq(0, time * 12, step), params, initial_states)
+    run <- as.data.frame(run)
+    return(run)
+  }
+  
   # Checks on inputs
-  Check_interventions(Intervention)
-  Check_effect(Intervention_effect)
-  stopifnot(is.numeric(Time), is.numeric(Intervention_time), is.numeric(step),
-            length(Time)==1, length(Intervention_time)==1, length(step)==1,
-            Time>0, Intervention_time<=Time, Intervention_time>0, is.list(Params),
-            is.list(Initial_states), is.numeric(Burn_in), Burn_in>=0)
-
+  check_interventions(intervention)
+  check_effect(intervention_effect)
+  stopifnot(
+    is.numeric(time), is.numeric(intervention_time), is.numeric(step),
+    length(time) == 1, length(intervention_time) == 1, length(step) == 1,
+    time > 0, intervention_time <= time, intervention_time > 0, is.list(params),
+    is.list(initial_states), is.numeric(burn_in), burn_in >= 0
+  )
+  
   # Set time vectors for pre- and pos-intervention
-  tt1<-seq(0, (Intervention_time*12)-step, step)
+  tt1 <- seq(0, (intervention_time * 12) - step, step)
   # Set yearly times for interention period
-  splits<-seq((Intervention_time*12), Time*12, 12)
-  tt2<-list()
-  for(i in 1:(length(splits)-1)){
-    tt2[[i]]<-seq(splits[i]+step, splits[i+1], step)
+  splits <- seq((intervention_time * 12), time * 12, 12)
+  tt2 <- list()
+  for (i in 1:(length(splits) - 1)) {
+    tt2[[i]] <- seq(splits[i] + step, splits[i + 1], step)
   }
-
-  # Run the pre-intervention period
-  BL<-Single_run(tt1, params=Params, states=Initial_states)
-
-  Runs<-list()
-  Runs[[1]]<-BL
-
-  for(i in 1:length(tt2)){
+  
+  # run the pre-intervention period
+  bl <- single_run(tt1, params = params, states = initial_states)
+  
+  runs <- list()
+  runs[[1]] <- bl
+  
+  for (i in 1:length(tt2)) {
     # Pull the 'end' state values from previous run
-    Tail_states<-as.list(tail(Runs[[i]],1))
-    names(Tail_states)<-paste(colnames(Runs[[i]]), '0', sep='')
-
+    tail_states <- as.list(utils::tail(runs[[i]], 1))
+    names(tail_states) <- paste(colnames(runs[[i]]), "0", sep = "")
+    tail_states <- clean_initial_states(tail_states)
+    
     # Alter states/params for single interventions
-    if(i==1){
-      Params<-Intervention_event_param(Params=Params, Intervention, Intervention_effect)
+    if (i == 1) {
+      params <- intervention_event_param(params = params, intervention, intervention_effect)
     }
-
+    
     # Alter states/params for repeat interventions
-    States<-Intervention_event_state(States=Tail_states, Intervention, Intervention_effect)
-
-
+    states <- intervention_event_state(states = tail_states, intervention, intervention_effect)
+    
+    
     # Do the next run
-    Runs[[i+1]]<-Single_run(tt2[[i]], Params, states=States)
+    runs[[i + 1]] <- single_run(tt2[[i]], params, states = states)
   }
-
-  Runs<-do.call('rbind', Runs)
-  Runs<-as.data.frame(Runs)
-
-  return(Runs)
+  
+  runs <- do.call("rbind", runs)
+  runs <- as.data.frame(runs)
+  
+  return(runs)
 }
 
 
-
+#' Clean initial states
+#'
+#' @param x dataframe of model output states
+#'
+#' @return Initial states formatted for input (without summary columns)
+clean_initial_states <- function(x){
+  x <- x[!names(x) %in% c(
+    "Humans_Taeniasis0", "Humans_Cysticercosis0",
+    "Pigs_Cysticercosis0", "Human_Taeniasis_prev0",
+    "Human_Cysticercosis_prev0", "Pig_Cysticercosis_prev0",
+    "t0"
+  )]
+}

@@ -1,3 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^Rebuild\.R$
+^\.github$
+^README\.Rmd$
+^doc$
+^Meta$

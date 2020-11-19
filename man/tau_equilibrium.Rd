@@ -21,4 +21,3 @@ The equilibrium egg to pig transmission parameter
 \description{
 Calculate the transmission parameter (egg->pig) at equiliberium
 }
-
