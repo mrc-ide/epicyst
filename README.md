@@ -9,11 +9,11 @@ status](https://github.com/pwinskill/EPICYST/workflows/R-CMD-check/badge.svg)](h
 [![codecov](https://codecov.io/gh/pwinskill/EPICYST/branch/master/graph/badge.svg)](https://codecov.io/gh/pwinskill/EPICYST)
 <!-- badges: end -->
 
-<img src="https://github.com/pwinskill/EPICYST/blob/master/EPICYST_logo.png?raw=true" alt="Drawing" style="width: 500px;"/>
+<img src='man/figures/logo.png' align="right" height="211" />
+
+<br />
 
 ### A deterministic *Taenia solium* and Cysticercosis dynamic model
-
-### Imperial College London
 
 -----
 
