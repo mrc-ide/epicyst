@@ -1,15 +1,15 @@
 ---
-title: "Introduction to EPICYST"
+title: "Introduction to epicyst"
 author: "Peter Winskill"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction to EPICYST}
+  %\VignetteIndexEntry{Introduction to epicyst}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 ```{r, echo=FALSE}
-library(EPICYST)
+library(epicyst)
 ```
 
 # Call default parameters and equilibrium solutions

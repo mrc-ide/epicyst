@@ -15,7 +15,7 @@ E0_equilibrium(delta, HPS, TPrev, CPrev, dE)
 
 \item{CPrev}{Cysticercosis prevalence in human population}
 
-\item{dE}{The egg mortlality/removal rate (per month)}
+\item{dE}{The egg mortlality / removal rate (per month)}
 }
 \value{
 The Equilbirum number of eggs in the environment

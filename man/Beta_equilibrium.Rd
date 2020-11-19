@@ -9,9 +9,9 @@ Beta_equilibrium(alpha, IH0, IHC0, eta, dH, IP0, PPS, SH0, SHC0)
 \arguments{
 \item{alpha}{Human recovery rate from Taenisasis (per month)}
 
-\item{IH0}{Initial number of Human: T+ C-}
+\item{IH0}{Initial number of Human: T +  C-}
 
-\item{IHC0}{Initial number of Human: T+ C+}
+\item{IHC0}{Initial number of Human: T +  C +}
 
 \item{eta}{Human recovery rate from Cysticercosis (oer month)}
 
@@ -23,7 +23,7 @@ Beta_equilibrium(alpha, IH0, IHC0, eta, dH, IP0, PPS, SH0, SHC0)
 
 \item{SH0}{Initial number of Human: susceptible}
 
-\item{SHC0}{Initial number of Human: T- C+}
+\item{SHC0}{Initial number of Human: T- C +}
 }
 \value{
 The equilibrium pig to human transmission parameter

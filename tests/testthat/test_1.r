@@ -1,7 +1,5 @@
 ### Tests for EPICYST Package ###
 
-
-
 test_that("Sensitivity params basic tests", {
   expect_is(Sensitivity_params(2), 'list')
   expect_is(unlist(Sensitivity_params(2)), 'numeric')

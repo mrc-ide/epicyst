@@ -3,3 +3,5 @@
 ^Rebuild\.R$
 ^\.github$
 ^README\.Rmd$
+^doc$
+^Meta$

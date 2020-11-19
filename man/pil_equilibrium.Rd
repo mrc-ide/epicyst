@@ -13,7 +13,7 @@ pil_equilibrium(beta, chi, phi, CRR)
 
 \item{phi}{Proportion of infected pigs with low-intensity cyst burden}
 
-\item{CRR}{Combined reltive risk for high cyst burden pork (increased RR of infection * decreased RR of consumption)}
+\item{CRR}{Combined reltive risk for high cyst burden pork (increased RR of infection  *  decreased RR of consumption)}
 }
 \value{
 The equilibrium transmission probability between a low intesnisty infected pig and human

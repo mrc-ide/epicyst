@@ -1,4 +1,4 @@
-Package: EPICYST
+Package: epicyst
 Type: Package
 Title: Cysticercosis ODE and Intervention model
 Version: 1.0.1
