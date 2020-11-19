@@ -11,8 +11,8 @@
 #' @param dE The egg mortlality / removal rate (per month)
 #'
 #' @return The Equilbirum number of eggs in the environment
-E0_equilibrium <- function(delta, HPS, TPrev, CPrev, dE){
-  ((delta * HPS * TPrev * (1-CPrev)) + (delta * HPS * TPrev * CPrev)) / dE
+e0_equilibrium <- function(delta, HPS, TPrev, CPrev, dE) {
+  ((delta * HPS * TPrev * (1 - CPrev)) + (delta * HPS * TPrev * CPrev)) / dE
 }
 
 #' @title
@@ -26,7 +26,7 @@ E0_equilibrium <- function(delta, HPS, TPrev, CPrev, dE){
 #' @param E0 The equilibrium number of eggs in the environment
 #'
 #' @return The equilibrium egg to pig transmission parameter
-tau_equilibrium <- function(dP, IP0, SP0, E0){
+tau_equilibrium <- function(dP, IP0, SP0, E0) {
   (dP * IP0) / (SP0 * E0)
 }
 
@@ -37,16 +37,16 @@ tau_equilibrium <- function(dP, IP0, SP0, E0){
 #'
 #' @param alpha Human recovery rate from Taenisasis (per month)
 #' @param IH0 Initial number of Human: T +  C-
-#' @param IHC0 Initial number of Human: T +  C + 
+#' @param IHC0 Initial number of Human: T +  C +
 #' @param eta Human recovery rate from Cysticercosis (oer month)
 #' @param dH Human mortality rate (per month)
 #' @param IP0 Initial number of infected pigs
 #' @param PPS Pig popultion size
 #' @param SH0 Initial number of Human: susceptible
-#' @param SHC0 Initial number of Human: T- C + 
+#' @param SHC0 Initial number of Human: T- C +
 #'
 #' @return The equilibrium pig to human transmission parameter
-Beta_equilibrium <- function(alpha, IH0, IHC0, eta, dH, IP0, PPS, SH0, SHC0){
+beta_equilibrium <- function(alpha, IH0, IHC0, eta, dH, IP0, PPS, SH0, SHC0) {
   (alpha * (IH0 + IHC0) + eta * IHC0 + dH * (IH0 + IHC0)) / ((IP0 / PPS) * (SH0 + SHC0))
 }
 
@@ -57,8 +57,8 @@ Beta_equilibrium <- function(alpha, IH0, IHC0, eta, dH, IP0, PPS, SH0, SHC0){
 #'
 #' @param bH Births of humans (net)
 #' @param eta Human recovery rate from Cysticercosis (oer month)
-#' @param SHC0 Initial number of Human: T- C + 
-#' @param IHC0 Initial number of Human: T +  C + 
+#' @param SHC0 Initial number of Human: T- C +
+#' @param IHC0 Initial number of Human: T +  C +
 #' @param dH Human mortality rate (per month)
 #' @param SH0 Initial number of Human: susceptible
 #' @param IH0 Initial number of Human: T +  C-
@@ -67,7 +67,7 @@ Beta_equilibrium <- function(alpha, IH0, IHC0, eta, dH, IP0, PPS, SH0, SHC0){
 #'
 #' @return The equilibrium egg to human transmission parameter
 theta_equilibrium <- function(bH, eta, SHC0, IHC0, dH, SH0, IH0, E0, RR) {
-  (bH + eta * (SHC0 + IHC0)-dH * (SH0 + IH0)) / ((SH0 * E0) + ((1 + RR) * IH0 * E0))
+  (bH + eta * (SHC0 + IHC0) - dH * (SH0 + IH0)) / ((SH0 * E0) + ((1 + RR) * IH0 * E0))
 }
 
 #' @title
@@ -80,17 +80,9 @@ theta_equilibrium <- function(bH, eta, SHC0, IHC0, dH, SH0, IH0, E0, RR) {
 #' @param phi Proportion of infected pigs with low-intensity cyst burden
 #' @param CRR Combined reltive risk for high cyst burden pork (increased RR of infection  *  decreased RR of consumption)
 #' @return The equilibrium transmission probability between a low intesnisty infected pig and human
-pil_equilibrium <- function(beta, chi, phi, CRR){
+pil_equilibrium <- function(beta, chi, phi, CRR) {
   chil <- chi * phi
-  chih <- chi * (1-phi)
-
-  pil <- beta / (chil  +  CRR * chih)
-
+  chih <- chi * (1 - phi)
+  pil <- beta / (chil + CRR * chih)
   return(pil)
 }
-
-
-
-
-
-

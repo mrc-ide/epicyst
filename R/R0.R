@@ -1,7 +1,7 @@
 #' @title
-#' R0 internal
+#' r0 internal
 #' @description
-#' Calculate R0
+#' Calculate r0
 #'
 #' @param delta Egg production rate (per month)
 #' @param tau Egg to pig transmission paramter
@@ -19,19 +19,19 @@
 #' @param HPS Human population size
 #' @param ... Additional (unused) parameters
 #' @export
-R0_internal<-function(delta, tau, phi, alpha, dH, dE, dP, RR_cysticercosis, theta,eta, chi, pih, pil, HPS, ...){
-  betah = chi * pih
-  betal = chi * pil
+r0_internal <- function(delta, tau, phi, alpha, dH, dE, dP, RR_cysticercosis, theta, eta, chi, pih, pil, HPS, ...) {
+  betah <- chi * pih
+  betal <- chi * pil
   ((((delta * tau) * (betah - (betah * phi) + (betal * phi))) / (dE * dP * ((RR_cysticercosis * theta) + dH + alpha))) * (1 + ((RR_cysticercosis * theta) / (eta + dH + alpha))) * HPS)^(1 / 3)
 }
 
 #' @title
-#' R0 wrapper
+#' r0 wrapper
 #' @description
-#' A wrapper function to facilitate the R0 function being called with a list of parameters
+#' A wrapper function to facilitate the r0 function being called with a list of parameters
 #'
-#' @param Params A list of model parameters: see \code{\link{R0_internal}} for list
+#' @param params A list of model parameters: see \code{\link{r0_internal}} for list
 #' @export
-R0<-function(Params){
-  do.call('R0_internal', Params)
+r0 <- function(params) {
+  do.call("r0_internal", params)
 }

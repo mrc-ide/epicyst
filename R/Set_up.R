@@ -6,7 +6,7 @@
 #' @param dur Average duration (years)
 #'
 #' @return Monthly rate
-month_rate <- function(dur){
+month_rate <- function(dur) {
   1 / (dur * 12)
 }
 
@@ -37,8 +37,8 @@ month_rate <- function(dur){
 #'
 #' @return Two lists of parameters and state variable values
 #' @export
-Set_up <- function(LEP = 1, delta = 960000, HPS = 10000, PPS = 2000, TPrev = 0.02, CPrev = 0.07, PCPrev = 0.2, AEL = 2,
-                 ATL = 2, ADI = 3, LEH = 54, phi = 0.8, chi = 0.5, RR_cysticercosis = 1, epsilon = 0.01, RR_infection = 1, RR_consumption = -0.25){
+set_up <- function(LEP = 1, delta = 960000, HPS = 10000, PPS = 2000, TPrev = 0.02, CPrev = 0.07, PCPrev = 0.2, AEL = 2,
+                   ATL = 2, ADI = 3, LEH = 54, phi = 0.8, chi = 0.5, RR_cysticercosis = 1, epsilon = 0.01, RR_infection = 1, RR_consumption = -0.25) {
 
   # Pig mortality rate
   dP <- month_rate(LEP)
@@ -49,7 +49,7 @@ Set_up <- function(LEP = 1, delta = 960000, HPS = 10000, PPS = 2000, TPrev = 0.0
   # Intitial number of susceptible pigs
   SP0 <- PPS - IP0
   # Initial egg number (at equilibrium)
-  E0 <- E0_equilibrium(delta, HPS, TPrev, CPrev, dE)
+  E0 <- e0_equilibrium(delta, HPS, TPrev, CPrev, dE)
   # Egg to pig transmission parameter
   tau <- tau_equilibrium(dP, IP0, SP0, E0)
   # Human recovery rate from Taeniasis
@@ -75,12 +75,12 @@ Set_up <- function(LEP = 1, delta = 960000, HPS = 10000, PPS = 2000, TPrev = 0.0
   CRR <- 1 + RR_infection + RR_consumption
 
   # Pork to human tranmission parameter
-  beta <- Beta_equilibrium(alpha, IH0, IHC0, eta, dH, IP0, PPS, SH0, SHC0)
+  beta <- beta_equilibrium(alpha, IH0, IHC0, eta, dH, IP0, PPS, SH0, SHC0)
   # Probability of human becoming infected given consumption of low or high cyst burden meat
   pil <- pil_equilibrium(beta, chi, phi, CRR)
   pih <- CRR * pil
-  if(pil > 1 | pih > 1){
-    stop('pil or pih are >1, equilbirum not found')
+  if (pil > 1 | pih > 1) {
+    stop("pil or pih are >1, equilbirum not found")
   }
 
   # Number of infected pigs with low cyst burden at time 0
@@ -99,38 +99,41 @@ Set_up <- function(LEP = 1, delta = 960000, HPS = 10000, PPS = 2000, TPrev = 0.0
   theta <- theta_equilibrium(bH, eta, SHC0, IHC0, dH, SH0, IH0, E0, RR_cysticercosis)
 
 
-  params <- list(tau = tau,
-               PPS = PPS,
-               HPS = HPS,
-               bH = bH,
-               bP = bP,
-               dH = dH,
-               dP = dP,
-               dE = dE,
-               delta = delta,
-               phi = phi,
-               theta = theta,
-               alpha = alpha,
-               eta = eta,
-               chi = chi,
-               pil = pil,
-               pih = pih,
-               epsilon = epsilon,
-               RR_cysticercosis = RR_cysticercosis
+  params <- list(
+    tau = tau,
+    PPS = PPS,
+    HPS = HPS,
+    bH = bH,
+    bP = bP,
+    dH = dH,
+    dP = dP,
+    dE = dE,
+    delta = delta,
+    phi = phi,
+    theta = theta,
+    alpha = alpha,
+    eta = eta,
+    chi = chi,
+    pil = pil,
+    pih = pih,
+    epsilon = epsilon,
+    RR_cysticercosis = RR_cysticercosis
   )
 
-  states <- list(E0 = E0,
-               SP0 = SP0,
-               SHC0 = SHC0,
-               IHC0 = IHC0,
-               SH0 = SH0,
-               IH0 = IH0,
-               IPL0 = IPL0,
-               IPH0 = IPH0,
-               RP0 = RP0,
-               VP0 = VP0,
-               CCC0 = CCC0,
-               CTC0 = CTC0)
+  states <- list(
+    E0 = E0,
+    SP0 = SP0,
+    SHC0 = SHC0,
+    IHC0 = IHC0,
+    SH0 = SH0,
+    IH0 = IH0,
+    IPL0 = IPL0,
+    IPH0 = IPH0,
+    RP0 = RP0,
+    VP0 = VP0,
+    CCC0 = CCC0,
+    CTC0 = CTC0
+  )
 
   return(list(params, states))
 }

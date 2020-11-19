@@ -14,52 +14,57 @@ library(epicyst)
 
 # Call default parameters and equilibrium solutions
 
-The `Set_up()` function provides the user a means to specify parameters and starting conditions for a model run. Input parameters, as well as starting prevalence for Taeniasis, and Cysticercosis (in the porcine and human populations) may be left at the default values or specified in the function call. 
+The `set_up()` function provides the user a means to specify parameters and starting conditions for a model run. Input parameters, as well as starting prevalence for Taeniasis, and Cysticercosis (in the porcine and human populations) may be left at the default values or specified in the function call. 
 
-Changes to default prevalence values will initiate to re-estimation of transmission parameters to allow the system to run at the newly specified endemic equilibrium. The `Set_up()` function returns a list of two elements: 1) The input parameters for a model run (standardised time units and dependent parameters included) and 2) Initial state variable values.
+Changes to default prevalence values will initiate to re-estimation of transmission parameters to allow the system to run at the newly specified endemic equilibrium. The `set_up()` function returns a list of two elements: 1) The input parameters for a model run (standardised time units and dependent parameters included) and 2) Initial state variable values.
 
 To initiate and view default parameters:
 ```{r}
-Initialise<-Set_up()
+initialise <- set_up()
 ```
 
 ```{r}
 # View parameters
-Initialise[[1]][1:5]
+initialise[[1]][1:5]
 # View state variable starting values
-Initialise[[2]][6:7]
+initialise[[2]][6:7]
 ```
 
-Input arguments for `Set_up()` are documented in the help file `?Set_up()`. Certain combinations of input prevalence may not be possible to fit, in which case an error message will be thrown.
+Input arguments for `set_up()` are documented in the help file `?set_up()`. Certain combinations of input prevalence may not be possible to fit, in which case an error message will be thrown.
     
 -----
   
 # Run the model with no interventions
 
-The `Run_model()` function provides all functionality for model runs. To run the model at baseline, with default parameters and endemic equilibrium values, only the length of the model run (specified in years) need be specified:
+The `run_model()` function provides all functionality for model runs. To run the model at baseline, with default parameters and endemic equilibrium values, only the length of the model run (specified in years) need be specified:
 
 ```{r}
-M1<-Run_model(Time=50)
-````
+m1 <- run_model(time = 50)
+```
+
 ```{r, results='asis', echo=FALSE}
-knitr::kable(round(M1[1:5, 1:11]), caption = 'State variables')
-knitr::kable(round(M1[100:110, c(1,12:13)]), caption = 'Cumulative cases')
-knitr::kable(tail(M1[, c(1,14:16)], 10), caption = 'Tracked cases', digits=0)
-knitr::kable(tail(M1[, c(1,17:19)], 10), caption = 'Tracked prevalence', digits=2)
-````
+knitr::kable(round(m1[1:5, 1:11]), caption = 'State variables')
+knitr::kable(round(m1[100:110, c(1,12:13)]), caption = 'Cumulative cases')
+knitr::kable(tail(m1[, c(1,14:16)], 10), caption = 'Tracked cases', digits = 0)
+knitr::kable(tail(m1[, c(1,17:19)], 10), caption = 'Tracked prevalence', digits = 2)
+```
 
 It is suggested that a period of burn in (specified in years) is included to ensure small changes in endemic equilibrium at the start of a run are avoided:
 
-    M2<-Run_model(Time=50, Burn_in=25)
+```{r}
+m2 <- run_model(time = 50, burn_in = 25)
+```
 
 Model output starts after this burn in period.
 
 The model can be run with different starting parameters or endemic prevalences. For example to run the model with an prevalence of Taeniasis of 4%:
 
-    # Set up the model, specifying the new Taeniasis prevalence
-    S1<-Set_up(TPREV=0.04)
-    # Run the model, with new input parameters and initial conditions
-    M3<-Run_model(Time=50, Burn_in=25, Params=S1[[1]], Initial_states=S1[[2]])
+```{r}
+# Set up the model, specifying the new Taeniasis prevalence
+s1 <- set_up(TPrev = 0.04)
+# Run the model, with new input parameters and initial conditions
+m3 <- run_model(time = 50, burn_in = 25, params = s1[[1]], initial_states = s1[[2]])
+```
 
 Model runs return a `data.frame` of model output for each time step.
     
@@ -69,11 +74,13 @@ Model runs return a `data.frame` of model output for each time step.
 
 The intervention effect sizes can be viewed using the `Intervention_effect_size()` function. Effect sizes can be modified if required:
 
-    # Initialise default intervention effect sizes
-    E1<-Intervention_effect_size()
-    # Double the effect size of Husbandry
-    E1$$Husbandry<-0.6
-      
+```{r}
+# initialise default intervention effect sizes
+e1 <- intervention_effect_size()
+# Double the effect size of Husbandry
+e1$Husbandry <- 0.6
+
+```      
 -----
     
 # Run the model with intervention(s)
@@ -89,16 +96,16 @@ The model can be run with a number of interventions. These include:
 
 Running the model, with default intervention effect sizes, requires the intervention and implementation time (year) to be specified:
 ```{r}
-I1<-Run_model(Time=50, Burn_in=50, Intervention='Sanitation', Intervention_time=25)
+i1 <- run_model(time = 50, burn_in = 50, intervention = 'Sanitation', intervention_time = 25)
 ```
 
 Multiple interventions may be implemented by provision of a vector:
 ```{r}
-I2<-Run_model(Time=50, Burn_in=25, 
-              Intervention=c('Sanitation', 'Human_test_and_treat', 'Pig_vaccine'),
-              Intervention_time=25)
+i2 <- run_model(time = 50, burn_in = 25, 
+              intervention = c('Sanitation', 'Human_test_and_treat', 'Pig_vaccine'),
+              intervention_time = 25)
 ```
-Intervention options are detailed in the function help `?Run_model`. At present all interventions are implemented at the same time.
+Intervention options are detailed in the function help `?run_model`. At present all interventions are implemented at the same time.
     
 -----
   
@@ -107,20 +114,21 @@ Intervention options are detailed in the function help `?Run_model`. At present 
 The model output data.frame facilitates visualisation using general base `R` or other plotting methods (eg `ggplot2`).
 ```{r}
 # Run the baseline model:
-M1<-Run_model(Time=50, Burn_in=50)
+m1 <- run_model(time = 50, burn_in = 50)
 # Run the model with a single intervention:
-M2<-Run_model(Time=50, Intervention='Sanitation', Intervention_time=20, Burn_in=50)
+m2 <- run_model(time = 50, intervention = 'Sanitation', intervention_time = 20, burn_in = 50)
 # Run the model with multiple interventions:
-M3<-Run_model(Time=50, Intervention=c('Human_test_and_treat', 'Pig_MDA'), 
-                  Intervention_time=20, Burn_in=50)
+m3 <- run_model(time = 50, intervention = c('Human_test_and_treat', 'Pig_MDA'), 
+                  intervention_time = 20, burn_in = 50)
 ```
+
 ```{r, fig.align='center',fig.width=7, fig.height=5}
 # Plot the output in base R
-plot(M1$t/12, M1$Humans_Cysticercosis, t='l', ylim=c(0,1000), ylab='Humans with Cysticercosis', xlab='Time (years)')
-lines(M2$t/12, M2$Humans_Cysticercosis, col='deeppink')
-lines(M3$t/12, M3$Humans_Cysticercosis, col='dodgerblue')
-legend('topright', c('Baseline','Sanitation','Human test & treat and Pig MDA'), lty=c(1,1,1),
-           col=c('black','deeppink', 'dodgerblue'))
+plot(m1$t / 12, m1$Humans_Cysticercosis, t = 'l', ylim = c(0, 1000), ylab = 'Humans with Cysticercosis', xlab = 'time (years)')
+lines(m2$t / 12, m2$Humans_Cysticercosis, col = 'deeppink')
+lines(m3$t / 12, m3$Humans_Cysticercosis, col = 'dodgerblue')
+legend('topright', c('Baseline', 'Sanitation', 'Human test & treat and Pig MDA'), lty = c(1, 1, 1),
+           col=c('black', 'deeppink', 'dodgerblue'))
 ```
     
 -----
@@ -128,5 +136,6 @@ legend('topright', c('Baseline','Sanitation','Human test & treat and Pig MDA'), 
 # R0
 
 The next-generation matrix estimate of the basic reproduction number (R0) for a given parameters set can be estimated:
-
-    R0(Params=Set_up()[[1]])
+```{r}
+r0(params = set_up()[[1]])
+```
