@@ -1,9 +1,11 @@
 Package: epicyst
 Type: Package
 Title: Cysticercosis ODE and Intervention model
-Version: 1.0.1
-Authors@R: person("Peter", "Winskill", role = c("aut", "cre"),
-                     email = "p.winskill@imperial.ac.uk")
+Version: 1.0.2
+Authors@R: c(
+    person("Peter", "Winskill", role = c("aut", "cre"), email = "p.winskill@imperial.ac.uk"),
+    person("Matthew", "Dixon-Zegeye", role = c("aut")
+    )
 Author: Peter Winskill
 Maintainer: Peter Winskill <p.winskill@imeprial.ac.uk>
 Description: Contains ODEs for Cysticercosis/Pork tapeworm model.
