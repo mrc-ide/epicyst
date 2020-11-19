@@ -57,7 +57,7 @@ run_model <- function(params = NULL, initial_states = NULL, time, intervention =
   if (burn_in > 0) {
     tt_burn <- seq(0, (burn_in * 12), step)
     burn <- single_run(tt_burn, params = params, states = initial_states)
-    initial_states <- as.list(tail(burn, 1))
+    initial_states <- as.list(utils::tail(burn, 1))
     names(initial_states) <- paste(colnames(burn), "0", sep = "")
     initial_states <- clean_initial_states(initial_states)
   }
@@ -96,7 +96,7 @@ run_model <- function(params = NULL, initial_states = NULL, time, intervention =
   
   for (i in 1:length(tt2)) {
     # Pull the 'end' state values from previous run
-    tail_states <- as.list(tail(runs[[i]], 1))
+    tail_states <- as.list(utils::tail(runs[[i]], 1))
     names(tail_states) <- paste(colnames(runs[[i]]), "0", sep = "")
     tail_states <- clean_initial_states(tail_states)
     
