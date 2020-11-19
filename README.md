@@ -5,8 +5,8 @@
 has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![R build
-status](https://github.com/pwinskill/epicyst/workflows/R-CMD-check/badge.svg)](https://github.com/pwinskill/epicyst/actions)
-[![codecov](https://codecov.io/gh/pwinskill/epicyst/branch/master/graph/badge.svg)](https://codecov.io/gh/pwinskill/epicyst)
+status](https://github.com/mrc-ide/epicyst/workflows/R-CMD-check/badge.svg)](https://github.com/mrc-ide/epicyst/actions)
+[![codecov](https://codecov.io/gh/mrc-ide/epicyst/branch/master/graph/badge.svg)](https://codecov.io/gh/mrc-ide/epicyst)
 <!-- badges: end -->
 
 <img src='man/figures/logo.png' align="right" height="211" />
@@ -41,7 +41,7 @@ Available at:
 
 To use the package, please install package devtools and install epicyst:
 
-`devtools::install_github("pwinskill/epicyst")`
+`devtools::install_github("mrc-ide/epicyst")`
 
 You will need an appropriate compiler installed:
 (<https://cran.r-project.org/bin/windows/Rtools/>)
@@ -54,12 +54,12 @@ available at: (<https://github.com/richfitz/odin/>).
 ### Use
 
 For a detailed practical guide please see the [epicyst introduction
-vignette](https://pwinskill.github.io/epicyst/articles)
+vignette](https://mrc-ide.github.io/epicyst/articles)
 
 -----
 
 Details on the model functionality and use can be found on the [epicyst
-Webpage](https://pwinskill.github.io/epicyst/)  
+Webpage](https://mrc-ide.github.io/epicyst/)  
 Source code is available from the [epicyst
-Github](https://github.com/pwinskill/epicyst/)  
-[Report a bug](https://github.com/pwinskill/epicyst/issues)
+Github](https://github.com/mrc-ide/epicyst/)  
+[Report a bug](https://github.com/mrc-ide/epicyst/issues)
