@@ -54,5 +54,5 @@ For a detailed practical guide please see the [epicyst introduction vignette](ht
   
 Details on the model functionality and use can be found on the [epicyst Webpage](https://mrc-ide.github.io/epicyst/)  
 Source code is available from the [epicyst Github](https://github.com/mrc-ide/epicyst/)  
-[Report a bug](https://github.com/mrc-ide/epicyst/issues)
+Seen an issue? Please [Report a bug](https://github.com/mrc-ide/epicyst/issues)
 
