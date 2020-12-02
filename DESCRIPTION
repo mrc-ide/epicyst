@@ -1,7 +1,7 @@
 Package: epicyst
 Type: Package
 Title: Cysticercosis ODE and Intervention model
-Version: 1.0.3
+Version: 1.0.4
 Authors@R: c(
     person("Peter", "Winskill", role = c("aut", "cre"), email = "p.winskill@imperial.ac.uk"),
     person("Matthew", "Dixon-Zegeye", role = c("aut"))
@@ -14,8 +14,10 @@ LazyData: TRUE
 Imports:
     odin (>= 1.1.0)
 RoxygenNote: 7.1.1
-Suggests: testthat,
+Suggests: 
+    testthat,
     knitr,
     rmarkdown
 VignetteBuilder: knitr
 Encoding: UTF-8
+Remotes: mrc-ide/odin
