@@ -1,7 +1,7 @@
 Package: epicyst
 Type: Package
 Title: Cysticercosis ODE and Intervention model
-Version: 1.0.2
+Version: 1.0.3
 Authors@R: c(
     person("Peter", "Winskill", role = c("aut", "cre"), email = "p.winskill@imperial.ac.uk"),
     person("Matthew", "Dixon-Zegeye", role = c("aut"))
