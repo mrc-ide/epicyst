@@ -2,17 +2,19 @@
 % Please edit documentation in R/Set_up.R
 \name{set_up}
 \alias{set_up}
-\title{Set up}
+\title{Set up (age-structured model)}
 \usage{
 set_up(
-  LEP = 1,
-  delta = 960000,
+  LEP = 10,
+  SlgEP = 1,
   HPS = 10000,
   PPS = 2000,
-  TPrev = 0.02,
-  CPrev = 0.07,
-  PCPrev = 0.2,
   AEL = 2,
+  delta = 960000,
+  tau_input = NULL,
+  theta_input = NULL,
+  beta_input = NULL,
+  psi = 0.5,
   ATL = 2,
   ADI = 3,
   LEH = 54,
@@ -21,25 +23,37 @@ set_up(
   RR_cysticercosis = 1,
   epsilon = 0.01,
   RR_infection = 1,
-  RR_consumption = -0.25
+  RR_consumption = -0.25,
+  number_age_classes_pig = 100,
+  Slaughter_age_min = 6,
+  pig_age_class_width = 1,
+  number_age_classes_human = 7,
+  PCPrev_obs = NULL,
+  PCPrev_true = 0.2,
+  PC_sens = NULL,
+  PC_spec = NULL,
+  CPrev_obs = NULL,
+  CPrev_true = 0.07,
+  C_sens = NULL,
+  C_spec = NULL,
+  TPrev_obs = NULL,
+  TPrev_true = 0.02,
+  T_sens = NULL,
+  T_spec = NULL
 )
 }
 \arguments{
 \item{LEP}{Pig life expectancy (years)}
 
-\item{delta}{Egg production rate (per month)}
-
 \item{HPS}{Human population size}
 
 \item{PPS}{Pig population size}
 
-\item{TPrev}{Taeniasis prevalence}
-
-\item{CPrev}{Cysticercosis prevalence in humans}
-
-\item{PCPrev}{Cysticercosis prevalence in pigs}
-
 \item{AEL}{Average life expectancy of egg in the environment (weeks)}
+
+\item{delta}{Egg production rate (per month)}
+
+\item{psi}{Pig rate of transition from prepatent to infectious (average duration for maturation of cysts)}
 
 \item{ATL}{Average life expectancy of T. solium adult worm in human (years)}
 
@@ -58,6 +72,38 @@ set_up(
 \item{RR_infection}{Increased RR of infection given consumption of high cyct burden pork, compared with low cyst burden}
 
 \item{RR_consumption}{Decreased RR of consumption of high cyst burden pork, compared with low cyst burden pork}
+
+\item{number_age_classes_pig}{Number of age classes (month) for pig population structure}
+
+\item{Slaughter_age_min}{Minimum age (in months) from which pigs are slaughtered}
+
+\item{PCPrev_true}{Cysticercosis prevalence in pigs (true underlying prevalence)}
+
+\item{PC_sens}{Sensitivity of pig cysticercosis diagnostic}
+
+\item{PC_spec}{Specificity of pig cysticercosis diagnostic}
+
+\item{CPrev_obs}{Observed human cysticercosis prevalence option}
+
+\item{CPrev_true}{Cysticercosis prevalence in humans (true underlying prevalence)}
+
+\item{C_sens}{Sensitivity of human cysticercosis diagnostic}
+
+\item{C_spec}{Specificity of human cysticercosis diagnostic}
+
+\item{TPrev_obs}{Observed human taeniasis prevalence option}
+
+\item{TPrev_true}{Taeniasis prevalence (true underlying prevalence)}
+
+\item{T_sens}{Sensitivity of human taeniasis diagnostic}
+
+\item{T_spec}{Specificity of human taeniasis diagnostic}
+
+\item{Age_FOI_pig_lower}{Lowest pig age class contributing to transmission (youngest age at slaughter)}
+
+\item{Age_FOI_pig_upper}{Oldest pig age class contributing to transmission (youngest age at slaughter)}
+
+\item{PCPrev}{Observed pig cysticercosis prevaelnce option}
 }
 \value{
 Two lists of parameters and state variable values
