@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <R_ext/Rdynload.h>
 typedef struct cyst_generator_internal {
+  double *age_rate_human;
+  double *age_rate_pig;
   double alpha;
   double bH;
   double bP;
@@ -14,39 +16,79 @@ typedef struct cyst_generator_internal {
   double dE;
   double delta;
   double dH;
+  int dim_age_rate_human;
+  int dim_age_rate_pig;
+  int dim_IH;
+  int dim_IH0;
+  int dim_IHC;
+  int dim_IHC0;
+  int dim_IPH;
+  int dim_IPH0;
+  int dim_IPL;
+  int dim_IPL0;
+  int dim_PP;
+  int dim_PP0;
+  int dim_RP;
+  int dim_RP0;
+  int dim_SH;
+  int dim_SH0;
+  int dim_SHC;
+  int dim_SHC0;
+  int dim_SP;
+  int dim_SP0;
+  int dim_VP;
+  int dim_VP0;
   double dP;
+  double dPslg;
   double E0;
   double epsilon;
   double eta;
   double HPS;
-  double IH0;
-  double IHC0;
+  double *IH0;
+  double *IHC0;
   double initial_CCC;
   double initial_CTC;
   double initial_E;
-  double initial_IH;
-  double initial_IHC;
-  double initial_IPH;
-  double initial_IPL;
-  double initial_RP;
-  double initial_SH;
-  double initial_SHC;
-  double initial_SP;
-  double initial_VP;
-  double IPH0;
-  double IPL0;
+  double *initial_IH;
+  double *initial_IHC;
+  double *initial_IPH;
+  double *initial_IPL;
+  double *initial_PP;
+  double *initial_RP;
+  double *initial_SH;
+  double *initial_SHC;
+  double *initial_SP;
+  double *initial_VP;
+  double *IPH0;
+  double *IPL0;
+  int na_human;
+  int na_pig;
+  int offset_variable_IH;
+  int offset_variable_IHC;
+  int offset_variable_IPH;
+  int offset_variable_IPL;
+  int offset_variable_PP;
+  int offset_variable_RP;
+  int offset_variable_SHC;
+  int offset_variable_SP;
+  int offset_variable_VP;
   double phi;
   double pih;
   double pil;
+  double *PP0;
   double PPS;
-  double RP0;
+  double psi;
+  double *RP0;
   double RR_cysticercosis;
-  double SH0;
-  double SHC0;
-  double SP0;
+  double *SH0;
+  double *SHC0;
+  double slgage_foi;
+  int slgtage;
+  int slgtage_bfr;
+  double *SP0;
   double tau;
   double theta;
-  double VP0;
+  double *VP0;
 } cyst_generator_internal;
 cyst_generator_internal* cyst_generator_get_internal(SEXP internal_p, int closed_error);
 static void cyst_generator_finalise(SEXP internal_p);
@@ -73,6 +115,18 @@ void user_check_values_int(int * value, size_t len,
 void user_check_values(SEXP value, double min, double max,
                            const char *name);
 SEXP user_list_element(SEXP list, const char *name);
+void* user_get_array_dim(SEXP user, bool is_integer, void * previous,
+                         const char *name, int rank,
+                         double min, double max, int *dest_dim);
+void* user_get_array(SEXP user, bool is_integer, void * previous,
+                     const char *name, double min, double max,
+                     int rank, ...);
+SEXP user_get_array_check(SEXP el, bool is_integer, const char *name,
+                          double min, double max);
+SEXP user_get_array_check_rank(SEXP user, const char *name, int rank,
+                               bool required);
+double odin_sum1(double *x, size_t from, size_t to);
+int odin_isum1(int *x, size_t from, size_t to);
 double scalar_real(SEXP x, const char * name);
 cyst_generator_internal* cyst_generator_get_internal(SEXP internal_p, int closed_error) {
   cyst_generator_internal *internal = NULL;
@@ -88,12 +142,58 @@ cyst_generator_internal* cyst_generator_get_internal(SEXP internal_p, int closed
 void cyst_generator_finalise(SEXP internal_p) {
   cyst_generator_internal *internal = cyst_generator_get_internal(internal_p, 0);
   if (internal_p) {
+    Free(internal->age_rate_human);
+    Free(internal->age_rate_pig);
+    Free(internal->IH0);
+    Free(internal->IHC0);
+    Free(internal->initial_IH);
+    Free(internal->initial_IHC);
+    Free(internal->initial_IPH);
+    Free(internal->initial_IPL);
+    Free(internal->initial_PP);
+    Free(internal->initial_RP);
+    Free(internal->initial_SH);
+    Free(internal->initial_SHC);
+    Free(internal->initial_SP);
+    Free(internal->initial_VP);
+    Free(internal->IPH0);
+    Free(internal->IPL0);
+    Free(internal->PP0);
+    Free(internal->RP0);
+    Free(internal->SH0);
+    Free(internal->SHC0);
+    Free(internal->SP0);
+    Free(internal->VP0);
     Free(internal);
     R_ClearExternalPtr(internal_p);
   }
 }
 SEXP cyst_generator_create(SEXP user) {
   cyst_generator_internal *internal = (cyst_generator_internal*) Calloc(1, cyst_generator_internal);
+  internal->age_rate_human = NULL;
+  internal->age_rate_pig = NULL;
+  internal->IH0 = NULL;
+  internal->IHC0 = NULL;
+  internal->initial_IH = NULL;
+  internal->initial_IHC = NULL;
+  internal->initial_IPH = NULL;
+  internal->initial_IPL = NULL;
+  internal->initial_PP = NULL;
+  internal->initial_RP = NULL;
+  internal->initial_SH = NULL;
+  internal->initial_SHC = NULL;
+  internal->initial_SP = NULL;
+  internal->initial_VP = NULL;
+  internal->IPH0 = NULL;
+  internal->IPL0 = NULL;
+  internal->PP0 = NULL;
+  internal->RP0 = NULL;
+  internal->SH0 = NULL;
+  internal->SHC0 = NULL;
+  internal->SP0 = NULL;
+  internal->VP0 = NULL;
+  internal->age_rate_human = NULL;
+  internal->age_rate_pig = NULL;
   internal->alpha = NA_REAL;
   internal->bH = NA_REAL;
   internal->bP = NA_REAL;
@@ -104,26 +204,34 @@ SEXP cyst_generator_create(SEXP user) {
   internal->delta = NA_REAL;
   internal->dH = NA_REAL;
   internal->dP = NA_REAL;
+  internal->dPslg = NA_REAL;
   internal->E0 = NA_REAL;
   internal->epsilon = NA_REAL;
   internal->eta = NA_REAL;
   internal->HPS = NA_REAL;
-  internal->IH0 = NA_REAL;
-  internal->IHC0 = NA_REAL;
-  internal->IPH0 = NA_REAL;
-  internal->IPL0 = NA_REAL;
+  internal->IH0 = NULL;
+  internal->IHC0 = NULL;
+  internal->IPH0 = NULL;
+  internal->IPL0 = NULL;
+  internal->na_human = NA_INTEGER;
+  internal->na_pig = NA_INTEGER;
   internal->phi = NA_REAL;
   internal->pih = NA_REAL;
   internal->pil = NA_REAL;
+  internal->PP0 = NULL;
   internal->PPS = NA_REAL;
-  internal->RP0 = NA_REAL;
+  internal->psi = NA_REAL;
+  internal->RP0 = NULL;
   internal->RR_cysticercosis = NA_REAL;
-  internal->SH0 = NA_REAL;
-  internal->SHC0 = NA_REAL;
-  internal->SP0 = NA_REAL;
+  internal->SH0 = NULL;
+  internal->SHC0 = NULL;
+  internal->slgage_foi = NA_REAL;
+  internal->slgtage = NA_INTEGER;
+  internal->slgtage_bfr = NA_INTEGER;
+  internal->SP0 = NULL;
   internal->tau = NA_REAL;
   internal->theta = NA_REAL;
-  internal->VP0 = NA_REAL;
+  internal->VP0 = NULL;
   SEXP ptr = PROTECT(R_MakeExternalPtr(internal, R_NilValue, R_NilValue));
   R_RegisterCFinalizer(ptr, cyst_generator_finalise);
   UNPROTECT(1);
@@ -140,94 +248,222 @@ void cyst_generator_initmod_desolve(void(* odeparms) (int *, double *)) {
 }
 SEXP cyst_generator_contents(SEXP internal_p) {
   cyst_generator_internal *internal = cyst_generator_get_internal(internal_p, 1);
-  SEXP contents = PROTECT(allocVector(VECSXP, 42));
-  SET_VECTOR_ELT(contents, 0, ScalarReal(internal->alpha));
-  SET_VECTOR_ELT(contents, 1, ScalarReal(internal->bH));
-  SET_VECTOR_ELT(contents, 2, ScalarReal(internal->bP));
-  SET_VECTOR_ELT(contents, 3, ScalarReal(internal->CCC0));
-  SET_VECTOR_ELT(contents, 4, ScalarReal(internal->chi));
-  SET_VECTOR_ELT(contents, 5, ScalarReal(internal->CTC0));
-  SET_VECTOR_ELT(contents, 6, ScalarReal(internal->dE));
-  SET_VECTOR_ELT(contents, 7, ScalarReal(internal->delta));
-  SET_VECTOR_ELT(contents, 8, ScalarReal(internal->dH));
-  SET_VECTOR_ELT(contents, 9, ScalarReal(internal->dP));
-  SET_VECTOR_ELT(contents, 10, ScalarReal(internal->E0));
-  SET_VECTOR_ELT(contents, 11, ScalarReal(internal->epsilon));
-  SET_VECTOR_ELT(contents, 12, ScalarReal(internal->eta));
-  SET_VECTOR_ELT(contents, 13, ScalarReal(internal->HPS));
-  SET_VECTOR_ELT(contents, 14, ScalarReal(internal->IH0));
-  SET_VECTOR_ELT(contents, 15, ScalarReal(internal->IHC0));
-  SET_VECTOR_ELT(contents, 16, ScalarReal(internal->initial_CCC));
-  SET_VECTOR_ELT(contents, 17, ScalarReal(internal->initial_CTC));
-  SET_VECTOR_ELT(contents, 18, ScalarReal(internal->initial_E));
-  SET_VECTOR_ELT(contents, 19, ScalarReal(internal->initial_IH));
-  SET_VECTOR_ELT(contents, 20, ScalarReal(internal->initial_IHC));
-  SET_VECTOR_ELT(contents, 21, ScalarReal(internal->initial_IPH));
-  SET_VECTOR_ELT(contents, 22, ScalarReal(internal->initial_IPL));
-  SET_VECTOR_ELT(contents, 23, ScalarReal(internal->initial_RP));
-  SET_VECTOR_ELT(contents, 24, ScalarReal(internal->initial_SH));
-  SET_VECTOR_ELT(contents, 25, ScalarReal(internal->initial_SHC));
-  SET_VECTOR_ELT(contents, 26, ScalarReal(internal->initial_SP));
-  SET_VECTOR_ELT(contents, 27, ScalarReal(internal->initial_VP));
-  SET_VECTOR_ELT(contents, 28, ScalarReal(internal->IPH0));
-  SET_VECTOR_ELT(contents, 29, ScalarReal(internal->IPL0));
-  SET_VECTOR_ELT(contents, 30, ScalarReal(internal->phi));
-  SET_VECTOR_ELT(contents, 31, ScalarReal(internal->pih));
-  SET_VECTOR_ELT(contents, 32, ScalarReal(internal->pil));
-  SET_VECTOR_ELT(contents, 33, ScalarReal(internal->PPS));
-  SET_VECTOR_ELT(contents, 34, ScalarReal(internal->RP0));
-  SET_VECTOR_ELT(contents, 35, ScalarReal(internal->RR_cysticercosis));
-  SET_VECTOR_ELT(contents, 36, ScalarReal(internal->SH0));
-  SET_VECTOR_ELT(contents, 37, ScalarReal(internal->SHC0));
-  SET_VECTOR_ELT(contents, 38, ScalarReal(internal->SP0));
-  SET_VECTOR_ELT(contents, 39, ScalarReal(internal->tau));
-  SET_VECTOR_ELT(contents, 40, ScalarReal(internal->theta));
-  SET_VECTOR_ELT(contents, 41, ScalarReal(internal->VP0));
-  SEXP nms = PROTECT(allocVector(STRSXP, 42));
-  SET_STRING_ELT(nms, 0, mkChar("alpha"));
-  SET_STRING_ELT(nms, 1, mkChar("bH"));
-  SET_STRING_ELT(nms, 2, mkChar("bP"));
-  SET_STRING_ELT(nms, 3, mkChar("CCC0"));
-  SET_STRING_ELT(nms, 4, mkChar("chi"));
-  SET_STRING_ELT(nms, 5, mkChar("CTC0"));
-  SET_STRING_ELT(nms, 6, mkChar("dE"));
-  SET_STRING_ELT(nms, 7, mkChar("delta"));
-  SET_STRING_ELT(nms, 8, mkChar("dH"));
-  SET_STRING_ELT(nms, 9, mkChar("dP"));
-  SET_STRING_ELT(nms, 10, mkChar("E0"));
-  SET_STRING_ELT(nms, 11, mkChar("epsilon"));
-  SET_STRING_ELT(nms, 12, mkChar("eta"));
-  SET_STRING_ELT(nms, 13, mkChar("HPS"));
-  SET_STRING_ELT(nms, 14, mkChar("IH0"));
-  SET_STRING_ELT(nms, 15, mkChar("IHC0"));
-  SET_STRING_ELT(nms, 16, mkChar("initial_CCC"));
-  SET_STRING_ELT(nms, 17, mkChar("initial_CTC"));
-  SET_STRING_ELT(nms, 18, mkChar("initial_E"));
-  SET_STRING_ELT(nms, 19, mkChar("initial_IH"));
-  SET_STRING_ELT(nms, 20, mkChar("initial_IHC"));
-  SET_STRING_ELT(nms, 21, mkChar("initial_IPH"));
-  SET_STRING_ELT(nms, 22, mkChar("initial_IPL"));
-  SET_STRING_ELT(nms, 23, mkChar("initial_RP"));
-  SET_STRING_ELT(nms, 24, mkChar("initial_SH"));
-  SET_STRING_ELT(nms, 25, mkChar("initial_SHC"));
-  SET_STRING_ELT(nms, 26, mkChar("initial_SP"));
-  SET_STRING_ELT(nms, 27, mkChar("initial_VP"));
-  SET_STRING_ELT(nms, 28, mkChar("IPH0"));
-  SET_STRING_ELT(nms, 29, mkChar("IPL0"));
-  SET_STRING_ELT(nms, 30, mkChar("phi"));
-  SET_STRING_ELT(nms, 31, mkChar("pih"));
-  SET_STRING_ELT(nms, 32, mkChar("pil"));
-  SET_STRING_ELT(nms, 33, mkChar("PPS"));
-  SET_STRING_ELT(nms, 34, mkChar("RP0"));
-  SET_STRING_ELT(nms, 35, mkChar("RR_cysticercosis"));
-  SET_STRING_ELT(nms, 36, mkChar("SH0"));
-  SET_STRING_ELT(nms, 37, mkChar("SHC0"));
-  SET_STRING_ELT(nms, 38, mkChar("SP0"));
-  SET_STRING_ELT(nms, 39, mkChar("tau"));
-  SET_STRING_ELT(nms, 40, mkChar("theta"));
-  SET_STRING_ELT(nms, 41, mkChar("VP0"));
+  SEXP contents = PROTECT(allocVector(VECSXP, 84));
+  SEXP age_rate_human = PROTECT(allocVector(REALSXP, internal->dim_age_rate_human));
+  memcpy(REAL(age_rate_human), internal->age_rate_human, internal->dim_age_rate_human * sizeof(double));
+  SET_VECTOR_ELT(contents, 0, age_rate_human);
+  SEXP age_rate_pig = PROTECT(allocVector(REALSXP, internal->dim_age_rate_pig));
+  memcpy(REAL(age_rate_pig), internal->age_rate_pig, internal->dim_age_rate_pig * sizeof(double));
+  SET_VECTOR_ELT(contents, 1, age_rate_pig);
+  SET_VECTOR_ELT(contents, 2, ScalarReal(internal->alpha));
+  SET_VECTOR_ELT(contents, 3, ScalarReal(internal->bH));
+  SET_VECTOR_ELT(contents, 4, ScalarReal(internal->bP));
+  SET_VECTOR_ELT(contents, 5, ScalarReal(internal->CCC0));
+  SET_VECTOR_ELT(contents, 6, ScalarReal(internal->chi));
+  SET_VECTOR_ELT(contents, 7, ScalarReal(internal->CTC0));
+  SET_VECTOR_ELT(contents, 8, ScalarReal(internal->dE));
+  SET_VECTOR_ELT(contents, 9, ScalarReal(internal->delta));
+  SET_VECTOR_ELT(contents, 10, ScalarReal(internal->dH));
+  SET_VECTOR_ELT(contents, 11, ScalarInteger(internal->dim_age_rate_human));
+  SET_VECTOR_ELT(contents, 12, ScalarInteger(internal->dim_age_rate_pig));
+  SET_VECTOR_ELT(contents, 13, ScalarInteger(internal->dim_IH));
+  SET_VECTOR_ELT(contents, 14, ScalarInteger(internal->dim_IH0));
+  SET_VECTOR_ELT(contents, 15, ScalarInteger(internal->dim_IHC));
+  SET_VECTOR_ELT(contents, 16, ScalarInteger(internal->dim_IHC0));
+  SET_VECTOR_ELT(contents, 17, ScalarInteger(internal->dim_IPH));
+  SET_VECTOR_ELT(contents, 18, ScalarInteger(internal->dim_IPH0));
+  SET_VECTOR_ELT(contents, 19, ScalarInteger(internal->dim_IPL));
+  SET_VECTOR_ELT(contents, 20, ScalarInteger(internal->dim_IPL0));
+  SET_VECTOR_ELT(contents, 21, ScalarInteger(internal->dim_PP));
+  SET_VECTOR_ELT(contents, 22, ScalarInteger(internal->dim_PP0));
+  SET_VECTOR_ELT(contents, 23, ScalarInteger(internal->dim_RP));
+  SET_VECTOR_ELT(contents, 24, ScalarInteger(internal->dim_RP0));
+  SET_VECTOR_ELT(contents, 25, ScalarInteger(internal->dim_SH));
+  SET_VECTOR_ELT(contents, 26, ScalarInteger(internal->dim_SH0));
+  SET_VECTOR_ELT(contents, 27, ScalarInteger(internal->dim_SHC));
+  SET_VECTOR_ELT(contents, 28, ScalarInteger(internal->dim_SHC0));
+  SET_VECTOR_ELT(contents, 29, ScalarInteger(internal->dim_SP));
+  SET_VECTOR_ELT(contents, 30, ScalarInteger(internal->dim_SP0));
+  SET_VECTOR_ELT(contents, 31, ScalarInteger(internal->dim_VP));
+  SET_VECTOR_ELT(contents, 32, ScalarInteger(internal->dim_VP0));
+  SET_VECTOR_ELT(contents, 33, ScalarReal(internal->dP));
+  SET_VECTOR_ELT(contents, 34, ScalarReal(internal->dPslg));
+  SET_VECTOR_ELT(contents, 35, ScalarReal(internal->E0));
+  SET_VECTOR_ELT(contents, 36, ScalarReal(internal->epsilon));
+  SET_VECTOR_ELT(contents, 37, ScalarReal(internal->eta));
+  SET_VECTOR_ELT(contents, 38, ScalarReal(internal->HPS));
+  SEXP IH0 = PROTECT(allocVector(REALSXP, internal->dim_IH0));
+  memcpy(REAL(IH0), internal->IH0, internal->dim_IH0 * sizeof(double));
+  SET_VECTOR_ELT(contents, 39, IH0);
+  SEXP IHC0 = PROTECT(allocVector(REALSXP, internal->dim_IHC0));
+  memcpy(REAL(IHC0), internal->IHC0, internal->dim_IHC0 * sizeof(double));
+  SET_VECTOR_ELT(contents, 40, IHC0);
+  SET_VECTOR_ELT(contents, 41, ScalarReal(internal->initial_CCC));
+  SET_VECTOR_ELT(contents, 42, ScalarReal(internal->initial_CTC));
+  SET_VECTOR_ELT(contents, 43, ScalarReal(internal->initial_E));
+  SEXP initial_IH = PROTECT(allocVector(REALSXP, internal->dim_IH));
+  memcpy(REAL(initial_IH), internal->initial_IH, internal->dim_IH * sizeof(double));
+  SET_VECTOR_ELT(contents, 44, initial_IH);
+  SEXP initial_IHC = PROTECT(allocVector(REALSXP, internal->dim_IHC));
+  memcpy(REAL(initial_IHC), internal->initial_IHC, internal->dim_IHC * sizeof(double));
+  SET_VECTOR_ELT(contents, 45, initial_IHC);
+  SEXP initial_IPH = PROTECT(allocVector(REALSXP, internal->dim_IPH));
+  memcpy(REAL(initial_IPH), internal->initial_IPH, internal->dim_IPH * sizeof(double));
+  SET_VECTOR_ELT(contents, 46, initial_IPH);
+  SEXP initial_IPL = PROTECT(allocVector(REALSXP, internal->dim_IPL));
+  memcpy(REAL(initial_IPL), internal->initial_IPL, internal->dim_IPL * sizeof(double));
+  SET_VECTOR_ELT(contents, 47, initial_IPL);
+  SEXP initial_PP = PROTECT(allocVector(REALSXP, internal->dim_PP));
+  memcpy(REAL(initial_PP), internal->initial_PP, internal->dim_PP * sizeof(double));
+  SET_VECTOR_ELT(contents, 48, initial_PP);
+  SEXP initial_RP = PROTECT(allocVector(REALSXP, internal->dim_RP));
+  memcpy(REAL(initial_RP), internal->initial_RP, internal->dim_RP * sizeof(double));
+  SET_VECTOR_ELT(contents, 49, initial_RP);
+  SEXP initial_SH = PROTECT(allocVector(REALSXP, internal->dim_SH));
+  memcpy(REAL(initial_SH), internal->initial_SH, internal->dim_SH * sizeof(double));
+  SET_VECTOR_ELT(contents, 50, initial_SH);
+  SEXP initial_SHC = PROTECT(allocVector(REALSXP, internal->dim_SHC));
+  memcpy(REAL(initial_SHC), internal->initial_SHC, internal->dim_SHC * sizeof(double));
+  SET_VECTOR_ELT(contents, 51, initial_SHC);
+  SEXP initial_SP = PROTECT(allocVector(REALSXP, internal->dim_SP));
+  memcpy(REAL(initial_SP), internal->initial_SP, internal->dim_SP * sizeof(double));
+  SET_VECTOR_ELT(contents, 52, initial_SP);
+  SEXP initial_VP = PROTECT(allocVector(REALSXP, internal->dim_VP));
+  memcpy(REAL(initial_VP), internal->initial_VP, internal->dim_VP * sizeof(double));
+  SET_VECTOR_ELT(contents, 53, initial_VP);
+  SEXP IPH0 = PROTECT(allocVector(REALSXP, internal->dim_IPH0));
+  memcpy(REAL(IPH0), internal->IPH0, internal->dim_IPH0 * sizeof(double));
+  SET_VECTOR_ELT(contents, 54, IPH0);
+  SEXP IPL0 = PROTECT(allocVector(REALSXP, internal->dim_IPL0));
+  memcpy(REAL(IPL0), internal->IPL0, internal->dim_IPL0 * sizeof(double));
+  SET_VECTOR_ELT(contents, 55, IPL0);
+  SET_VECTOR_ELT(contents, 56, ScalarInteger(internal->na_human));
+  SET_VECTOR_ELT(contents, 57, ScalarInteger(internal->na_pig));
+  SET_VECTOR_ELT(contents, 58, ScalarInteger(internal->offset_variable_IH));
+  SET_VECTOR_ELT(contents, 59, ScalarInteger(internal->offset_variable_IHC));
+  SET_VECTOR_ELT(contents, 60, ScalarInteger(internal->offset_variable_IPH));
+  SET_VECTOR_ELT(contents, 61, ScalarInteger(internal->offset_variable_IPL));
+  SET_VECTOR_ELT(contents, 62, ScalarInteger(internal->offset_variable_PP));
+  SET_VECTOR_ELT(contents, 63, ScalarInteger(internal->offset_variable_RP));
+  SET_VECTOR_ELT(contents, 64, ScalarInteger(internal->offset_variable_SHC));
+  SET_VECTOR_ELT(contents, 65, ScalarInteger(internal->offset_variable_SP));
+  SET_VECTOR_ELT(contents, 66, ScalarInteger(internal->offset_variable_VP));
+  SET_VECTOR_ELT(contents, 67, ScalarReal(internal->phi));
+  SET_VECTOR_ELT(contents, 68, ScalarReal(internal->pih));
+  SET_VECTOR_ELT(contents, 69, ScalarReal(internal->pil));
+  SEXP PP0 = PROTECT(allocVector(REALSXP, internal->dim_PP0));
+  memcpy(REAL(PP0), internal->PP0, internal->dim_PP0 * sizeof(double));
+  SET_VECTOR_ELT(contents, 70, PP0);
+  SET_VECTOR_ELT(contents, 71, ScalarReal(internal->PPS));
+  SET_VECTOR_ELT(contents, 72, ScalarReal(internal->psi));
+  SEXP RP0 = PROTECT(allocVector(REALSXP, internal->dim_RP0));
+  memcpy(REAL(RP0), internal->RP0, internal->dim_RP0 * sizeof(double));
+  SET_VECTOR_ELT(contents, 73, RP0);
+  SET_VECTOR_ELT(contents, 74, ScalarReal(internal->RR_cysticercosis));
+  SEXP SH0 = PROTECT(allocVector(REALSXP, internal->dim_SH0));
+  memcpy(REAL(SH0), internal->SH0, internal->dim_SH0 * sizeof(double));
+  SET_VECTOR_ELT(contents, 75, SH0);
+  SEXP SHC0 = PROTECT(allocVector(REALSXP, internal->dim_SHC0));
+  memcpy(REAL(SHC0), internal->SHC0, internal->dim_SHC0 * sizeof(double));
+  SET_VECTOR_ELT(contents, 76, SHC0);
+  SET_VECTOR_ELT(contents, 77, ScalarReal(internal->slgage_foi));
+  SET_VECTOR_ELT(contents, 78, ScalarInteger(internal->slgtage));
+  SET_VECTOR_ELT(contents, 79, ScalarInteger(internal->slgtage_bfr));
+  SEXP SP0 = PROTECT(allocVector(REALSXP, internal->dim_SP0));
+  memcpy(REAL(SP0), internal->SP0, internal->dim_SP0 * sizeof(double));
+  SET_VECTOR_ELT(contents, 80, SP0);
+  SET_VECTOR_ELT(contents, 81, ScalarReal(internal->tau));
+  SET_VECTOR_ELT(contents, 82, ScalarReal(internal->theta));
+  SEXP VP0 = PROTECT(allocVector(REALSXP, internal->dim_VP0));
+  memcpy(REAL(VP0), internal->VP0, internal->dim_VP0 * sizeof(double));
+  SET_VECTOR_ELT(contents, 83, VP0);
+  SEXP nms = PROTECT(allocVector(STRSXP, 84));
+  SET_STRING_ELT(nms, 0, mkChar("age_rate_human"));
+  SET_STRING_ELT(nms, 1, mkChar("age_rate_pig"));
+  SET_STRING_ELT(nms, 2, mkChar("alpha"));
+  SET_STRING_ELT(nms, 3, mkChar("bH"));
+  SET_STRING_ELT(nms, 4, mkChar("bP"));
+  SET_STRING_ELT(nms, 5, mkChar("CCC0"));
+  SET_STRING_ELT(nms, 6, mkChar("chi"));
+  SET_STRING_ELT(nms, 7, mkChar("CTC0"));
+  SET_STRING_ELT(nms, 8, mkChar("dE"));
+  SET_STRING_ELT(nms, 9, mkChar("delta"));
+  SET_STRING_ELT(nms, 10, mkChar("dH"));
+  SET_STRING_ELT(nms, 11, mkChar("dim_age_rate_human"));
+  SET_STRING_ELT(nms, 12, mkChar("dim_age_rate_pig"));
+  SET_STRING_ELT(nms, 13, mkChar("dim_IH"));
+  SET_STRING_ELT(nms, 14, mkChar("dim_IH0"));
+  SET_STRING_ELT(nms, 15, mkChar("dim_IHC"));
+  SET_STRING_ELT(nms, 16, mkChar("dim_IHC0"));
+  SET_STRING_ELT(nms, 17, mkChar("dim_IPH"));
+  SET_STRING_ELT(nms, 18, mkChar("dim_IPH0"));
+  SET_STRING_ELT(nms, 19, mkChar("dim_IPL"));
+  SET_STRING_ELT(nms, 20, mkChar("dim_IPL0"));
+  SET_STRING_ELT(nms, 21, mkChar("dim_PP"));
+  SET_STRING_ELT(nms, 22, mkChar("dim_PP0"));
+  SET_STRING_ELT(nms, 23, mkChar("dim_RP"));
+  SET_STRING_ELT(nms, 24, mkChar("dim_RP0"));
+  SET_STRING_ELT(nms, 25, mkChar("dim_SH"));
+  SET_STRING_ELT(nms, 26, mkChar("dim_SH0"));
+  SET_STRING_ELT(nms, 27, mkChar("dim_SHC"));
+  SET_STRING_ELT(nms, 28, mkChar("dim_SHC0"));
+  SET_STRING_ELT(nms, 29, mkChar("dim_SP"));
+  SET_STRING_ELT(nms, 30, mkChar("dim_SP0"));
+  SET_STRING_ELT(nms, 31, mkChar("dim_VP"));
+  SET_STRING_ELT(nms, 32, mkChar("dim_VP0"));
+  SET_STRING_ELT(nms, 33, mkChar("dP"));
+  SET_STRING_ELT(nms, 34, mkChar("dPslg"));
+  SET_STRING_ELT(nms, 35, mkChar("E0"));
+  SET_STRING_ELT(nms, 36, mkChar("epsilon"));
+  SET_STRING_ELT(nms, 37, mkChar("eta"));
+  SET_STRING_ELT(nms, 38, mkChar("HPS"));
+  SET_STRING_ELT(nms, 39, mkChar("IH0"));
+  SET_STRING_ELT(nms, 40, mkChar("IHC0"));
+  SET_STRING_ELT(nms, 41, mkChar("initial_CCC"));
+  SET_STRING_ELT(nms, 42, mkChar("initial_CTC"));
+  SET_STRING_ELT(nms, 43, mkChar("initial_E"));
+  SET_STRING_ELT(nms, 44, mkChar("initial_IH"));
+  SET_STRING_ELT(nms, 45, mkChar("initial_IHC"));
+  SET_STRING_ELT(nms, 46, mkChar("initial_IPH"));
+  SET_STRING_ELT(nms, 47, mkChar("initial_IPL"));
+  SET_STRING_ELT(nms, 48, mkChar("initial_PP"));
+  SET_STRING_ELT(nms, 49, mkChar("initial_RP"));
+  SET_STRING_ELT(nms, 50, mkChar("initial_SH"));
+  SET_STRING_ELT(nms, 51, mkChar("initial_SHC"));
+  SET_STRING_ELT(nms, 52, mkChar("initial_SP"));
+  SET_STRING_ELT(nms, 53, mkChar("initial_VP"));
+  SET_STRING_ELT(nms, 54, mkChar("IPH0"));
+  SET_STRING_ELT(nms, 55, mkChar("IPL0"));
+  SET_STRING_ELT(nms, 56, mkChar("na_human"));
+  SET_STRING_ELT(nms, 57, mkChar("na_pig"));
+  SET_STRING_ELT(nms, 58, mkChar("offset_variable_IH"));
+  SET_STRING_ELT(nms, 59, mkChar("offset_variable_IHC"));
+  SET_STRING_ELT(nms, 60, mkChar("offset_variable_IPH"));
+  SET_STRING_ELT(nms, 61, mkChar("offset_variable_IPL"));
+  SET_STRING_ELT(nms, 62, mkChar("offset_variable_PP"));
+  SET_STRING_ELT(nms, 63, mkChar("offset_variable_RP"));
+  SET_STRING_ELT(nms, 64, mkChar("offset_variable_SHC"));
+  SET_STRING_ELT(nms, 65, mkChar("offset_variable_SP"));
+  SET_STRING_ELT(nms, 66, mkChar("offset_variable_VP"));
+  SET_STRING_ELT(nms, 67, mkChar("phi"));
+  SET_STRING_ELT(nms, 68, mkChar("pih"));
+  SET_STRING_ELT(nms, 69, mkChar("pil"));
+  SET_STRING_ELT(nms, 70, mkChar("PP0"));
+  SET_STRING_ELT(nms, 71, mkChar("PPS"));
+  SET_STRING_ELT(nms, 72, mkChar("psi"));
+  SET_STRING_ELT(nms, 73, mkChar("RP0"));
+  SET_STRING_ELT(nms, 74, mkChar("RR_cysticercosis"));
+  SET_STRING_ELT(nms, 75, mkChar("SH0"));
+  SET_STRING_ELT(nms, 76, mkChar("SHC0"));
+  SET_STRING_ELT(nms, 77, mkChar("slgage_foi"));
+  SET_STRING_ELT(nms, 78, mkChar("slgtage"));
+  SET_STRING_ELT(nms, 79, mkChar("slgtage_bfr"));
+  SET_STRING_ELT(nms, 80, mkChar("SP0"));
+  SET_STRING_ELT(nms, 81, mkChar("tau"));
+  SET_STRING_ELT(nms, 82, mkChar("theta"));
+  SET_STRING_ELT(nms, 83, mkChar("VP0"));
   setAttrib(contents, R_NamesSymbol, nms);
-  UNPROTECT(2);
+  UNPROTECT(24);
   return contents;
 }
 SEXP cyst_generator_set_user(SEXP internal_p, SEXP user) {
@@ -242,38 +478,120 @@ SEXP cyst_generator_set_user(SEXP internal_p, SEXP user) {
   internal->delta = user_get_scalar_double(user, "delta", internal->delta, NA_REAL, NA_REAL);
   internal->dH = user_get_scalar_double(user, "dH", internal->dH, NA_REAL, NA_REAL);
   internal->dP = user_get_scalar_double(user, "dP", internal->dP, NA_REAL, NA_REAL);
+  internal->dPslg = user_get_scalar_double(user, "dPslg", internal->dPslg, NA_REAL, NA_REAL);
   internal->E0 = user_get_scalar_double(user, "E0", internal->E0, NA_REAL, NA_REAL);
   internal->epsilon = user_get_scalar_double(user, "epsilon", internal->epsilon, NA_REAL, NA_REAL);
   internal->eta = user_get_scalar_double(user, "eta", internal->eta, NA_REAL, NA_REAL);
   internal->HPS = user_get_scalar_double(user, "HPS", internal->HPS, NA_REAL, NA_REAL);
-  internal->IH0 = user_get_scalar_double(user, "IH0", internal->IH0, NA_REAL, NA_REAL);
-  internal->IHC0 = user_get_scalar_double(user, "IHC0", internal->IHC0, NA_REAL, NA_REAL);
-  internal->IPH0 = user_get_scalar_double(user, "IPH0", internal->IPH0, NA_REAL, NA_REAL);
-  internal->IPL0 = user_get_scalar_double(user, "IPL0", internal->IPL0, NA_REAL, NA_REAL);
+  internal->na_human = user_get_scalar_int(user, "na_human", internal->na_human, NA_REAL, NA_REAL);
+  internal->na_pig = user_get_scalar_int(user, "na_pig", internal->na_pig, NA_REAL, NA_REAL);
   internal->phi = user_get_scalar_double(user, "phi", internal->phi, NA_REAL, NA_REAL);
   internal->pih = user_get_scalar_double(user, "pih", internal->pih, NA_REAL, NA_REAL);
   internal->pil = user_get_scalar_double(user, "pil", internal->pil, NA_REAL, NA_REAL);
   internal->PPS = user_get_scalar_double(user, "PPS", internal->PPS, NA_REAL, NA_REAL);
-  internal->RP0 = user_get_scalar_double(user, "RP0", internal->RP0, NA_REAL, NA_REAL);
+  internal->psi = user_get_scalar_double(user, "psi", internal->psi, NA_REAL, NA_REAL);
   internal->RR_cysticercosis = user_get_scalar_double(user, "RR_cysticercosis", internal->RR_cysticercosis, NA_REAL, NA_REAL);
-  internal->SH0 = user_get_scalar_double(user, "SH0", internal->SH0, NA_REAL, NA_REAL);
-  internal->SHC0 = user_get_scalar_double(user, "SHC0", internal->SHC0, NA_REAL, NA_REAL);
-  internal->SP0 = user_get_scalar_double(user, "SP0", internal->SP0, NA_REAL, NA_REAL);
+  internal->slgage_foi = user_get_scalar_double(user, "slgage_foi", internal->slgage_foi, NA_REAL, NA_REAL);
+  internal->slgtage = user_get_scalar_int(user, "slgtage", internal->slgtage, NA_REAL, NA_REAL);
+  internal->slgtage_bfr = user_get_scalar_int(user, "slgtage_bfr", internal->slgtage_bfr, NA_REAL, NA_REAL);
   internal->tau = user_get_scalar_double(user, "tau", internal->tau, NA_REAL, NA_REAL);
   internal->theta = user_get_scalar_double(user, "theta", internal->theta, NA_REAL, NA_REAL);
-  internal->VP0 = user_get_scalar_double(user, "VP0", internal->VP0, NA_REAL, NA_REAL);
+  internal->dim_age_rate_human = internal->na_human;
+  internal->dim_age_rate_pig = internal->na_pig;
+  internal->dim_IH = internal->na_human;
+  internal->dim_IH0 = internal->na_human;
+  internal->dim_IHC = internal->na_human;
+  internal->dim_IHC0 = internal->na_human;
+  internal->dim_IPH = internal->na_pig;
+  internal->dim_IPH0 = internal->na_pig;
+  internal->dim_IPL = internal->na_pig;
+  internal->dim_IPL0 = internal->na_pig;
+  internal->dim_PP = internal->na_pig;
+  internal->dim_PP0 = internal->na_pig;
+  internal->dim_RP = internal->na_pig;
+  internal->dim_RP0 = internal->na_pig;
+  internal->dim_SH = internal->na_human;
+  internal->dim_SH0 = internal->na_human;
+  internal->dim_SHC = internal->na_human;
+  internal->dim_SHC0 = internal->na_human;
+  internal->dim_SP = internal->na_pig;
+  internal->dim_SP0 = internal->na_pig;
+  internal->dim_VP = internal->na_pig;
+  internal->dim_VP0 = internal->na_pig;
   internal->initial_CCC = internal->CCC0;
   internal->initial_CTC = internal->CTC0;
   internal->initial_E = internal->E0;
-  internal->initial_IH = internal->IH0;
-  internal->initial_IHC = internal->IHC0;
-  internal->initial_IPH = internal->IPH0;
-  internal->initial_IPL = internal->IPL0;
-  internal->initial_RP = internal->RP0;
-  internal->initial_SH = internal->SH0;
-  internal->initial_SHC = internal->SHC0;
-  internal->initial_SP = internal->SP0;
-  internal->initial_VP = internal->VP0;
+  internal->age_rate_human = (double*) user_get_array(user, false, internal->age_rate_human, "age_rate_human", NA_REAL, NA_REAL, 1, internal->dim_age_rate_human);
+  internal->age_rate_pig = (double*) user_get_array(user, false, internal->age_rate_pig, "age_rate_pig", NA_REAL, NA_REAL, 1, internal->dim_age_rate_pig);
+  Free(internal->initial_IH);
+  internal->initial_IH = (double*) Calloc(internal->dim_IH, double);
+  Free(internal->initial_IHC);
+  internal->initial_IHC = (double*) Calloc(internal->dim_IHC, double);
+  Free(internal->initial_IPH);
+  internal->initial_IPH = (double*) Calloc(internal->dim_IPH, double);
+  Free(internal->initial_IPL);
+  internal->initial_IPL = (double*) Calloc(internal->dim_IPL, double);
+  Free(internal->initial_PP);
+  internal->initial_PP = (double*) Calloc(internal->dim_PP, double);
+  Free(internal->initial_RP);
+  internal->initial_RP = (double*) Calloc(internal->dim_RP, double);
+  Free(internal->initial_SH);
+  internal->initial_SH = (double*) Calloc(internal->dim_SH, double);
+  Free(internal->initial_SHC);
+  internal->initial_SHC = (double*) Calloc(internal->dim_SHC, double);
+  Free(internal->initial_SP);
+  internal->initial_SP = (double*) Calloc(internal->dim_SP, double);
+  Free(internal->initial_VP);
+  internal->initial_VP = (double*) Calloc(internal->dim_VP, double);
+  internal->IH0 = (double*) user_get_array(user, false, internal->IH0, "IH0", NA_REAL, NA_REAL, 1, internal->dim_IH0);
+  internal->IHC0 = (double*) user_get_array(user, false, internal->IHC0, "IHC0", NA_REAL, NA_REAL, 1, internal->dim_IHC0);
+  internal->IPH0 = (double*) user_get_array(user, false, internal->IPH0, "IPH0", NA_REAL, NA_REAL, 1, internal->dim_IPH0);
+  internal->IPL0 = (double*) user_get_array(user, false, internal->IPL0, "IPL0", NA_REAL, NA_REAL, 1, internal->dim_IPL0);
+  internal->offset_variable_IH = 3 + internal->dim_SH + internal->dim_SHC;
+  internal->offset_variable_IHC = 3 + internal->dim_SH + internal->dim_SHC + internal->dim_IH;
+  internal->offset_variable_IPH = 3 + internal->dim_SH + internal->dim_SHC + internal->dim_IH + internal->dim_IHC + internal->dim_SP + internal->dim_PP + internal->dim_IPL;
+  internal->offset_variable_IPL = 3 + internal->dim_SH + internal->dim_SHC + internal->dim_IH + internal->dim_IHC + internal->dim_SP + internal->dim_PP;
+  internal->offset_variable_PP = 3 + internal->dim_SH + internal->dim_SHC + internal->dim_IH + internal->dim_IHC + internal->dim_SP;
+  internal->offset_variable_RP = 3 + internal->dim_SH + internal->dim_SHC + internal->dim_IH + internal->dim_IHC + internal->dim_SP + internal->dim_PP + internal->dim_IPL + internal->dim_IPH;
+  internal->offset_variable_SHC = 3 + internal->dim_SH;
+  internal->offset_variable_SP = 3 + internal->dim_SH + internal->dim_SHC + internal->dim_IH + internal->dim_IHC;
+  internal->offset_variable_VP = 3 + internal->dim_SH + internal->dim_SHC + internal->dim_IH + internal->dim_IHC + internal->dim_SP + internal->dim_PP + internal->dim_IPL + internal->dim_IPH + internal->dim_RP;
+  internal->PP0 = (double*) user_get_array(user, false, internal->PP0, "PP0", NA_REAL, NA_REAL, 1, internal->dim_PP0);
+  internal->RP0 = (double*) user_get_array(user, false, internal->RP0, "RP0", NA_REAL, NA_REAL, 1, internal->dim_RP0);
+  internal->SH0 = (double*) user_get_array(user, false, internal->SH0, "SH0", NA_REAL, NA_REAL, 1, internal->dim_SH0);
+  internal->SHC0 = (double*) user_get_array(user, false, internal->SHC0, "SHC0", NA_REAL, NA_REAL, 1, internal->dim_SHC0);
+  internal->SP0 = (double*) user_get_array(user, false, internal->SP0, "SP0", NA_REAL, NA_REAL, 1, internal->dim_SP0);
+  internal->VP0 = (double*) user_get_array(user, false, internal->VP0, "VP0", NA_REAL, NA_REAL, 1, internal->dim_VP0);
+  for (int i = 1; i <= internal->dim_IH; ++i) {
+    internal->initial_IH[i - 1] = internal->IH0[i - 1];
+  }
+  for (int i = 1; i <= internal->dim_IHC; ++i) {
+    internal->initial_IHC[i - 1] = internal->IHC0[i - 1];
+  }
+  for (int i = 1; i <= internal->dim_IPH; ++i) {
+    internal->initial_IPH[i - 1] = internal->IPH0[i - 1];
+  }
+  for (int i = 1; i <= internal->dim_IPL; ++i) {
+    internal->initial_IPL[i - 1] = internal->IPL0[i - 1];
+  }
+  for (int i = 1; i <= internal->dim_PP; ++i) {
+    internal->initial_PP[i - 1] = internal->PP0[i - 1];
+  }
+  for (int i = 1; i <= internal->dim_RP; ++i) {
+    internal->initial_RP[i - 1] = internal->RP0[i - 1];
+  }
+  for (int i = 1; i <= internal->dim_SH; ++i) {
+    internal->initial_SH[i - 1] = internal->SH0[i - 1];
+  }
+  for (int i = 1; i <= internal->dim_SHC; ++i) {
+    internal->initial_SHC[i - 1] = internal->SHC0[i - 1];
+  }
+  for (int i = 1; i <= internal->dim_SP; ++i) {
+    internal->initial_SP[i - 1] = internal->SP0[i - 1];
+  }
+  for (int i = 1; i <= internal->dim_VP; ++i) {
+    internal->initial_VP[i - 1] = internal->VP0[i - 1];
+  }
   return R_NilValue;
 }
 SEXP cyst_generator_set_initial(SEXP internal_p, SEXP t_ptr, SEXP state_ptr, SEXP cyst_generator_use_dde_ptr) {
@@ -288,37 +606,39 @@ SEXP cyst_generator_metadata(SEXP internal_p) {
   SET_STRING_ELT(nms, 2, mkChar("n_out"));
   SET_STRING_ELT(nms, 3, mkChar("interpolate_t"));
   setAttrib(ret, R_NamesSymbol, nms);
-  SEXP variable_length = PROTECT(allocVector(VECSXP, 12));
-  SEXP variable_names = PROTECT(allocVector(STRSXP, 12));
+  SEXP variable_length = PROTECT(allocVector(VECSXP, 13));
+  SEXP variable_names = PROTECT(allocVector(STRSXP, 13));
   setAttrib(variable_length, R_NamesSymbol, variable_names);
   SET_VECTOR_ELT(variable_length, 0, R_NilValue);
   SET_VECTOR_ELT(variable_length, 1, R_NilValue);
   SET_VECTOR_ELT(variable_length, 2, R_NilValue);
-  SET_VECTOR_ELT(variable_length, 3, R_NilValue);
-  SET_VECTOR_ELT(variable_length, 4, R_NilValue);
-  SET_VECTOR_ELT(variable_length, 5, R_NilValue);
-  SET_VECTOR_ELT(variable_length, 6, R_NilValue);
-  SET_VECTOR_ELT(variable_length, 7, R_NilValue);
-  SET_VECTOR_ELT(variable_length, 8, R_NilValue);
-  SET_VECTOR_ELT(variable_length, 9, R_NilValue);
-  SET_VECTOR_ELT(variable_length, 10, R_NilValue);
-  SET_VECTOR_ELT(variable_length, 11, R_NilValue);
-  SET_STRING_ELT(variable_names, 0, mkChar("SH"));
-  SET_STRING_ELT(variable_names, 1, mkChar("IH"));
-  SET_STRING_ELT(variable_names, 2, mkChar("SHC"));
-  SET_STRING_ELT(variable_names, 3, mkChar("IHC"));
-  SET_STRING_ELT(variable_names, 4, mkChar("E"));
-  SET_STRING_ELT(variable_names, 5, mkChar("SP"));
-  SET_STRING_ELT(variable_names, 6, mkChar("IPL"));
-  SET_STRING_ELT(variable_names, 7, mkChar("IPH"));
-  SET_STRING_ELT(variable_names, 8, mkChar("RP"));
-  SET_STRING_ELT(variable_names, 9, mkChar("VP"));
-  SET_STRING_ELT(variable_names, 10, mkChar("CCC"));
-  SET_STRING_ELT(variable_names, 11, mkChar("CTC"));
+  SET_VECTOR_ELT(variable_length, 3, ScalarInteger(internal->dim_SH));
+  SET_VECTOR_ELT(variable_length, 4, ScalarInteger(internal->dim_SHC));
+  SET_VECTOR_ELT(variable_length, 5, ScalarInteger(internal->dim_IH));
+  SET_VECTOR_ELT(variable_length, 6, ScalarInteger(internal->dim_IHC));
+  SET_VECTOR_ELT(variable_length, 7, ScalarInteger(internal->dim_SP));
+  SET_VECTOR_ELT(variable_length, 8, ScalarInteger(internal->dim_PP));
+  SET_VECTOR_ELT(variable_length, 9, ScalarInteger(internal->dim_IPL));
+  SET_VECTOR_ELT(variable_length, 10, ScalarInteger(internal->dim_IPH));
+  SET_VECTOR_ELT(variable_length, 11, ScalarInteger(internal->dim_RP));
+  SET_VECTOR_ELT(variable_length, 12, ScalarInteger(internal->dim_VP));
+  SET_STRING_ELT(variable_names, 0, mkChar("E"));
+  SET_STRING_ELT(variable_names, 1, mkChar("CCC"));
+  SET_STRING_ELT(variable_names, 2, mkChar("CTC"));
+  SET_STRING_ELT(variable_names, 3, mkChar("SH"));
+  SET_STRING_ELT(variable_names, 4, mkChar("SHC"));
+  SET_STRING_ELT(variable_names, 5, mkChar("IH"));
+  SET_STRING_ELT(variable_names, 6, mkChar("IHC"));
+  SET_STRING_ELT(variable_names, 7, mkChar("SP"));
+  SET_STRING_ELT(variable_names, 8, mkChar("PP"));
+  SET_STRING_ELT(variable_names, 9, mkChar("IPL"));
+  SET_STRING_ELT(variable_names, 10, mkChar("IPH"));
+  SET_STRING_ELT(variable_names, 11, mkChar("RP"));
+  SET_STRING_ELT(variable_names, 12, mkChar("VP"));
   SET_VECTOR_ELT(ret, 0, variable_length);
   UNPROTECT(2);
-  SEXP output_length = PROTECT(allocVector(VECSXP, 6));
-  SEXP output_names = PROTECT(allocVector(STRSXP, 6));
+  SEXP output_length = PROTECT(allocVector(VECSXP, 9));
+  SEXP output_names = PROTECT(allocVector(STRSXP, 9));
   setAttrib(output_length, R_NamesSymbol, output_names);
   SET_VECTOR_ELT(output_length, 0, R_NilValue);
   SET_VECTOR_ELT(output_length, 1, R_NilValue);
@@ -326,67 +646,157 @@ SEXP cyst_generator_metadata(SEXP internal_p) {
   SET_VECTOR_ELT(output_length, 3, R_NilValue);
   SET_VECTOR_ELT(output_length, 4, R_NilValue);
   SET_VECTOR_ELT(output_length, 5, R_NilValue);
+  SET_VECTOR_ELT(output_length, 6, R_NilValue);
+  SET_VECTOR_ELT(output_length, 7, R_NilValue);
+  SET_VECTOR_ELT(output_length, 8, R_NilValue);
   SET_STRING_ELT(output_names, 0, mkChar("Humans_Taeniasis"));
   SET_STRING_ELT(output_names, 1, mkChar("Humans_Cysticercosis"));
   SET_STRING_ELT(output_names, 2, mkChar("Pigs_Cysticercosis"));
   SET_STRING_ELT(output_names, 3, mkChar("Human_Taeniasis_prev"));
   SET_STRING_ELT(output_names, 4, mkChar("Human_Cysticercosis_prev"));
   SET_STRING_ELT(output_names, 5, mkChar("Pig_Cysticercosis_prev"));
+  SET_STRING_ELT(output_names, 6, mkChar("Human_total"));
+  SET_STRING_ELT(output_names, 7, mkChar("Pig_total"));
+  SET_STRING_ELT(output_names, 8, mkChar("birthrate"));
   SET_VECTOR_ELT(ret, 1, output_length);
   UNPROTECT(2);
-  SET_VECTOR_ELT(ret, 2, ScalarInteger(6));
+  SET_VECTOR_ELT(ret, 2, ScalarInteger(9));
   UNPROTECT(2);
   return ret;
 }
 SEXP cyst_generator_initial_conditions(SEXP internal_p, SEXP t_ptr) {
   cyst_generator_internal *internal = cyst_generator_get_internal(internal_p, 1);
-  SEXP r_state = PROTECT(allocVector(REALSXP, 12));
+  SEXP r_state = PROTECT(allocVector(REALSXP, 3 + internal->dim_SH + internal->dim_SHC + internal->dim_IH + internal->dim_IHC + internal->dim_SP + internal->dim_PP + internal->dim_IPL + internal->dim_IPH + internal->dim_RP + internal->dim_VP));
   double * state = REAL(r_state);
-  state[0] = internal->initial_SH;
-  state[1] = internal->initial_IH;
-  state[2] = internal->initial_SHC;
-  state[3] = internal->initial_IHC;
-  state[4] = internal->initial_E;
-  state[5] = internal->initial_SP;
-  state[6] = internal->initial_IPL;
-  state[7] = internal->initial_IPH;
-  state[8] = internal->initial_RP;
-  state[9] = internal->initial_VP;
-  state[10] = internal->initial_CCC;
-  state[11] = internal->initial_CTC;
+  state[0] = internal->initial_E;
+  state[1] = internal->initial_CCC;
+  state[2] = internal->initial_CTC;
+  memcpy(state + 3, internal->initial_SH, internal->dim_SH * sizeof(double));
+  memcpy(state + internal->offset_variable_SHC, internal->initial_SHC, internal->dim_SHC * sizeof(double));
+  memcpy(state + internal->offset_variable_IH, internal->initial_IH, internal->dim_IH * sizeof(double));
+  memcpy(state + internal->offset_variable_IHC, internal->initial_IHC, internal->dim_IHC * sizeof(double));
+  memcpy(state + internal->offset_variable_SP, internal->initial_SP, internal->dim_SP * sizeof(double));
+  memcpy(state + internal->offset_variable_PP, internal->initial_PP, internal->dim_PP * sizeof(double));
+  memcpy(state + internal->offset_variable_IPL, internal->initial_IPL, internal->dim_IPL * sizeof(double));
+  memcpy(state + internal->offset_variable_IPH, internal->initial_IPH, internal->dim_IPH * sizeof(double));
+  memcpy(state + internal->offset_variable_RP, internal->initial_RP, internal->dim_RP * sizeof(double));
+  memcpy(state + internal->offset_variable_VP, internal->initial_VP, internal->dim_VP * sizeof(double));
   UNPROTECT(1);
   return r_state;
 }
 void cyst_generator_rhs(cyst_generator_internal* internal, double t, double * state, double * dstatedt, double * output) {
-  double SH = state[0];
-  double IH = state[1];
-  double SHC = state[2];
-  double IHC = state[3];
-  double E = state[4];
-  double SP = state[5];
-  double IPL = state[6];
-  double IPH = state[7];
-  double RP = state[8];
-  double VP = state[9];
-  dstatedt[10] = internal->theta * (1 + internal->RR_cysticercosis) * IH * E + internal->theta * SH * E;
-  dstatedt[11] = (internal->pil * internal->chi) * SH * IPL / (double) internal->PPS + (internal->pil * internal->chi) * SHC * IPL / (double) internal->PPS + (internal->pih * internal->chi) * SH * IPH / (double) internal->PPS + (internal->pih * internal->chi) * SHC * IPH / (double) internal->PPS;
-  dstatedt[4] = internal->delta * IH + internal->delta * IHC - internal->dE * E;
-  dstatedt[1] = (internal->pil * internal->chi) * SH * IPL / (double) internal->PPS + (internal->pih * internal->chi) * SH * IPH / (double) internal->PPS - internal->alpha * IH - internal->theta * (1 + internal->RR_cysticercosis) * IH * E - internal->dH * IH;
-  dstatedt[3] = (internal->pil * internal->chi) * SHC * IPL / (double) internal->PPS + (internal->pih * internal->chi) * SHC * IPH / (double) internal->PPS + internal->theta * (1 + internal->RR_cysticercosis) * IH * E - internal->alpha * IHC - internal->eta * IHC - internal->dH * IHC;
-  dstatedt[7] = (1 - internal->phi) * internal->tau * SP * E - internal->dP * IPH;
-  dstatedt[6] = internal->phi * internal->tau * SP * E - internal->dP * IPL;
-  dstatedt[8] = -(internal->epsilon) * RP - internal->dP * RP;
-  dstatedt[0] = internal->bH + internal->alpha * IH + internal->eta * SHC + internal->eta * IHC - (internal->pil * internal->chi) * SH * IPL / (double) internal->PPS - (internal->pih * internal->chi) * SH * IPH / (double) internal->PPS - internal->theta * SH * E - internal->dH * SH;
-  dstatedt[2] = internal->theta * SH * E + internal->alpha * IHC - (internal->pil * internal->chi) * SHC * IPL / (double) internal->PPS - (internal->pih * internal->chi) * SHC * IPH / (double) internal->PPS - internal->eta * SHC - internal->dH * SHC;
-  dstatedt[5] = internal->bP + internal->epsilon * RP - internal->phi * internal->tau * SP * E - (1 - internal->phi) * internal->tau * SP * E - internal->dP * SP;
-  dstatedt[9] = -(internal->dP) * VP;
+  double * SH = state + 3;
+  double * IH = state + internal->offset_variable_IH;
+  double * SHC = state + internal->offset_variable_SHC;
+  double * IHC = state + internal->offset_variable_IHC;
+  double E = state[0];
+  double * SP = state + internal->offset_variable_SP;
+  double * PP = state + internal->offset_variable_PP;
+  double * IPL = state + internal->offset_variable_IPL;
+  double * IPH = state + internal->offset_variable_IPH;
+  double * RP = state + internal->offset_variable_RP;
+  double * VP = state + internal->offset_variable_VP;
+  dstatedt[1] = internal->theta * (1 + internal->RR_cysticercosis) * odin_sum1(IH, 0, internal->dim_IH) * E + internal->theta * odin_sum1(SH, 0, internal->dim_SH) * E;
+  dstatedt[2] = (internal->pil * internal->chi) * odin_sum1(SH, 0, internal->dim_SH) * odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) + (internal->pil * internal->chi) * odin_sum1(SHC, 0, internal->dim_SHC) * odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) + (internal->pih * internal->chi) * odin_sum1(SH, 0, internal->dim_SH) * odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) + (internal->pih * internal->chi) * odin_sum1(SHC, 0, internal->dim_SHC) * odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig));
+  dstatedt[0] = internal->delta * (odin_sum1(IH, 0, internal->dim_IH)) + internal->delta * (odin_sum1(IHC, 0, internal->dim_IHC)) - internal->dE * E;
+  {
+     int i = 1;
+     dstatedt[internal->offset_variable_IH + i - 1] = (internal->pil * internal->chi) * SH[0] * odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) + (internal->pih * internal->chi) * SH[0] * odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) - internal->alpha * IH[0] - internal->theta * (1 + internal->RR_cysticercosis) * IH[0] * E - internal->dH * IH[0] - (internal->age_rate_human[0] * IH[0]);
+  }
+  for (int i = 2; i <= internal->na_human; ++i) {
+    dstatedt[internal->offset_variable_IH + i - 1] = internal->age_rate_human[i - 1 - 1] * IH[i - 1 - 1] + (internal->pil * internal->chi) * SH[i - 1] * odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) + (internal->pih * internal->chi) * SH[i - 1] * odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) - internal->alpha * IH[i - 1] - internal->theta * (1 + internal->RR_cysticercosis) * IH[i - 1] * E - internal->dH * IH[i - 1] - (internal->age_rate_human[i - 1] * IH[i - 1]);
+  }
+  {
+     int i = 1;
+     dstatedt[internal->offset_variable_IHC + i - 1] = (internal->pil * internal->chi) * SHC[0] * odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) + (internal->pih * internal->chi) * SHC[0] * odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) + internal->theta * (1 + internal->RR_cysticercosis) * IH[0] * E - internal->alpha * IHC[0] - internal->eta * IHC[0] - internal->dH * IHC[0] - (internal->age_rate_human[0] * IHC[0]);
+  }
+  for (int i = 2; i <= internal->na_human; ++i) {
+    dstatedt[internal->offset_variable_IHC + i - 1] = internal->age_rate_human[i - 1 - 1] * IHC[i - 1 - 1] + (internal->pil * internal->chi) * SHC[i - 1] * odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) + (internal->pih * internal->chi) * SHC[i - 1] * odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) + internal->theta * (1 + internal->RR_cysticercosis) * IH[i - 1] * E - internal->alpha * IHC[i - 1] - internal->eta * IHC[i - 1] - internal->dH * IHC[i - 1] - (internal->age_rate_human[i - 1] * IHC[i - 1]);
+  }
+  {
+     int i = 1;
+     dstatedt[internal->offset_variable_IPH + i - 1] = (1 - internal->phi) * internal->psi * PP[0] - internal->dP * IPH[0] - (internal->age_rate_pig[0] * IPH[0]);
+  }
+  for (int i = 2; i <= internal->slgtage_bfr; ++i) {
+    dstatedt[internal->offset_variable_IPH + i - 1] = internal->age_rate_pig[i - 1 - 1] * IPH[i - 1 - 1] + (1 - internal->phi) * internal->psi * PP[i - 1] - internal->dP * IPH[i - 1] - (internal->age_rate_pig[i - 1] * IPH[i - 1]);
+  }
+  for (int i = internal->slgtage; i <= internal->na_pig; ++i) {
+    dstatedt[internal->offset_variable_IPH + i - 1] = internal->age_rate_pig[i - 1 - 1] * IPH[i - 1 - 1] + (1 - internal->phi) * internal->psi * PP[i - 1] - internal->dP * IPH[i - 1] - internal->dPslg * IPH[i - 1] - (internal->age_rate_pig[i - 1] * IPH[i - 1]);
+  }
+  {
+     int i = 1;
+     dstatedt[internal->offset_variable_IPL + i - 1] = internal->phi * internal->psi * PP[0] - internal->dP * IPL[0] - (internal->age_rate_pig[0] * IPL[0]);
+  }
+  for (int i = 2; i <= internal->slgtage_bfr; ++i) {
+    dstatedt[internal->offset_variable_IPL + i - 1] = internal->age_rate_pig[i - 1 - 1] * IPL[i - 1 - 1] + internal->phi * internal->psi * PP[i - 1] - internal->dP * IPL[i - 1] - (internal->age_rate_pig[i - 1] * IPL[i - 1]);
+  }
+  for (int i = internal->slgtage; i <= internal->na_pig; ++i) {
+    dstatedt[internal->offset_variable_IPL + i - 1] = internal->age_rate_pig[i - 1 - 1] * IPL[i - 1 - 1] + internal->phi * internal->psi * PP[i - 1] - internal->dP * IPL[i - 1] - internal->dPslg * IPL[i - 1] - (internal->age_rate_pig[i - 1] * IPL[i - 1]);
+  }
+  {
+     int i = 1;
+     dstatedt[internal->offset_variable_PP + i - 1] = internal->tau * SP[0] * E - internal->phi * internal->psi * PP[0] - (1 - internal->phi) * internal->psi * PP[0] - internal->dP * PP[0] - (internal->age_rate_pig[0] * PP[0]);
+  }
+  for (int i = 2; i <= internal->slgtage_bfr; ++i) {
+    dstatedt[internal->offset_variable_PP + i - 1] = internal->age_rate_pig[i - 1 - 1] * PP[i - 1 - 1] + internal->tau * SP[i - 1] * E - internal->phi * internal->psi * PP[i - 1] - (1 - internal->phi) * internal->psi * PP[i - 1] - internal->dP * PP[i - 1] - (internal->age_rate_pig[i - 1] * PP[i - 1]);
+  }
+  for (int i = internal->slgtage; i <= internal->na_pig; ++i) {
+    dstatedt[internal->offset_variable_PP + i - 1] = internal->age_rate_pig[i - 1 - 1] * PP[i - 1 - 1] + internal->tau * SP[i - 1] * E - internal->phi * internal->psi * PP[i - 1] - (1 - internal->phi) * internal->psi * PP[i - 1] - internal->dPslg * PP[i - 1] - internal->dP * PP[i - 1] - (internal->age_rate_pig[i - 1] * PP[i - 1]);
+  }
+  {
+     int i = 1;
+     dstatedt[internal->offset_variable_RP + i - 1] = -(internal->epsilon) * RP[0] - internal->dP * RP[0] - (internal->age_rate_pig[0] * RP[0]);
+  }
+  for (int i = 2; i <= internal->slgtage_bfr; ++i) {
+    dstatedt[internal->offset_variable_RP + i - 1] = internal->age_rate_pig[i - 1 - 1] * RP[i - 1 - 1] - internal->epsilon * RP[i - 1] - internal->dP * RP[i - 1] - (internal->age_rate_pig[i - 1] * RP[i - 1]);
+  }
+  for (int i = internal->slgtage; i <= internal->na_pig; ++i) {
+    dstatedt[internal->offset_variable_RP + i - 1] = internal->age_rate_pig[i - 1 - 1] * RP[i - 1 - 1] - internal->epsilon * RP[i - 1] - internal->dP * RP[i - 1] - internal->dPslg * RP[i - 1] - (internal->age_rate_pig[i - 1] * RP[i - 1]);
+  }
+  {
+     int i = 1;
+     dstatedt[3 + i - 1] = internal->bH + internal->alpha * IH[0] + internal->eta * SHC[0] + internal->eta * IHC[0] - (internal->pil * internal->chi) * SH[0] * odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) - (internal->pih * internal->chi) * SH[0] * odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) - internal->theta * SH[0] * E - internal->dH * SH[0] - (internal->age_rate_human[0] * SH[0]);
+  }
+  for (int i = 2; i <= internal->na_human; ++i) {
+    dstatedt[3 + i - 1] = internal->age_rate_human[i - 1 - 1] * SH[i - 1 - 1] + internal->alpha * IH[i - 1] + internal->eta * SHC[i - 1] + internal->eta * IHC[i - 1] - (internal->pil * internal->chi) * SH[i - 1] * odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) - (internal->pih * internal->chi) * SH[i - 1] * odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) - internal->theta * SH[i - 1] * E - internal->dH * SH[i - 1] - (internal->age_rate_human[i - 1] * SH[i - 1]);
+  }
+  {
+     int i = 1;
+     dstatedt[internal->offset_variable_SHC + i - 1] = internal->theta * SH[0] * E + internal->alpha * IHC[0] - (internal->pil * internal->chi) * SHC[0] * odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) - (internal->pih * internal->chi) * SHC[0] * odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) - internal->eta * SHC[0] - internal->dH * SHC[0] - (internal->age_rate_human[0] * SHC[0]);
+  }
+  for (int i = 2; i <= internal->na_human; ++i) {
+    dstatedt[internal->offset_variable_SHC + i - 1] = internal->age_rate_human[i - 1 - 1] * SHC[i - 1 - 1] + internal->theta * SH[i - 1] * E + internal->alpha * IHC[i - 1] - (internal->pil * internal->chi) * SHC[i - 1] * odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) - (internal->pih * internal->chi) * SHC[i - 1] * odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) / (double) (odin_sum1(SP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(PP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPL, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(IPH, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(RP, internal->slgage_foi - 1, internal->na_pig) + odin_sum1(VP, internal->slgage_foi - 1, internal->na_pig)) - internal->eta * SHC[i - 1] - internal->dH * SHC[i - 1] - (internal->age_rate_human[i - 1] * SHC[i - 1]);
+  }
+  {
+     int i = 1;
+     dstatedt[internal->offset_variable_SP + i - 1] = internal->bP + internal->epsilon * RP[0] - internal->tau * SP[0] * E - internal->dP * SP[0] - (internal->age_rate_pig[0] * SP[0]);
+  }
+  for (int i = 2; i <= internal->slgtage_bfr; ++i) {
+    dstatedt[internal->offset_variable_SP + i - 1] = internal->age_rate_pig[i - 1 - 1] * SP[i - 1 - 1] + internal->epsilon * RP[i - 1] - internal->tau * SP[i - 1] * E - internal->dP * SP[i - 1] - (internal->age_rate_pig[i - 1] * SP[i - 1]);
+  }
+  for (int i = internal->slgtage; i <= internal->na_pig; ++i) {
+    dstatedt[internal->offset_variable_SP + i - 1] = internal->age_rate_pig[i - 1 - 1] * SP[i - 1 - 1] + internal->epsilon * RP[i - 1] - internal->tau * SP[i - 1] * E - internal->dPslg * SP[i - 1] - internal->dP * SP[i - 1] - (internal->age_rate_pig[i - 1] * SP[i - 1]);
+  }
+  {
+     int i = 1;
+     dstatedt[internal->offset_variable_VP + i - 1] = -(internal->dP) * VP[0] - (internal->age_rate_pig[0] * VP[0]);
+  }
+  for (int i = 2; i <= internal->slgtage_bfr; ++i) {
+    dstatedt[internal->offset_variable_VP + i - 1] = internal->age_rate_pig[i - 1 - 1] * VP[i - 1 - 1] - internal->dP * VP[i - 1] - (internal->age_rate_pig[i - 1] * VP[i - 1]);
+  }
+  for (int i = internal->slgtage; i <= internal->na_pig; ++i) {
+    dstatedt[internal->offset_variable_VP + i - 1] = internal->age_rate_pig[i - 1 - 1] * VP[i - 1 - 1] - internal->dP * VP[i - 1] - internal->dPslg * VP[i - 1] - (internal->age_rate_pig[i - 1] * VP[i - 1]);
+  }
   if (output) {
-    output[4] = (SHC + IHC) / (double) internal->HPS;
-    output[3] = (IH + IHC) / (double) internal->HPS;
-    output[1] = SHC + IHC;
-    output[0] = IH + IHC;
-    output[5] = (IPH + IPL) / (double) internal->PPS;
-    output[2] = IPH + IPL;
+    output[8] = internal->bP;
+    output[4] = (odin_sum1(SHC, 0, internal->dim_SHC) + odin_sum1(IHC, 0, internal->dim_IHC)) / (double) internal->HPS;
+    output[3] = (odin_sum1(IH, 0, internal->dim_IH) + odin_sum1(IHC, 0, internal->dim_IHC)) / (double) internal->HPS;
+    output[6] = odin_sum1(IH, 0, internal->dim_IH) + odin_sum1(IHC, 0, internal->dim_IHC) + odin_sum1(SH, 0, internal->dim_SH) + odin_sum1(SHC, 0, internal->dim_SHC);
+    output[1] = odin_sum1(SHC, 0, internal->dim_SHC) + odin_sum1(IHC, 0, internal->dim_IHC);
+    output[0] = odin_sum1(IH, 0, internal->dim_IH) + odin_sum1(IHC, 0, internal->dim_IHC);
+    output[5] = (odin_sum1(IPH, 0, internal->dim_IPH) + odin_sum1(IPL, 0, internal->dim_IPL)) / (double) internal->PPS;
+    output[7] = odin_sum1(SP, 0, internal->dim_SP) + odin_sum1(PP, 0, internal->dim_PP) + odin_sum1(IPH, 0, internal->dim_IPH) + odin_sum1(IPL, 0, internal->dim_IPL) + odin_sum1(RP, 0, internal->dim_RP) + odin_sum1(VP, 0, internal->dim_VP);
+    output[2] = odin_sum1(IPH, 0, internal->dim_IPH) + odin_sum1(IPL, 0, internal->dim_IPL);
   }
 }
 void cyst_generator_rhs_dde(size_t neq, double t, double * state, double * dstatedt, void * internal) {
@@ -397,22 +807,30 @@ void cyst_generator_rhs_desolve(int * neq, double * t, double * state, double * 
 }
 void cyst_generator_output_dde(size_t n_eq, double t, double * state, size_t n_output, double * output, void * internal_p) {
   cyst_generator_internal *internal = (cyst_generator_internal*) internal_p;
-  double IH = state[1];
-  double SHC = state[2];
-  double IHC = state[3];
-  double IPL = state[6];
-  double IPH = state[7];
-  output[4] = (SHC + IHC) / (double) internal->HPS;
-  output[3] = (IH + IHC) / (double) internal->HPS;
-  output[1] = SHC + IHC;
-  output[0] = IH + IHC;
-  output[5] = (IPH + IPL) / (double) internal->PPS;
-  output[2] = IPH + IPL;
+  double * SH = state + 3;
+  double * IH = state + internal->offset_variable_IH;
+  double * SHC = state + internal->offset_variable_SHC;
+  double * IHC = state + internal->offset_variable_IHC;
+  double * SP = state + internal->offset_variable_SP;
+  double * PP = state + internal->offset_variable_PP;
+  double * IPL = state + internal->offset_variable_IPL;
+  double * IPH = state + internal->offset_variable_IPH;
+  double * RP = state + internal->offset_variable_RP;
+  double * VP = state + internal->offset_variable_VP;
+  output[8] = internal->bP;
+  output[4] = (odin_sum1(SHC, 0, internal->dim_SHC) + odin_sum1(IHC, 0, internal->dim_IHC)) / (double) internal->HPS;
+  output[3] = (odin_sum1(IH, 0, internal->dim_IH) + odin_sum1(IHC, 0, internal->dim_IHC)) / (double) internal->HPS;
+  output[6] = odin_sum1(IH, 0, internal->dim_IH) + odin_sum1(IHC, 0, internal->dim_IHC) + odin_sum1(SH, 0, internal->dim_SH) + odin_sum1(SHC, 0, internal->dim_SHC);
+  output[1] = odin_sum1(SHC, 0, internal->dim_SHC) + odin_sum1(IHC, 0, internal->dim_IHC);
+  output[0] = odin_sum1(IH, 0, internal->dim_IH) + odin_sum1(IHC, 0, internal->dim_IHC);
+  output[5] = (odin_sum1(IPH, 0, internal->dim_IPH) + odin_sum1(IPL, 0, internal->dim_IPL)) / (double) internal->PPS;
+  output[7] = odin_sum1(SP, 0, internal->dim_SP) + odin_sum1(PP, 0, internal->dim_PP) + odin_sum1(IPH, 0, internal->dim_IPH) + odin_sum1(IPL, 0, internal->dim_IPL) + odin_sum1(RP, 0, internal->dim_RP) + odin_sum1(VP, 0, internal->dim_VP);
+  output[2] = odin_sum1(IPH, 0, internal->dim_IPH) + odin_sum1(IPL, 0, internal->dim_IPL);
 }
 SEXP cyst_generator_rhs_r(SEXP internal_p, SEXP t, SEXP state) {
   SEXP dstatedt = PROTECT(allocVector(REALSXP, LENGTH(state)));
   cyst_generator_internal *internal = cyst_generator_get_internal(internal_p, 1);
-  SEXP output_ptr = PROTECT(allocVector(REALSXP, 6));
+  SEXP output_ptr = PROTECT(allocVector(REALSXP, 9));
   setAttrib(dstatedt, install("output"), output_ptr);
   UNPROTECT(1);
   double *output = REAL(output_ptr);
@@ -526,6 +944,160 @@ SEXP user_list_element(SEXP list, const char *name) {
     }
   }
   return ret;
+}
+void* user_get_array_dim(SEXP user, bool is_integer, void * previous,
+                         const char *name, int rank,
+                         double min, double max, int *dest_dim) {
+  SEXP el = user_get_array_check_rank(user, name, rank, previous == NULL);
+  if (el == R_NilValue) {
+    return previous;
+  }
+
+  dest_dim[0] = LENGTH(el);
+  if (rank > 1) {
+    SEXP r_dim = PROTECT(coerceVector(getAttrib(el, R_DimSymbol), INTSXP));
+    int *dim = INTEGER(r_dim);
+
+    for (size_t i = 0; i < (size_t) rank; ++i) {
+      dest_dim[i + 1] = dim[i];
+    }
+
+    UNPROTECT(1);
+  }
+
+  el = PROTECT(user_get_array_check(el, is_integer, name, min, max));
+
+  int len = LENGTH(el);
+  void *dest = NULL;
+  if (is_integer) {
+    dest = Calloc(len, int);
+    memcpy(dest, INTEGER(el), len * sizeof(int));
+  } else {
+    dest = Calloc(len, double);
+    memcpy(dest, REAL(el), len * sizeof(double));
+  }
+  Free(previous);
+
+  UNPROTECT(1);
+
+  return dest;
+}
+void* user_get_array(SEXP user, bool is_integer, void * previous,
+                     const char *name, double min, double max,
+                     int rank, ...) {
+  SEXP el = user_get_array_check_rank(user, name, rank, previous == NULL);
+  if (el == R_NilValue) {
+    return previous;
+  }
+
+  SEXP r_dim;
+  int *dim;
+
+  size_t len = LENGTH(el);
+  if (rank == 1) {
+    r_dim = PROTECT(ScalarInteger(len));
+  } else {
+    r_dim = PROTECT(coerceVector(getAttrib(el, R_DimSymbol), INTSXP));
+  }
+  dim = INTEGER(r_dim);
+
+  va_list ap;
+  va_start(ap, rank);
+  for (size_t i = 0; i < (size_t) rank; ++i) {
+    int dim_expected = va_arg(ap, int);
+    if (dim[i] != dim_expected) {
+      va_end(ap); // avoid a leak
+      if (rank == 1) {
+        Rf_error("Expected length %d value for %s", dim_expected, name);
+      } else {
+        Rf_error("Incorrect size of dimension %d of %s (expected %d)",
+                 i + 1, name, dim_expected);
+      }
+    }
+  }
+  va_end(ap);
+  UNPROTECT(1);
+
+  el = PROTECT(user_get_array_check(el, is_integer, name, min, max));
+
+  void *dest = NULL;
+  if (is_integer) {
+    dest = Calloc(len, int);
+    memcpy(dest, INTEGER(el), len * sizeof(int));
+  } else {
+    dest = Calloc(len, double);
+    memcpy(dest, REAL(el), len * sizeof(double));
+  }
+  Free(previous);
+
+  UNPROTECT(1);
+
+  return dest;
+}
+SEXP user_get_array_check(SEXP el, bool is_integer, const char *name,
+                          double min, double max) {
+  size_t len = (size_t) length(el);
+  if (is_integer) {
+    if (TYPEOF(el) == INTSXP) {
+      user_check_values_int(INTEGER(el), len, min, max, name);
+    } else if (TYPEOF(el) == REALSXP) {
+      el = PROTECT(coerceVector(el, INTSXP));
+      user_check_values_int(INTEGER(el), len, min, max, name);
+      UNPROTECT(1);
+    } else {
+      Rf_error("Expected a integer value for %s", name);
+    }
+  } else {
+    if (TYPEOF(el) == INTSXP) {
+      el = PROTECT(coerceVector(el, REALSXP));
+      user_check_values_double(REAL(el), len, min, max, name);
+      UNPROTECT(1);
+    } else if (TYPEOF(el) == REALSXP) {
+      user_check_values_double(REAL(el), len, min, max, name);
+    } else {
+      Rf_error("Expected a numeric value for %s", name);
+    }
+  }
+  return el;
+}
+SEXP user_get_array_check_rank(SEXP user, const char *name, int rank,
+                               bool required) {
+  SEXP el = user_list_element(user, name);
+  if (el == R_NilValue) {
+    if (required) {
+      Rf_error("Expected a value for '%s'", name);
+    }
+  } else {
+    if (rank == 1) {
+      if (isArray(el)) {
+        Rf_error("Expected a numeric vector for '%s'", name);
+      }
+    } else {
+      SEXP r_dim = getAttrib(el, R_DimSymbol);
+      if (r_dim == R_NilValue || LENGTH(r_dim) != rank) {
+        if (rank == 2) {
+          Rf_error("Expected a numeric matrix for '%s'", name);
+        } else {
+          Rf_error("Expected a numeric array of rank %d for '%s'", rank, name);
+        }
+      }
+    }
+  }
+  return el;
+}
+double odin_sum1(double *x, size_t from, size_t to) {
+  double tot = 0.0;
+  for (size_t i = from; i < to; ++i) {
+    tot += x[i];
+  }
+  return tot;
+}
+int odin_isum1(int *x, size_t from, size_t to) {
+  int tot = 0.0;
+  for (size_t i = from; i < to; ++i) {
+    tot += x[i];
+  }
+  return tot;
 }
 double scalar_real(SEXP x, const char * name) {
   if (Rf_length(x) != 1) {

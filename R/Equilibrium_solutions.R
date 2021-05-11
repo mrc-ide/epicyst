@@ -26,8 +26,8 @@ e0_equilibrium <- function(delta, HPS, TPrev, CPrev, dE) {
 #' @param E0 The equilibrium number of eggs in the environment
 #'
 #' @return The equilibrium egg to pig transmission parameter
-tau_equilibrium <- function(dP, IP0, SP0, E0) {
-  (dP * IP0) / (SP0 * E0)
+tau_equilibrium <- function(dP, dPslg, IP0_nonslgt, IP0_slgt, IP0_all, SP0_all, E0) {
+  ((dP * IP0_all) + (dPslg * IP0_slgt)) / (SP0_all * E0)
 }
 
 #' @title
@@ -46,8 +46,8 @@ tau_equilibrium <- function(dP, IP0, SP0, E0) {
 #' @param SHC0 Initial number of Human: T- C +
 #'
 #' @return The equilibrium pig to human transmission parameter
-beta_equilibrium <- function(alpha, IH0, IHC0, eta, dH, IP0, PPS, SH0, SHC0) {
-  (alpha * (IH0 + IHC0) + eta * IHC0 + dH * (IH0 + IHC0)) / ((IP0 / PPS) * (SH0 + SHC0))
+beta_equilibrium <- function(alpha, IH0_all, IHC0_all, eta, dH, IP0_all, PPS, SH0_all, SHC0_all) {
+  (alpha * (IH0_all + IHC0_all) + eta * IHC0_all + dH * (IH0_all + IHC0_all)) / ((IP0_all / PPS) * (SH0_all + SHC0_all))
 }
 
 #' @title
@@ -66,8 +66,8 @@ beta_equilibrium <- function(alpha, IH0, IHC0, eta, dH, IP0, PPS, SH0, SHC0) {
 #' @param RR Risk multiplier for Cysticercosis if human has Taeniasis
 #'
 #' @return The equilibrium egg to human transmission parameter
-theta_equilibrium <- function(bH, eta, SHC0, IHC0, dH, SH0, IH0, E0, RR) {
-  (bH + eta * (SHC0 + IHC0) - dH * (SH0 + IH0)) / ((SH0 * E0) + ((1 + RR) * IH0 * E0))
+theta_equilibrium <- function(bH, eta, SHC0_all, IHC0_all, dH, SH0_all, IH0_all, E0, RR) {
+  (bH + eta * (SHC0_all + IHC0_all) - dH * (SH0_all + IH0_all)) / ((SH0_all * E0) + ((1 + RR) * IH0_all * E0))
 }
 
 #' @title
@@ -84,5 +84,7 @@ pil_equilibrium <- function(beta, chi, phi, CRR) {
   chil <- chi * phi
   chih <- chi * (1 - phi)
   pil <- beta / (chil + CRR * chih)
+  
   return(pil)
 }
+

@@ -19,10 +19,12 @@ cyst_generator_ <- R6::R6Class(
       initmod_desolve = "cyst_generator_initmod_desolve",
       output_dde = "cyst_generator_output_dde"),
     dll = "epicyst",
-    user = c("alpha", "bH", "bP", "CCC0", "chi", "CTC0", "dE", "delta", "dH",
-             "dP", "E0", "epsilon", "eta", "HPS", "IH0", "IHC0", "IPH0",
-             "IPL0", "phi", "pih", "pil", "PPS", "RP0", "RR_cysticercosis",
-             "SH0", "SHC0", "SP0", "tau", "theta", "VP0"),
+    user = c("age_rate_human", "age_rate_pig", "alpha", "bH", "bP", "CCC0",
+             "chi", "CTC0", "dE", "delta", "dH", "dP", "dPslg", "E0",
+             "epsilon", "eta", "HPS", "IH0", "IHC0", "IPH0", "IPL0",
+             "na_human", "na_pig", "phi", "pih", "pil", "PP0", "PPS", "psi",
+             "RP0", "RR_cysticercosis", "SH0", "SHC0", "slgage_foi",
+             "slgtage", "slgtage_bfr", "SP0", "tau", "theta", "VP0"),
 
     ## This is never called, but is used to ensure that R finds our
     ## symbols that we will use from the package; without this they

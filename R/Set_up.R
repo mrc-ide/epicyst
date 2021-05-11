@@ -51,172 +51,174 @@ month_rate <- function(dur) {
 #'
 #' @return Two lists of parameters and state variable values
 #' @export
-set_up <- function(LEP=10, SlgEP=1,  HPS=10000, PPS=2000, AEL=2,delta=960000,
-                         tau_input=NULL, theta_input=NULL, beta_input=NULL, psi=0.5,
-                         ATL=2, ADI=3, LEH=54, phi=0.8, chi=0.5, RR_cysticercosis=1, epsilon=0.01, RR_infection=1, RR_consumption=-0.25,
-                         number_age_classes_pig = 100, Slaughter_age_min=6, pig_age_class_width=1,
-                         number_age_classes_human = 7,
-                         PCPrev_obs=NULL, PCPrev_true=0.2, PC_sens=NULL, PC_spec=NULL,
-                         CPrev_obs=NULL, CPrev_true=0.07, C_sens=NULL, C_spec=NULL,
-                         TPrev_obs=NULL, TPrev_true=0.02, T_sens=NULL, T_spec=NULL){
+set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2,delta=960000,
+                   tau_input=NULL, theta_input=NULL, beta_input=NULL, psi=0.5,
+                   ATL=2, ADI=3, LEH=54, phi=0.8, chi=0.5, RR_cysticercosis=1, epsilon=0.01, 
+                   RR_infection=1, RR_consumption=-0.25, number_age_classes_pig = 100, 
+                   slaughter_age_min=6, pig_age_class_width=1, number_age_classes_human = 7,
+                   PCPrev_obs=NULL, PCPrev_true=0.2, PC_sens=NULL, PC_spec=NULL, 
+                   CPrev_obs=NULL, CPrev_true=0.07, C_sens=NULL, C_spec=NULL, 
+                   TPrev_obs=NULL, TPrev_true=0.02, T_sens=NULL, T_spec=NULL){
   
   #=============================================================================#
   # First make any adjustments to observed prevalence inputs to true prevalence #
   
   # Pig cysticercosis prevalence adjustment #
-  if(is.null(PCPrev_obs)){
+  if (is.null(PCPrev_obs)) {
     PCPrev <- PCPrev_true
   }
   
-  if(!is.null(PCPrev_obs)){
+  if (!is.null(PCPrev_obs)) {
     PC_obs_positive <- round(PCPrev_obs * PPS)
-    PCPrev <- Prev_adjustment_TP_func(sens = PC_sens, spec = PC_spec, positive= PC_obs_positive, total= PPS)
+    PCPrev <-
+      prev_adjustment_TP_func(
+        sens = PC_sens,
+        spec = PC_spec,
+        positive = PC_obs_positive,
+        total = PPS
+      )
   }
   
   # Human cysticercosis prevalence adjustment #
-  if(is.null(CPrev_obs)){
+  if(is.null(CPrev_obs)) {
     CPrev <- CPrev_true
   }
   
-  if(!is.null(CPrev_obs)){
+  if (!is.null(CPrev_obs)) {
     C_obs_positive <- round(CPrev_obs * HPS)
-    CPrev <- Prev_adjustment_TP_func(sens = C_sens, spec = C_spec, positive= C_obs_positive, total= HPS)
-  } 
+    CPrev <-
+      prev_adjustment_TP_func(
+        sens = C_sens,
+        spec = C_spec,
+        positive = C_obs_positive,
+        total = HPS
+      )
+  }
   
   # Human taeniasis prevalence adjustment #
-  if(is.null(TPrev_obs)){
+  if(is.null(TPrev_obs)) {
     TPrev <- TPrev_true
   }
   
-  if(!is.null(TPrev_obs)){
+  if (!is.null(TPrev_obs)) {
     T_obs_positive <- round(TPrev_obs * HPS)
-    TPrev <- Prev_adjustment_TP_func(sens = T_sens, spec = T_spec, positive= T_obs_positive, total= HPS)
+    TPrev <-
+      prev_adjustment_TP_func(
+        sens = T_sens,
+        spec = T_spec,
+        positive = T_obs_positive,
+        total = HPS
+      )
   } 
   
   #===============#
-  #  PARAMETERS  #
+  #  PARAMETERS   #
+  #===============#
   
+  #===========================================#
+  # Setting up death rate parameters for pigs #
   
   # set up age classes at which pigs slaughtered and contribute exposure to humans
-  if(Slaughter_age_min==0 && number_age_classes_pig>1){
+  if (slaughter_age_min == 0 && number_age_classes_pig > 1) {
     # Slaughter age min for age classes (in months- age-classes in 1 month intervals)
-    SLAUGHTER_AGE_before <- 2
-    SLAUGHTER_AGE <- 3
-    SLAUGHTER_AGE_foitohuman <- 1
+    slgtage_bfr <- 2 # age class before slaughter rate occurs
+    slgtage <- 3 # age class where slaughter rate begins from
+    slgage_foi <- 1 # pig age classes contributing to expsoure to humans b/c slaughtered
   }
   
-  if(Slaughter_age_min==0 && number_age_classes_pig==1){
+  if (slaughter_age_min == 0 && number_age_classes_pig == 1) {
     # Slaughter age min for age classes (in months- age-classes in 1 month intervals)
-    SLAUGHTER_AGE_before <- 1
-    SLAUGHTER_AGE <- 1
-    SLAUGHTER_AGE_foitohuman <- 1
+    slgtage_bfr <- 1
+    slgtage <- 1
+    slgage_foi <- 1
   }
   
-  if(Slaughter_age_min==1){
+  if (slaughter_age_min == 1) {
     # Slaughter age min for age classes (in months- age-classes in 1 month intervals)
-    SLAUGHTER_AGE_before <- 2
-    SLAUGHTER_AGE <- 2
-    SLAUGHTER_AGE_foitohuman <- 2
+    slgtage_bfr <- 2
+    slgtage <- 2
+    slgage_foi <- 2
   }
   
-  if(Slaughter_age_min>1){
-    SLAUGHTER_AGE_before <- Slaughter_age_min
-    SLAUGHTER_AGE <- Slaughter_age_min + 1
-    SLAUGHTER_AGE_foitohuman <- SLAUGHTER_AGE
+  if (slaughter_age_min > 1) {
+    slgtage_bfr <- slaughter_age_min
+    slgtage <- slaughter_age_min + 1
+    slgage_foi <- slgtage
   }
   
-  # specify natural and slaughter-age specific mortality rates in pigs
+  #====================================================================#
+  # specify natural and slaughter-age specific mortality rates in pigs #
   
   # If Min slaughter age from 0 (i.e. unstructured model) need to set dP to include both dP and dPslg
-  # TO DO: not currently working ?
-  if(Slaughter_age_min==0){
-    
-    LEP <- SlgEP
+  if (slaughter_age_min == 0) {
+    LEP <- slgEP
     # Pig Total mortality rate (LEP and SlgEP)
-    dP<-month_rate(LEP)
-    
+    dP <- month_rate(LEP)
     dPslg <- 0
   }
   
   # If Min slaughter age > 0 then use both dP and dPslg
-  if(Slaughter_age_min>0){
-    
+  if(slaughter_age_min>0){
     # Pig natural mortality rate
     dP<-month_rate(LEP)
-    
     # Pig mortality rate (from min slaughter age class)
-    dPslg <- month_rate(SlgEP)
-    
-  }
+    dPslg <- month_rate(slgEP)
+    }
   
   # Egg mortality rate
-  dE<-month_rate(AEL*7/365)
+  dE <- month_rate(AEL * 7 / 365)
   # Initial egg number (at equilibrium)
-  E0<-E0_equilibrium(delta, HPS, TPrev, CPrev, dE)
+  E0 <- e0_equilibrium(delta, HPS, TPrev, CPrev, dE)
   # Human recovery rate from Taeniasis
-  alpha<-month_rate(ATL)
+  alpha <- month_rate(ATL)
   # Initial number of Human: T+ C-
-  IH0_total <- HPS*TPrev*(1-CPrev)
+  IH0_total <- HPS * TPrev * (1 - CPrev)
   # Initial number of Human: T+ C+
-  IHC0_total<-HPS*TPrev*CPrev
+  IHC0_total <- HPS * TPrev * CPrev
   # Human recovery rate from cysticercosis
-  eta<-month_rate(ADI)
+  eta <- month_rate(ADI)
   # Human mortality rate
-  dH<-month_rate(LEH)
+  dH <- month_rate(LEH)
   # Initial number of Human: susceptible
-  SH0_total<-HPS*(1-TPrev)*(1-CPrev)
+  SH0_total <- HPS * (1 - TPrev) * (1 - CPrev)
   # Initial number of Human: T- C+
-  SHC0_total<-HPS*(1-TPrev)*CPrev
+  SHC0_total <- HPS * (1 - TPrev) * CPrev
   # Initial number of cumulative cysticercosis cases
-  CCC0<-0
+  CCC0 <- 0
   # Initial number of cumulative taeniasis cases
-  CTC0<-0
+  CTC0 <- 0
   # Combined relative risk for high-cyst burden meat (increased RR of infection * decreased RR of consumption)
-  CRR<-1+RR_infection+RR_consumption
+  CRR <- 1 + RR_infection + RR_consumption
   # Birth of humans
-  bH<-HPS*dH
+  bH <- HPS * dH
   # Intitial number of infected pigs
-  IP0_total<-PPS*PCPrev
+  IP0_total <- PPS * PCPrev
   # Intitial number of susceptible pigs
-  SP0_total<-PPS-IP0_total
+  SP0_total <- PPS - IP0_total
   # Prepatent pigs at time 0
-  PP0_total <-0
+  PP0_total <- 0
   # Number of infected pigs with low cyst burden at time 0
-  IPL0_total<-(PPS-SP0_total) * phi
+  IPL0_total <- (PPS - SP0_total) * phi
   # Number of infected pigs with high cyst burden at time 0
-  IPH0_total<-(PPS-SP0_total) * (1-phi)
+  IPH0_total <- (PPS - SP0_total) * (1 - phi)
   # Recovered pigs at time 0
-  RP0_total<-0
+  RP0_total <- 0
   # Vaccinated pigs at time 0
-  VP0_total<-0
+  VP0_total <- 0
   
   
   #==========================#
   # Set - up Pig age classes #
   
-  # number of age classes = max age (in months) of pig population
-  N_pig_classes <- number_age_classes_pig 
-  
   # vector for mean no. of months in each age compartment 
   age_width_pig <- c()
   
-  #==========================#
-  # non-age structured model
-  if(number_age_classes_pig==1){
-    age_width_pig <- 150
-  } 
-  
-  # calculate age rate (function of age width)
-  if(number_age_classes_pig==1){ 
-    age_rate_pig <- 0
-  }
-  
   #===========================#
   # Age-structured model      #
-  if(number_age_classes_pig>1){  
-    for(i in N_pig_classes){
+  if (number_age_classes_pig > 1) {
+    for (i in number_age_classes_pig) {
       # width of 1 month for each age class (symmetrical age classes)
-      age_width_pig[1: N_pig_classes] <- pig_age_class_width  
+      age_width_pig[1:number_age_classes_pig] <- pig_age_class_width
     }
   }
   
@@ -224,46 +226,40 @@ set_up <- function(LEP=10, SlgEP=1,  HPS=10000, PPS=2000, AEL=2,delta=960000,
   na_pig <- as.integer(length(age_width_pig)) 
   
   # calculate age rate (function of age width)
-  if(number_age_classes_pig>1){ age_rate_pig <- c()
-  
-  for(i in na_pig){
-    # age rate leaving age classes (to next) excluding last age class (e.g. 1:2) 
-    age_rate_pig[1:(na_pig - 1)] <- 1 / age_width_pig[1: i-1] 
-    # no age rate leaving last age class
-    age_rate_pig[na_pig] <- 0 
-  }
+  if (number_age_classes_pig > 1) {
+    age_rate_pig <- c()
+    
+    for (i in na_pig) {
+      # age rate leaving age classes (to next) excluding last age class (e.g. 1:2)
+      age_rate_pig[1:(na_pig - 1)] <- 1 / age_width_pig[1:i - 1]
+      # no age rate leaving last age class
+      age_rate_pig[na_pig] <- 0
+    }
   }
   
   #==========================================================================#
-  # To set up population distribution at baseline: 
-  # LIFE TABLES APPROACH - credit Bob: https://github.com/mrc-ide/covfefe           
-  # FAO paper ref: http://www.fao.org/tempref/docrep/fao/008/a0212e/a0212E09.pdf        
-  
-  # specify number of age classes
-  na_pig <- number_age_classes_pig
-  
+  # To set up population distribution at baseline: LIFE TABLES APPROACH      #
+  # Ref Verity et al: https://github.com/mrc-ide/covfefe                     #
+  # FAO paper: http://www.fao.org/tempref/docrep/fao/008/a0212e/a0212E09.pdf #        
   
   # non-age structured 
-  if(Slaughter_age_min==0){
+  if (slaughter_age_min == 0) {
     age1toslg <- 0
     ageslgtoN <- length(c(1:na_pig))
   }
   
   # age-structured    
-  if(Slaughter_age_min==1){
+  if (slaughter_age_min == 1) {
     age1toslg <- length(c(1:1))
-    ageslgtoN <- length(c(SLAUGHTER_AGE:na_pig))
+    ageslgtoN <- length(c(slgtage:na_pig))
   }
   
-  
-  if(Slaughter_age_min>1){
-    age1toslg <- length(c(1:SLAUGHTER_AGE_before))
-    ageslgtoN <- length(c(SLAUGHTER_AGE:na_pig))
+  if (slaughter_age_min > 1) {
+    age1toslg <- length(c(1:slgtage_bfr))
+    ageslgtoN <- length(c(slgtage:na_pig))
   }
-  
   
   # Assuming age groups of equal width: PROBABILITY (not rate) of death: (p=1-exp(-rt))
-  
   # From natural cases (1/15 yrs*12)
   dp <- dP
   # From slaughter (1/1 yrs*12)
@@ -273,24 +269,22 @@ set_up <- function(LEP=10, SlgEP=1,  HPS=10000, PPS=2000, AEL=2,delta=960000,
   
   # Vector of death probability for each age group (final value is 1 to ensure closed population)
   life_table_sub1 <- rep(dp, age1toslg)  # life table for non slaughter ages
-  life_table_sub2 <- rep(dtot, ageslgtoN-1) # life table for slaughter ages
+  life_table_sub2 <- rep(dtot, ageslgtoN - 1) # life table for slaughter ages
   life_table <- c(life_table_sub1, life_table_sub2, 1) # combine
-  
   n <- length(life_table)
-  
   age_death <- rep(0,n)
-  
   remaining <- 1
   
+  # define death probabilities
   for (i in 1:n) {
-    age_death[i] <- remaining*life_table[i]
-    remaining <- remaining*(1 - life_table[i])
+    age_death[i] <- remaining * life_table[i]
+    remaining <- remaining * (1 - life_table[i])
   }  # should sum to 1
   
   # convert life table to transition matrix
-  m <- matrix(0,n,n)
-  m[col(m) == (row(m)+1)] <- 1 - life_table[1:(n-1)]
-  m[,1] <- 1 - rowSums(m)
+  m <- matrix(0, n, n)
+  m[col(m) == (row(m) + 1)] <- 1 - life_table[1:(n - 1)]
+  m[, 1] <- 1 - rowSums(m)
   
   # convert to rates
   r = m - diag(n)
@@ -302,86 +296,85 @@ set_up <- function(LEP=10, SlgEP=1,  HPS=10000, PPS=2000, AEL=2,delta=960000,
   w <- which.min(abs(E$values))
   
   # the stable solution is the corresponding Eigenvector, suitably normalised
-  age_stable <- Re(E$vectors[,w]/sum(E$vectors[,w])) # intrinsic  rate  of population increase (r)  - should sum to 1
+  age_stable <- Re(E$vectors[, w] / sum(E$vectors[, w])) # intrinsic  rate  of population increase (r)  - should sum to 1
   
-  # modify project
-  pig_demography <- list(life_table = life_table,
-                         age_death = age_death,
-                         age_death_rate = (-log(1-age_death)),
-                         age_stable = age_stable)
+  # final demography parameters
+  pig_demography <- list(
+    life_table = life_table,
+    age_death = age_death,
+    age_death_rate = (-log(1 - age_death)),
+    age_stable = age_stable
+  )
   
   # calculate proportion/ number of pigs in each age class 
-  PPS <- PPS
   den_pig <- c()
   
-  for (i in 1: na_pig){
-    
+  for (i in 1:na_pig) {
     den_pig[i] <- PPS * pig_demography$age_stable[i]
-    
   }
   
-  den_pig_fraction <- den_pig/PPS
-  
+  den_pig_fraction <- den_pig / PPS
   
   # calculate numbers in each age class for each state (SP, PP, IPL, IPH, RP, VP)
   SP_eq <- c()
-  for (i in 1:na_pig){
-    SP_eq[i] <- den_pig_fraction[i] * ((PPS)- (IPL0_total + IPH0_total + PP0_total + RP0_total + VP0_total))
+  for (i in 1:na_pig) {
+    SP_eq[i] <- den_pig_fraction[i] * ((PPS) - (IPL0_total + IPH0_total + PP0_total + RP0_total + VP0_total))
   }
   
   PP_eq <- c()
-  for (i in 1:na_pig){
+  for (i in 1:na_pig) {
     PP_eq[i] <- den_pig_fraction[i] * PP0_total
   }
   
-  IPL_eq <-c()
-  for (i in 1:na_pig){
+  IPL_eq <- c()
+  for (i in 1:na_pig) {
     IPL_eq[i] <- den_pig_fraction[i] * IPL0_total
   }
   
-  IPH_eq <-c()
-  for (i in 1:na_pig){
+  IPH_eq <- c()
+  for (i in 1:na_pig) {
     IPH_eq[i] <- den_pig_fraction[i] * IPH0_total
   }
   
-  RP_eq <-c()
-  for (i in 1:na_pig){
+  RP_eq <- c()
+  for (i in 1:na_pig) {
     RP_eq[i] <- den_pig_fraction[i] * RP0_total
   }
   
-  VP_eq <-c()
-  for (i in 1:na_pig){
+  VP_eq <- c()
+  for (i in 1:na_pig) {
     VP_eq[i] <- den_pig_fraction[i] * VP0_total
   }
   
   # calculate number of pigs of slaughter age in each state
-  IPL0_slgt <- sum(IPL_eq[SLAUGHTER_AGE_foitohuman:na_pig])
-  IPH0_slgt <- sum(IPH_eq[SLAUGHTER_AGE_foitohuman:na_pig])
-  SP0_slgt <- sum(SP_eq[SLAUGHTER_AGE_foitohuman:na_pig])
-  PP0_slgt <- sum(PP_eq[SLAUGHTER_AGE_foitohuman:na_pig])
+  IPL0_slgt <- sum(IPL_eq[slgage_foi:na_pig])
+  IPH0_slgt <- sum(IPH_eq[slgage_foi:na_pig])
+  SP0_slgt <- sum(SP_eq[slgage_foi:na_pig])
+  PP0_slgt <- sum(PP_eq[slgage_foi:na_pig])
   
-  # calculate number non-slaughter age pigs in each state
-  if(Slaughter_age_min==0){
+  # calculate number non-slaughter age pigs in each state (depending on specified min slaughter age)
+  if (slaughter_age_min == 0) {
     IPL0_nonslgt <- 0
     IPH0_nonslgt <- 0
     SP0_nonslgt <- 0
     PP0_nonslgt <- 0
     PPS_nonslgt_eq <- 0
-  } # for non-age structured model (?)
+  } 
   
-  if(Slaughter_age_min==1){
+  if (slaughter_age_min == 1) {
     IPL0_nonslgt <- sum(IPL_eq[1:1])
     IPH0_nonslgt <- sum(IPH_eq[1:1])
     SP0_nonslgt <- sum(SP_eq[1:1])
     PP0_nonslgt <- sum(PP_eq[1:1])
     PPS_nonslgt_eq <- sum(SP_eq[1:1]) + sum(PP_eq[1:1]) + sum(IPL_eq[1:1]) + sum(IPH_eq[1:1])
   }
-  if(Slaughter_age_min>1){
-    IPL0_nonslgt <- sum(IPL_eq[1:SLAUGHTER_AGE_before])
-    IPH0_nonslgt <- sum(IPH_eq[1:SLAUGHTER_AGE_before])
-    SP0_nonslgt <- sum(SP_eq[1:SLAUGHTER_AGE_before])
-    PP0_nonslgt <- sum(PP_eq[1:SLAUGHTER_AGE_before])
-    PPS_nonslgt_eq <- sum(SP_eq[1:SLAUGHTER_AGE_before]) + sum(PP_eq[1:SLAUGHTER_AGE_before]) + sum(IPL_eq[1:SLAUGHTER_AGE_before]) + sum(IPH_eq[1:SLAUGHTER_AGE_before]) 
+  
+  if (slaughter_age_min > 1) {
+    IPL0_nonslgt <- sum(IPL_eq[1:slgtage_bfr])
+    IPH0_nonslgt <- sum(IPH_eq[1:slgtage_bfr])
+    SP0_nonslgt <- sum(SP_eq[1:slgtage_bfr])
+    PP0_nonslgt <- sum(PP_eq[1:slgtage_bfr])
+    PPS_nonslgt_eq <- sum(SP_eq[1:slgtage_bfr]) + sum(PP_eq[1:slgtage_bfr]) + sum(IPL_eq[1:slgtage_bfr]) + sum(IPH_eq[1:slgtage_bfr])
   }
   
   # calculate key quantities of pigs 
@@ -393,7 +386,7 @@ set_up <- function(LEP=10, SlgEP=1,  HPS=10000, PPS=2000, AEL=2,delta=960000,
   IP0_nonslgt <- IPL0_nonslgt + IPH0_nonslgt # total infected (patent) pigs of non slaughter age at baseline
   SP0_all <- sum(SP_eq[1:na_pig]) # total susceptible pigs at baseline
   PCC_prev_eq <- (IPL0_all + IPH0_all)/ (IPL0_all + IPH0_all + PP0_all + SP0_all) # quantity check: (patent) PCC prevalence at baseline (all ages)
-  PPS_slgt_eq <- (sum(SP_eq[SLAUGHTER_AGE_foitohuman:na_pig])+sum(PP_eq[SLAUGHTER_AGE_foitohuman:na_pig])+sum(IPL_eq[SLAUGHTER_AGE_foitohuman:na_pig])+sum(IPH_eq[SLAUGHTER_AGE_foitohuman:na_pig])+sum(RP_eq[SLAUGHTER_AGE_foitohuman:na_pig])+sum(VP_eq[SLAUGHTER_AGE_foitohuman:na_pig])) # quantity check: (patent) PCC prevalence at baseline (slaughter ages)
+  PPS_slgt_eq <- (sum(SP_eq[slgage_foi:na_pig]) + sum(PP_eq[slgage_foi:na_pig]) + sum(IPL_eq[slgage_foi:na_pig]) + sum(IPH_eq[slgage_foi:na_pig]) + sum(RP_eq[slgage_foi:na_pig]) + sum(VP_eq[slgage_foi:na_pig])) # quantity check: (patent) PCC prevalence at baseline (slaughter ages)
   PPS_nonslgt_eq <- PPS - PPS_slgt_eq # quantity check: (patent) PCC prevalence at baseline (non-slaughter ages)
   
   #===========================================================#
@@ -401,34 +394,20 @@ set_up <- function(LEP=10, SlgEP=1,  HPS=10000, PPS=2000, AEL=2,delta=960000,
   
   # Birth (rate) of pigs
   
-  if(number_age_classes_pig>1){
-    bP_constant <- (dP*sum(SP_eq)+dP*sum(PP_eq)+dP*sum(IPL_eq)+dP*sum(IPH_eq)+dP*sum(RP_eq)+dP*sum(VP_eq)) + ((dPslg*sum(SP_eq[SLAUGHTER_AGE:na_pig]))+(dPslg*sum(PP_eq[SLAUGHTER_AGE:na_pig]))+(dPslg*sum(IPL_eq[SLAUGHTER_AGE:na_pig]))+(dPslg*sum(IPH_eq[SLAUGHTER_AGE:na_pig]))+(dPslg*sum(RP_eq[SLAUGHTER_AGE:na_pig]))+(dPslg*sum(VP_eq[SLAUGHTER_AGE:na_pig])))
+  if (number_age_classes_pig > 1) {
+    bP <- (dP * sum(SP_eq) + dP * sum(PP_eq) + dP * sum(IPL_eq) + dP * sum(IPH_eq) + dP * sum(RP_eq) + dP * sum(VP_eq)) + ((dPslg * sum(SP_eq[slgtage:na_pig])) + (dPslg * sum(PP_eq[slgtage:na_pig])) + (dPslg * sum(IPL_eq[slgtage:na_pig])) + (dPslg * sum(IPH_eq[slgtage:na_pig])) + (dPslg * sum(RP_eq[slgtage:na_pig])) + (dPslg * sum(VP_eq[slgtage:na_pig])))
+    }
+  
+  if (number_age_classes_pig == 1) {
+    bP <- PPS * dP
   }
   
-  if(number_age_classes_pig==1){
-    bP_constant <- PPS * dP
-  }
-  
-  # For tracking 
-  
-  # pig_deaths_total_old <- (dP*sum(SP_eq)+dP*sum(IPL_eq)+dP*sum(IPH_eq)+dP*sum(RP_eq)+dP*sum(VP_eq)) + (((dP+dPslg)*sum(SP_eq[SLAUGHTER_AGE:na_pig]))+((dP+dPslg)*sum(IPL_eq[SLAUGHTER_AGE:na_pig]))+((dP+dPslg)*sum(IPH_eq[SLAUGHTER_AGE:na_pig]))+((dP+dPslg)*sum(RP_eq[SLAUGHTER_AGE:na_pig]))+((dP+dPslg)*sum(VP_eq[SLAUGHTER_AGE:na_pig])))
-  # pig_deaths_total_old2 <- (dP*sum(SP_eq)+dP*sum(IPL_eq)+dP*sum(IPH_eq)+dP*sum(RP_eq)+dP*sum(VP_eq)) + (((dPslg)*sum(SP_eq[SLAUGHTER_AGE:na_pig]))+((dPslg)*sum(IPL_eq[SLAUGHTER_AGE:na_pig]))+((dPslg)*sum(IPH_eq[SLAUGHTER_AGE:na_pig]))+((dPslg)*sum(RP_eq[SLAUGHTER_AGE:na_pig]))+((dPslg)*sum(VP_eq[SLAUGHTER_AGE:na_pig])))
-  # pig_deaths_total_correct <- (dP*sum(SP_eq[1:na_pig]))+(dP*sum(IPL_eq[1:na_pig]))+(dP*sum(IPH_eq[1:na_pig]))+(dP*sum(RP_eq[1:na_pig]))+(dP*sum(VP_eq[1:na_pig]))+(dPslg*sum(SP_eq[SLAUGHTER_AGE_foitohuman:na_pig]))+(dPslg*sum(IPL_eq[SLAUGHTER_AGE_foitohuman:na_pig]))+(dPslg*sum(IPH_eq[SLAUGHTER_AGE_foitohuman:na_pig]))+(dPslg*sum(RP_eq[SLAUGHTER_AGE_foitohuman:na_pig]))+(dPslg*sum(VP_eq[SLAUGHTER_AGE_foitohuman:na_pig]))
-  # bP_1toslg <- (dP*sum(SP_eq[1:SLAUGHTER_AGE_before]))+(dP*sum(IPL_eq[1:SLAUGHTER_AGE_before]))+(dP*sum(IPH_eq[1:SLAUGHTER_AGE_before]))+(dP*sum(RP_eq[1:SLAUGHTER_AGE_before]))+(dP*sum(VP_eq[1:SLAUGHTER_AGE_before])) 
-  # bP_slgtoN_natural <- (dP*sum(SP_eq[SLAUGHTER_AGE:na_pig]))+(dP*sum(IPL_eq[SLAUGHTER_AGE:na_pig]))+(dP*sum(IPH_eq[SLAUGHTER_AGE:na_pig]))+(dP*sum(RP_eq[SLAUGHTER_AGE:na_pig]))+(dP*sum(VP_eq[SLAUGHTER_AGE:na_pig]))
-  # bP_slgtoN_slg <- (dPslg*sum(SP_eq[SLAUGHTER_AGE:na_pig]))+(dPslg*sum(IPL_eq[SLAUGHTER_AGE:na_pig]))+(dPslg*sum(IPH_eq[SLAUGHTER_AGE:na_pig]))+(dPslg*sum(RP_eq[SLAUGHTER_AGE:na_pig]))+(dPslg*sum(VP_eq[SLAUGHTER_AGE:na_pig]))
-  # bP_total <- bP_1toslg + bP_slgtoN_natural + bP_slgtoN_slg
-  
-  #============================#
-  # Set - up human age classes #  note life-tables approach not used
-  
-  # specify number of age classes
-  N_human_classes <- number_age_classes_human
-  
+  #================================================================#
+  # Set - up human age classes: note life-tables approach not used #
+
   # vector of specified no. of months in each age compartment 
-  if(N_human_classes==7){
+  if (number_age_classes_human == 7) {
     age_width_human <- c()
-    
     age_width_human[1] <- 5 * 12 # 0 - 4.99 yrs (in months)
     age_width_human[2] <- 5 * 12 # 5 - 9.99 yrs
     age_width_human[3] <- 5 * 12 # 10- 14.99 yrs
@@ -438,24 +417,14 @@ set_up <- function(LEP=10, SlgEP=1,  HPS=10000, PPS=2000, AEL=2,delta=960000,
     age_width_human[7] <- 20 * 12 # 70 - 89.99 yrs
   }
   
-  # only 1 age class
-  # if(N_human_classes==1){
-  #   age_width_human <- c()
-  #   human_age_class_width<- 1
-  #   
-  #   for(i in N_human_classes){
-  #     age_width_human[1: N_human_classes] <- human_age_class_width  # width of 1 month for each age class (symmetrical age classes)
-  #   }
-  # }
-  
   # create vector of length n age classes for ODIN (& create dimensions for other variables)
   na_human <- as.integer(length(age_width_human)) 
   
   # calculate age rate (function of age width)
   age_rate_human <- c()
   
-  for(i in na_human){
-    age_rate_human[1:(na_human - 1)] <- 1 / age_width_human[1:i-1]
+  for (i in na_human) {
+    age_rate_human[1:(na_human - 1)] <- 1 / age_width_human[1:i - 1]
     age_rate_human[na_human] <- 0
   }
   
@@ -463,31 +432,28 @@ set_up <- function(LEP=10, SlgEP=1,  HPS=10000, PPS=2000, AEL=2,delta=960000,
   den_human <- c()
   den_human[1] <- 1 / (1 + age_rate_human[1] / dH)
   
-  for (i in 2:na_human){
-    den_human[i] <- age_rate_human[i-1] * den_human[i-1] / (age_rate_human[i] + dH)
-    
+  for (i in 2:na_human) {
+    den_human[i] <- age_rate_human[i - 1] * den_human[i - 1] / (age_rate_human[i] + dH)
   }
   
-  
   # calculate numbers in each age class for each state (SH, SHC, IH, IHC)
-  
   SH_eq <- c()
-  for (i in 1:na_human){
-    SH_eq[i] <- den_human[i] * ((HPS)- (SHC0_total + IH0_total + IHC0_total))
+  for (i in 1:na_human) {
+    SH_eq[i] <- den_human[i] * ((HPS) - (SHC0_total + IH0_total + IHC0_total))
   }
   
   SHC_eq <- c()
-  for (i in 1:na_human){
+  for (i in 1:na_human) {
     SHC_eq[i] <- den_human[i] * SHC0_total
   }
   
   IH_eq <- c()
-  for (i in 1:na_human){
+  for (i in 1:na_human) {
     IH_eq[i] <- den_human[i] * IH0_total
   }
   
   IHC_eq <- c()
-  for (i in 1:na_human){
+  for (i in 1:na_human) {
     IHC_eq[i] <- den_human[i] * IHC0_total
   }
   
@@ -497,140 +463,98 @@ set_up <- function(LEP=10, SlgEP=1,  HPS=10000, PPS=2000, AEL=2,delta=960000,
   IH0_all <- sum(IH_eq)   # all taeniasis infected humans at baseline
   IHC0_all <- sum(IHC_eq) # all cysticercosis & taeniasis infected humans at baseline
   
-  # Other key parameters
+  #=========================================#
+  # Define other transmission parameters    #
   
   # Egg to pig transmission parameter (tau)
-  
-  if(is.null(tau_input)){
+  if (is.null(tau_input)) {
     tau <- tau_equilibrium(dP, dPslg, IP0_nonslgt, IP0_slgt, IP0_all, SP0_all, E0)
   }
   
-  if(!is.null(tau_input)){
+  if (!is.null(tau_input)) {
     tau <- tau_input
   }
   
   # Pork to human transmission parameter (beta)
-  if(is.null(beta_input)){
-    beta<-Beta_equilibrium(alpha, IH0_all, IHC0_all, eta, dH, IP0_all, PPS, SH0_all, SHC0_all)
+  if (is.null(beta_input)) {
+    beta<-beta_equilibrium(alpha, IH0_all, IHC0_all, eta, dH, IP0_all, PPS, SH0_all, SHC0_all)
   }
   
-  if(!is.null(beta_input)){
+  if (!is.null(beta_input)) {
     beta <- beta_input
   }
   
   # Probability of human becoming infected given consumption of low or high cyst burden meat (pi)
-  pil<-pil_equilibrium(beta, chi, phi, CRR)
-  pih<-CRR*pil
-  if(pil>1 | pih>1){
+  pil <- pil_equilibrium(beta, chi, phi, CRR)
+  pih <- CRR * pil
+  if (pil > 1 |
+     pih > 1) {
     stop('pil or pih are >1, equilbirum not found')
   }
   
   # Egg to human transmission parameter (theta)
-  if(is.null(theta_input)){
-    theta<-theta_equilibrium(bH, eta, SHC0_all, IHC0_all, dH, SH0_all, IH0_all, E0, RR_cysticercosis)
+  if (is.null(theta_input)) {
+    theta <- theta_equilibrium(bH, eta, SHC0_all, IHC0_all, dH, SH0_all, IH0_all, E0, RR_cysticercosis)
   }
   
-  if(!is.null(theta_input)){
+  if (!is.null(theta_input)) {
     theta <- theta_input
   }
   
   #=============================================#
   #  Generate List of outputs for ODE's in ODIN #
   
-  # if need to revert - change bP to bP_constant and let odin calculate bP rate 
-  
-  params<-list(tau=tau,
-               PPS=PPS,
-               HPS=HPS,
-               bH=bH,
-               bP_constant=bP_constant, 
-               pig_deaths_total_correct = pig_deaths_total_correct,
-               LEH=LEH,
-               dH=dH,
-               dP=dP,
-               dPslg=dPslg,
-               LEP=LEP,
-               SlgEP = SlgEP,
-               AEL=AEL,
-               ATL=ATL,
-               ADI=ADI,
-               dE=dE,
-               delta=delta,
-               phi=phi,
-               theta=theta,
-               alpha=alpha,
-               eta=eta,
-               beta=beta,
-               chi=chi,
-               pil=pil,
-               pih=pih,
-               psi=psi,
-               epsilon=epsilon,
-               RR_cysticercosis=RR_cysticercosis,
-               RR_infection = RR_infection,
-               RR_consumption = RR_consumption,
-               age_rate_pig = age_rate_pig,
-               deaths_pig = pig_demography$age_death,
-               na_pig = na_pig,
-               SLAUGHTER_AGE = SLAUGHTER_AGE,
-               SLAUGHTER_AGE_before = SLAUGHTER_AGE_before,
-               SLAUGHTER_AGE_foitohuman = SLAUGHTER_AGE_foitohuman,
-               PPS_slgt_eq = PPS_slgt_eq,
-               PPS_nonslgt_eq = PPS_nonslgt_eq,
-               SP0_slgt=SP0_slgt,
-               IP0_slgt = IP0_slgt,
-               IP0_nonslgt = IP0_nonslgt ,
-               IP0_nonslgt2 = IP0_nonslgt2,
-               IP0_all = IP0_all,
-               IH0_all = IH0_all,
-               IHC0_all = IHC0_all,
-               SH0_all = SH0_all,
-               SHC0_all = SHC0_all,
-               age_rate_human = age_rate_human,
-               na_human = na_human,
-               PC_sens = PC_sens,
-               PC_spec = PC_spec,
-               PCPrev_obs=PCPrev_obs,
-               C_sens = C_sens,
-               C_spec = C_spec,
-               CPrev_obs=CPrev_obs,
-               T_sens = T_sens,
-               T_spec = T_spec,
-               TPrev_obs=TPrev_obs,
-               PCPrev = PCPrev,
-               CPrev = CPrev,
-               TPrev = TPrev,
-               #pig_deaths_total_old = pig_deaths_total_old,
-               #pig_deaths_total_old2 = pig_deaths_total_old2,
-               #bP_1toslg = bP_1toslg,
-               #bP_slgtoN_natural = bP_slgtoN_natural,
-               #bP_slgtoN_slg = bP_slgtoN_slg,
-               #bP_total = bP_total,
-               #bP=bP_constant,
-               #PPS=PPS,
-               #age_rate_pig_old = age_rate_pig,
-               #age_rate_pig = pig_demography$age_stable,
-               #death_rate_pig = pig_demography$age_death_rate,
-               #PCPrev = PCPrev
+  params <- list(
+    tau = tau,
+    PPS = PPS,
+    HPS = HPS,
+    bH = bH,
+    bP = bP,
+    dH = dH,
+    dP = dP,
+    dPslg = dPslg,
+    dE = dE,
+    delta = delta,
+    phi = phi,
+    theta = theta,
+    alpha = alpha,
+    eta = eta,
+    chi = chi,
+    pil = pil,
+    pih = pih,
+    psi = psi,
+    epsilon = epsilon,
+    RR_cysticercosis = RR_cysticercosis,
+    age_rate_pig = age_rate_pig,
+    na_pig = na_pig,
+    slgtage = slgtage,
+    slgtage_bfr = slgtage_bfr,
+    slgage_foi = slgage_foi,
+    age_rate_human = age_rate_human,
+    na_human = na_human,
+    PC_sens = PC_sens,
+    PC_spec = PC_spec,
+    C_sens = C_sens,
+    C_spec = C_spec,
+    T_sens = T_sens,
+    T_spec = T_spec
   )
   
-  states<-list(E0=E0,
-               # SHC0=SHC0,
-               # IHC0=IHC0,
-               # SH0=SH0,
-               # IH0=IH0,
-               SHC0=SHC_eq,
-               IHC0=IHC_eq,
-               SH0=SH_eq,
-               IH0=IH_eq,
-               SP0 = SP_eq,
-               PP0 = PP_eq,
-               IPL0 = IPL_eq, 
-               IPH0 = IPH_eq, 
-               RP0 = RP_eq, 
-               VP0 = VP_eq,
-               CCC0=CCC0,
-               CTC0=CTC0)
+  states <- list(
+    E0 = E0,
+    SHC0 = SHC_eq,
+    IHC0 = IHC_eq,
+    SH0 = SH_eq,
+    IH0 = IH_eq,
+    SP0 = SP_eq,
+    PP0 = PP_eq,
+    IPL0 = IPL_eq,
+    IPH0 = IPH_eq,
+    RP0 = RP_eq,
+    VP0 = VP_eq,
+    CCC0 = CCC0,
+    CTC0 = CTC0
+  )
   
   return(list(params, states))
 }

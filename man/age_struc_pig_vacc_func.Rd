@@ -4,7 +4,7 @@
 \alias{age_struc_pig_vacc_func}
 \title{age_struc_pig_vacc_func}
 \usage{
-age_struc_pig_vacc_func(oldest_age, Intervention_frequency)
+age_struc_pig_vacc_func(oldest_age, intervention_frequency)
 }
 \arguments{
 \item{oldest_age}{oldest_age - upper limit of age vector}

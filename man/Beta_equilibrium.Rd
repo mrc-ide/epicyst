@@ -4,22 +4,32 @@
 \alias{beta_equilibrium}
 \title{Pig to human transmission paramter}
 \usage{
-beta_equilibrium(alpha, IH0, IHC0, eta, dH, IP0, PPS, SH0, SHC0)
+beta_equilibrium(
+  alpha,
+  IH0_all,
+  IHC0_all,
+  eta,
+  dH,
+  IP0_all,
+  PPS,
+  SH0_all,
+  SHC0_all
+)
 }
 \arguments{
 \item{alpha}{Human recovery rate from Taenisasis (per month)}
-
-\item{IH0}{Initial number of Human: T +  C-}
-
-\item{IHC0}{Initial number of Human: T +  C +}
 
 \item{eta}{Human recovery rate from Cysticercosis (oer month)}
 
 \item{dH}{Human mortality rate (per month)}
 
-\item{IP0}{Initial number of infected pigs}
-
 \item{PPS}{Pig popultion size}
+
+\item{IH0}{Initial number of Human: T +  C-}
+
+\item{IHC0}{Initial number of Human: T +  C +}
+
+\item{IP0}{Initial number of infected pigs}
 
 \item{SH0}{Initial number of Human: susceptible}
 

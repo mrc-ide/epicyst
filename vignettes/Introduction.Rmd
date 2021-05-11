@@ -61,7 +61,7 @@ The model can be run with different starting parameters or endemic prevalences. 
 
 ```{r}
 # Set up the model, specifying the new Taeniasis prevalence
-s1 <- set_up(TPrev = 0.04)
+s1 <- set_up(TPrev_true = 0.04)
 # Run the model, with new input parameters and initial conditions
 m3 <- run_model(time = 50, burn_in = 25, params = s1[[1]], initial_states = s1[[2]])
 ```

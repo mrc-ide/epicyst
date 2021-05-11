@@ -1,5 +1,5 @@
 #' @title
-#' Inter_run_setup
+#' Inter-run setup
 #' @description
 #' Converts output from odin into Initial_states (all initial states and converts age-strcutured states & age_rates into vectors) to re-supply odin
 #'
@@ -9,14 +9,12 @@
 #'
 #' @return single lists of state variable values
 #' @export
-Inter_run_setup <- function(model_output, na_pig, na_human) { 
+inter_run_setup <- function(model_output, na_pig, na_human) { 
   
-  states_output<-as.list(tail(model_output,1))
-  names(states_output)<-paste(colnames(model_output), '0', sep='')
+  states_output <- as.list(tail(model_output, 1))
+  names(states_output) <- paste(colnames(model_output), '0', sep = '')
   
   # set number of age classes (pig compartments)
-  na_pig <- na_pig 
-  
   SP_eq <- (unlist(states_output[grep("SP", names(states_output))][1:na_pig]))
   PP_eq <- (unlist(states_output[grep("PP", names(states_output))][1:na_pig]))
   IPL_eq <- (unlist(states_output[grep("IPL", names(states_output))][1:na_pig]))
@@ -25,8 +23,6 @@ Inter_run_setup <- function(model_output, na_pig, na_human) {
   VP_eq <- (unlist(states_output[grep("VP", names(states_output))][1:na_pig]))
   
   # set number of age classes (human compartments)
-  na_human <- na_human 
-  
   SH_eq <- (unlist(states_output[grep("SH", names(states_output))][1:na_human]))
   SHC_eq <- (unlist(states_output[grep("SHC", names(states_output))][1:na_human]))
   IH_eq <- (unlist(states_output[grep("IH", names(states_output))][1:na_human]))
@@ -37,7 +33,6 @@ Inter_run_setup <- function(model_output, na_pig, na_human) {
   #====================================================#
   
   states_processed<-list(
-    t0=states_output$t0,
     E0=states_output$E0,
     SH0 = SH_eq,
     SHC0 = SHC_eq,
@@ -49,15 +44,9 @@ Inter_run_setup <- function(model_output, na_pig, na_human) {
     IPH0 = IPH_eq, 
     RP0 = RP_eq, 
     VP0 = VP_eq,
-    CCC0=states_output$CCC0,
-    CTC0=states_output$CTC0,
-    Humans_Taeniasis0=states_output$Humans_Taeniasis0,
-    Humans_Cysticercosis0=states_output$Humans_Cysticercosis0,
-    Pigs_Cysticercosis0=states_output$Pigs_Cysticercosis0,
-    Human_Taeniasis_prev0=states_output$Human_Taeniasis_prev0,
-    Human_Cysticercosis_prev0=states_output$Human_Cysticercosis_prev0,
-    Pig_Cysticercosis_prev0=states_output$Pig_Cysticercosis_prev0
-  )
+    CCC0 = states_output$CCC0,
+    CTC0 = states_output$CTC0
+   )
   
   return(states_processed)
 }

@@ -6,7 +6,7 @@
 \usage{
 set_up(
   LEP = 10,
-  SlgEP = 1,
+  slgEP = 1,
   HPS = 10000,
   PPS = 2000,
   AEL = 2,
@@ -25,7 +25,7 @@ set_up(
   RR_infection = 1,
   RR_consumption = -0.25,
   number_age_classes_pig = 100,
-  Slaughter_age_min = 6,
+  slaughter_age_min = 6,
   pig_age_class_width = 1,
   number_age_classes_human = 7,
   PCPrev_obs = NULL,
@@ -75,8 +75,6 @@ set_up(
 
 \item{number_age_classes_pig}{Number of age classes (month) for pig population structure}
 
-\item{Slaughter_age_min}{Minimum age (in months) from which pigs are slaughtered}
-
 \item{PCPrev_true}{Cysticercosis prevalence in pigs (true underlying prevalence)}
 
 \item{PC_sens}{Sensitivity of pig cysticercosis diagnostic}
@@ -98,6 +96,8 @@ set_up(
 \item{T_sens}{Sensitivity of human taeniasis diagnostic}
 
 \item{T_spec}{Specificity of human taeniasis diagnostic}
+
+\item{Slaughter_age_min}{Minimum age (in months) from which pigs are slaughtered}
 
 \item{Age_FOI_pig_lower}{Lowest pig age class contributing to transmission (youngest age at slaughter)}
 
