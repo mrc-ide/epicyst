@@ -31,11 +31,9 @@ month_rate <- function(dur) {
 #' @param epsilon Pig rate of loss of naturally aquired immunity
 #' @param RR_infection Increased RR of infection given consumption of high cyct burden pork, compared with low cyst burden
 #' @param RR_consumption Decreased RR of consumption of high cyst burden pork, compared with low cyst burden pork
-#' @param number_age_classes_pig Number of age classes (month) for pig population structure
-#' @param Slaughter_age_min Minimum age (in months) from which pigs are slaughtered
-#' @param Age_FOI_pig_lower Lowest pig age class contributing to transmission (youngest age at slaughter)
-#' @param Age_FOI_pig_upper Oldest pig age class contributing to transmission (youngest age at slaughter)
-#' @param PCPrev Observed pig cysticercosis prevaelnce option
+#' @param number_age_classes_pig Number of age classes for pig population structure
+#' @param slaughter_age_min Minimum age (in months) from which pigs are slaughtered
+#' @param PCPrev_obs Observed pig cysticercosis prevaelnce option
 #' @param PCPrev_true Cysticercosis prevalence in pigs (true underlying prevalence)
 #' @param PC_sens Sensitivity of pig cysticercosis diagnostic
 #' @param PC_spec Specificity of pig cysticercosis diagnostic
@@ -48,10 +46,16 @@ month_rate <- function(dur) {
 #' @param T_sens Sensitivity of human taeniasis diagnostic
 #' @param T_spec Specificity of human taeniasis diagnostic
 #' @param psi Pig rate of transition from prepatent to infectious (average duration for maturation of cysts)
+#' @param slgEP life expectancy (years) after pigs reach slaughter age
+#' @param tau_input user specified egg to pig transmission coefficient
+#' @param theta_input user specified egg to human transmission coefficient
+#' @param beta_input user specified pig to human transmission coefficient
+#' @param pig_age_class_width duration/width of each pig age class (months) 
+#' @param number_age_classes_human number of age classes for human population structure
 #'
 #' @return Two lists of parameters and state variable values
 #' @export
-set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2,delta=960000,
+set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2, delta=960000,
                    tau_input=NULL, theta_input=NULL, beta_input=NULL, psi=0.5,
                    ATL=2, ADI=3, LEH=54, phi=0.8, chi=0.5, RR_cysticercosis=1, epsilon=0.01, 
                    RR_infection=1, RR_consumption=-0.25, number_age_classes_pig = 100, 

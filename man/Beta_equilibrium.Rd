@@ -19,21 +19,21 @@ beta_equilibrium(
 \arguments{
 \item{alpha}{Human recovery rate from Taenisasis (per month)}
 
+\item{IH0_all}{Initial number of Human: T +  C-}
+
+\item{IHC0_all}{Initial number of Human: T +  C +}
+
 \item{eta}{Human recovery rate from Cysticercosis (oer month)}
 
 \item{dH}{Human mortality rate (per month)}
 
+\item{IP0_all}{Initial number of infected pigs}
+
 \item{PPS}{Pig popultion size}
 
-\item{IH0}{Initial number of Human: T +  C-}
+\item{SH0_all}{Initial number of Human: susceptible}
 
-\item{IHC0}{Initial number of Human: T +  C +}
-
-\item{IP0}{Initial number of infected pigs}
-
-\item{SH0}{Initial number of Human: susceptible}
-
-\item{SHC0}{Initial number of Human: T- C +}
+\item{SHC0_all}{Initial number of Human: T- C +}
 }
 \value{
 The equilibrium pig to human transmission parameter

@@ -16,7 +16,7 @@
 prev_adjustment_TP_func <- function(sens, spec, positive, total) {
   p <- prevalence::truePrev(x=positive, n=total, SE= sens, SP= spec)
   p_matrix <- prevalence::as.matrix(p)
-  TPrev <- median(p_matrix[,1])
+  TPrev <- stats::median(p_matrix[,1])
   remove(p)
   
   return(TPrev)
@@ -45,7 +45,6 @@ prev_adjustment_AP_func <- function(sens, spec, TP) {
 #' @description
 #' uses Prev_adjustment_AP_func to generate a column with observed/ apparent prevalence in model run dataframe
 #'
-#' @param model_out model run dataframe as input (specific prevalence column in dataframe from PCC, HCC, HT)
 #' @param sens sensitivity of diagnostic
 #' @param spec specificity of diagnostic
 #' @param TP model generated prevalence

@@ -10,7 +10,7 @@
 #' @param CPrev Cysticercosis prevalence in human population
 #' @param dE The egg mortlality / removal rate (per month)
 #'
-#' @return The Equilbirum number of eggs in the environment
+#' @return The Equilibrium number of eggs in the environment
 e0_equilibrium <- function(delta, HPS, TPrev, CPrev, dE) {
   ((delta * HPS * TPrev * (1 - CPrev)) + (delta * HPS * TPrev * CPrev)) / dE
 }
@@ -21,8 +21,11 @@ e0_equilibrium <- function(delta, HPS, TPrev, CPrev, dE) {
 #' Calculate the transmission parameter (egg->pig) at equiliberium
 #'
 #' @param dP Pig mortality rate (per month)
-#' @param IP0 Initial number of infected pigs
-#' @param SP0 Intitial number of susceptible pigs
+#' @param dPslg Pig mortality rate due to slaughter (per month)
+#' @param IP0_all Initial number of infected pigs
+#' @param IP0_nonslgt Initial number of infected pigs (non slaughter age pigs)
+#' @param IP0_slgt Initial number of infected pigs (slaughter age pigs)
+#' @param SP0_all Initial number of susceptible pigs
 #' @param E0 The equilibrium number of eggs in the environment
 #'
 #' @return The equilibrium egg to pig transmission parameter
@@ -36,14 +39,14 @@ tau_equilibrium <- function(dP, dPslg, IP0_nonslgt, IP0_slgt, IP0_all, SP0_all, 
 #' Calculate the transmission parameter (pig->human) at equiliberium
 #'
 #' @param alpha Human recovery rate from Taenisasis (per month)
-#' @param IH0 Initial number of Human: T +  C-
-#' @param IHC0 Initial number of Human: T +  C +
+#' @param IH0_all Initial number of Human: T +  C-
+#' @param IHC0_all Initial number of Human: T +  C +
 #' @param eta Human recovery rate from Cysticercosis (oer month)
 #' @param dH Human mortality rate (per month)
-#' @param IP0 Initial number of infected pigs
+#' @param IP0_all Initial number of infected pigs
 #' @param PPS Pig popultion size
-#' @param SH0 Initial number of Human: susceptible
-#' @param SHC0 Initial number of Human: T- C +
+#' @param SH0_all Initial number of Human: susceptible
+#' @param SHC0_all Initial number of Human: T- C +
 #'
 #' @return The equilibrium pig to human transmission parameter
 beta_equilibrium <- function(alpha, IH0_all, IHC0_all, eta, dH, IP0_all, PPS, SH0_all, SHC0_all) {
@@ -57,11 +60,11 @@ beta_equilibrium <- function(alpha, IH0_all, IHC0_all, eta, dH, IP0_all, PPS, SH
 #'
 #' @param bH Births of humans (net)
 #' @param eta Human recovery rate from Cysticercosis (oer month)
-#' @param SHC0 Initial number of Human: T- C +
-#' @param IHC0 Initial number of Human: T +  C +
+#' @param SHC0_all Initial number of Human: T- C +
+#' @param IHC0_all Initial number of Human: T +  C +
 #' @param dH Human mortality rate (per month)
-#' @param SH0 Initial number of Human: susceptible
-#' @param IH0 Initial number of Human: T +  C-
+#' @param SH0_all Initial number of Human: susceptible
+#' @param IH0_all Initial number of Human: T +  C-
 #' @param E0 The equilibrium number of eggs in the environment
 #' @param RR Risk multiplier for Cysticercosis if human has Taeniasis
 #'

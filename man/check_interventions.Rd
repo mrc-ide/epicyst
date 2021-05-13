@@ -4,19 +4,11 @@
 \alias{check_interventions}
 \title{Check intervention input}
 \usage{
-check_interventions(intervention_stage2)
-
-check_interventions(intervention_stage2)
-
-check_interventions(intervention_stage2)
+check_interventions(intervention)
 }
 \arguments{
-\item{Intevention}{Vector of one or more parameter interventions}
+\item{intervention}{Vector of one or more parameter interventions}
 }
 \description{
-Checks that the interventions input are correct
-
-Checks that the interventions input are correct
-
 Checks that the interventions input are correct
 }

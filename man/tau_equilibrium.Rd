@@ -9,11 +9,17 @@ tau_equilibrium(dP, dPslg, IP0_nonslgt, IP0_slgt, IP0_all, SP0_all, E0)
 \arguments{
 \item{dP}{Pig mortality rate (per month)}
 
+\item{dPslg}{Pig mortality rate due to slaughter (per month)}
+
+\item{IP0_nonslgt}{Initial number of infected pigs (non slaughter age pigs)}
+
+\item{IP0_slgt}{Initial number of infected pigs (slaughter age pigs)}
+
+\item{IP0_all}{Initial number of infected pigs}
+
+\item{SP0_all}{Initial number of susceptible pigs}
+
 \item{E0}{The equilibrium number of eggs in the environment}
-
-\item{IP0}{Initial number of infected pigs}
-
-\item{SP0}{Intitial number of susceptible pigs}
 }
 \value{
 The equilibrium egg to pig transmission parameter

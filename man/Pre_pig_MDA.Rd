@@ -9,10 +9,10 @@ pre_pig_MDA(age_target, tail_states)
 \arguments{
 \item{age_target}{numeric of specific age groups to target/ select}
 
-\item{Tail_states}{output from Inter_run_processing}
+\item{tail_states}{output from Inter_run_processing}
 }
 \value{
-Tail states targetted for age-structured pig MDA intervention
+Tail states targeted for age-structured pig MDA intervention
 }
 \description{
 Takes processed Tail states (following burn-in and a run) and selects specific age groups to implement pig MDA moves

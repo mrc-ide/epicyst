@@ -7,7 +7,7 @@
 check_effect(intervention_effect)
 }
 \arguments{
-\item{Intevention}{Vector of one or more parameter interventions}
+\item{intervention_effect}{Vector of one or more parameter interventions}
 }
 \description{
 Checks that the intervention effect inputs are correct

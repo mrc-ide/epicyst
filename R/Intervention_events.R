@@ -3,13 +3,13 @@
 #' @description
 #' Checks that the interventions input are correct
 #'
-#' @param Intevention Vector of one or more parameter interventions
+#' @param intervention Vector of one or more parameter interventions
 check_interventions <- function(intervention) {
   param_interventions <- c('Husbandry', 'Sanitation', 'Inspection')
   state_interventions <- c('Pig_MDA','Pig_vaccine','Human_test_and_treat','Human_MDA_nic','Human_MDA_pzq')
   present <- intervention %in% c(param_interventions, state_interventions)
   
-  # Check the intervcentions supplied are proper and correct
+  # Check the interventions supplied are proper and correct
   if (!all(present)) {
     stop(
       intervention[!present],
@@ -27,7 +27,7 @@ check_interventions <- function(intervention) {
 #' @description
 #' Checks that the intervention effect inputs are correct
 #'
-#' @param Intevention Vector of one or more parameter interventions
+#' @param intervention_effect Vector of one or more parameter interventions
 check_effect <- function(intervention_effect) {
   param_interventions <- c('Husbandry', 'Sanitation', 'Inspection')
   state_interventions <- c('Pig_MDA','Pig_vaccine','Human_test_and_treat','Human_MDA_nic','Human_MDA_pzq')
@@ -51,7 +51,7 @@ check_effect <- function(intervention_effect) {
 #' @description
 #' Replaces a paramter with an aletred values after a parameter event
 #'
-#' @param Params List of model parameters
+#' @param params List of model parameters
 #' @param param_name The name of the parameter to be changed
 #' @param effect_size The intervention effect size. Where the new parameter value = old value multiplied by the effect size.
 replace_param <- function(params, param_name, effect_size) {
@@ -69,9 +69,9 @@ replace_param <- function(params, param_name, effect_size) {
 #' @description
 #' Implements one or more interventions that involve a parameter value being altered
 #'
-#' @param Params List of model parameters
-#' @param Intevention Vector of one or more parameter interventions
-#' @param Intervention_effect a list of intervention effect sizes
+#' @param params List of model parameters
+#' @param intervention Vector of one or more parameter interventions
+#' @param intervention_effect a list of intervention effect sizes
 intervention_event_param <- function(params, intervention, intervention_effect) {
     
     if ('Husbandry' %in% intervention) {
@@ -98,7 +98,7 @@ intervention_event_param <- function(params, intervention, intervention_effect) 
 #' @description
 #' Moves a propotion of individuals from one state compartemnt to another
 #'
-#' @param States List of state variable
+#' @param states List of state variable
 #' @param from The name of the state variabe individuals will be moved out of
 #' @param to The name of the state variable that individuals will be moved in to
 #' @param proportion The propotion of individuals in from that get moved into to
@@ -113,12 +113,14 @@ move_state <- function(states, from, to, proportion) {
 #' @title
 #' Move individuals between state variables two flows
 #' @description
-#' Moves a propotions of individuals from one state compartemnt to two others
+#' Moves a proportions of individuals from one state compartemnt to two others
 #'
-#' @param States List of state variable
+#' @param states List of state variable
 #' @param from The name of the state variabe individuals will be moved out of
-#' @param to The name of the state variable that individuals will be moved in to
-#' @param proportion The propotion of individuals in from that get moved into to
+#' @param to_1 The name of the state variable that individuals will be moved in to (first step)
+#' @param to_2 The name of the state variable that individuals will be moved in to (second step)
+#' @param proportion_1 The proportion of individuals in from that get moved into to (step 1)
+#' @param proportion_2 The proportion of individuals in from that get moved into to (step 2)
 move_state_double <- function(states, from, to_1, to_2, proportion_1, proportion_2) {
   prior_state_from <- states[[from]]
   states_reduce <- prior_state_from * (proportion_1) + prior_state_from * (proportion_2)
@@ -129,15 +131,19 @@ move_state_double <- function(states, from, to_1, to_2, proportion_1, proportion
   return(states)
 }
 
-#Move individuals between state variables three flows
+#' @title
+#' Move individuals between state variables three flows
 #' @description
 #' Moves a propotions of individuals from one state compartemnt to three others
 #'
 #' @param states List of state variable
 #' @param from The name of the state variabe individuals will be moved out of
-#' @param to The name of the state variable that individuals will be moved in to
-#' @param proportion The propotion of individuals in from that get moved into to
-
+#' @param to_1 The name of the state variable that individuals will be moved in to (first step)
+#' @param to_2 The name of the state variable that individuals will be moved in to (second step)
+#' @param to_3 The name of the state variable that individuals will be moved in to (third step)
+#' @param proportion_1 The proportion of individuals in from that get moved into to (step 1)
+#' @param proportion_2 The proportion of individuals in from that get moved into to (step 2)
+#' @param proportion_3 The proportion of individuals in from that get moved into to (step 3)
 move_state_triple <- function(states, from, to_1, to_2, to_3, proportion_1, proportion_2, proportion_3) {
   prior_state_from <- states[[from]]
   states_reduce <- prior_state_from * (proportion_1) + prior_state_from * (proportion_2) + prior_state_from * (proportion_3)
@@ -155,8 +161,8 @@ move_state_triple <- function(states, from, to_1, to_2, to_3, proportion_1, prop
 #' Implements one or more interventions that involve a parameter value being altered
 #'
 #' @param states List of model states
-#' @param Intevention Vector of one or more parameter interventions
-#' @param Intervention_effect a list of intervention effect sizes
+#' @param intervention Vector of one or more parameter interventions
+#' @param intervention_effect a list of intervention effect sizes
 intervention_event_state <- function(states, intervention, intervention_effect) {
   
   if('Pig_MDA' %in% intervention) {
@@ -236,7 +242,14 @@ intervention_effect_size <- function() {
 #' Coverage user defined intervention effect size
 #' @description
 #' enables user specified coverage to create list of proportions for state intervention moves
-#'
+#' @param pig_MDA_cov pig treatment coverage
+#' @param pig_vaccine_ds1_cov pig vaccine coverage (dose 1)
+#' @param pig_vaccine_ds2_cov pig vaccine coverage (dose 2)
+#' @param human_testtreat_cov human test and treat coverage
+#' @param human_MDAnic_cov human MDA (with niclosamide) coverage
+#' @param human_MDApzq_cov human MDA (with praziquantel) coverage
+#' @param pig_MDA_prop_noimmunity proportion of pigs without immunity following treatment
+#' 
 #' @return A list Intervention effects
 #' @export
 
@@ -303,8 +316,8 @@ intervention_effect_size_set_up <- function(pig_MDA_cov, pig_vaccine_ds1_cov, pi
 #' @description
 #' Checks that the interventions input are correct
 #'
-#' @param Intevention Vector of one or more parameter interventions
-check_interventions <- function(intervention_stage1) {
+#' @param intervention_stage1 Vector of one or more parameter interventions (stage 1)
+check_interventions_stg1 <- function(intervention_stage1) {
   param_interventions <- c('Husbandry', 'Sanitation', 'Inspection')
   state_interventions <- c('Pig_MDA', 'Pig_vaccine', 'Human_test_and_treat', 'Human_MDA_nic', 'Human_MDA_pzq')
   present <- intervention_stage1 %in% c(param_interventions, state_interventions)
@@ -321,8 +334,8 @@ check_interventions <- function(intervention_stage1) {
 #' @description
 #' Checks that the interventions input are correct
 #'
-#' @param Intevention Vector of one or more parameter interventions
-check_interventions <- function(intervention_stage2) {
+#' @param intervention_stage2 Vector of one or more parameter interventions (stage 2)
+check_interventions_stg2 <- function(intervention_stage2) {
   param_interventions <- c('Husbandry', 'Sanitation', 'Inspection')
   state_interventions <- c('Pig_MDA', 'Pig_vaccine', 'Human_test_and_treat', 'Human_MDA_nic', 'Human_MDA_pzq')
   present <- intervention_stage2 %in% c(param_interventions, state_interventions)

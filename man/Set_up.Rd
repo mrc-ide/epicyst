@@ -45,6 +45,8 @@ set_up(
 \arguments{
 \item{LEP}{Pig life expectancy (years)}
 
+\item{slgEP}{life expectancy (years) after pigs reach slaughter age}
+
 \item{HPS}{Human population size}
 
 \item{PPS}{Pig population size}
@@ -52,6 +54,12 @@ set_up(
 \item{AEL}{Average life expectancy of egg in the environment (weeks)}
 
 \item{delta}{Egg production rate (per month)}
+
+\item{tau_input}{user specified egg to pig transmission coefficient}
+
+\item{theta_input}{user specified egg to human transmission coefficient}
+
+\item{beta_input}{user specified pig to human transmission coefficient}
 
 \item{psi}{Pig rate of transition from prepatent to infectious (average duration for maturation of cysts)}
 
@@ -73,7 +81,15 @@ set_up(
 
 \item{RR_consumption}{Decreased RR of consumption of high cyst burden pork, compared with low cyst burden pork}
 
-\item{number_age_classes_pig}{Number of age classes (month) for pig population structure}
+\item{number_age_classes_pig}{Number of age classes for pig population structure}
+
+\item{slaughter_age_min}{Minimum age (in months) from which pigs are slaughtered}
+
+\item{pig_age_class_width}{duration/width of each pig age class (months)}
+
+\item{number_age_classes_human}{number of age classes for human population structure}
+
+\item{PCPrev_obs}{Observed pig cysticercosis prevaelnce option}
 
 \item{PCPrev_true}{Cysticercosis prevalence in pigs (true underlying prevalence)}
 
@@ -96,14 +112,6 @@ set_up(
 \item{T_sens}{Sensitivity of human taeniasis diagnostic}
 
 \item{T_spec}{Specificity of human taeniasis diagnostic}
-
-\item{Slaughter_age_min}{Minimum age (in months) from which pigs are slaughtered}
-
-\item{Age_FOI_pig_lower}{Lowest pig age class contributing to transmission (youngest age at slaughter)}
-
-\item{Age_FOI_pig_upper}{Oldest pig age class contributing to transmission (youngest age at slaughter)}
-
-\item{PCPrev}{Observed pig cysticercosis prevaelnce option}
 }
 \value{
 Two lists of parameters and state variable values

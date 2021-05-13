@@ -7,13 +7,13 @@
 move_state(states, from, to, proportion)
 }
 \arguments{
+\item{states}{List of state variable}
+
 \item{from}{The name of the state variabe individuals will be moved out of}
 
 \item{to}{The name of the state variable that individuals will be moved in to}
 
 \item{proportion}{The propotion of individuals in from that get moved into to}
-
-\item{States}{List of state variable}
 }
 \description{
 Moves a propotion of individuals from one state compartemnt to another

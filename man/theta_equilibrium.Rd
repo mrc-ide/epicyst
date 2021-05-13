@@ -11,19 +11,19 @@ theta_equilibrium(bH, eta, SHC0_all, IHC0_all, dH, SH0_all, IH0_all, E0, RR)
 
 \item{eta}{Human recovery rate from Cysticercosis (oer month)}
 
+\item{SHC0_all}{Initial number of Human: T- C +}
+
+\item{IHC0_all}{Initial number of Human: T +  C +}
+
 \item{dH}{Human mortality rate (per month)}
+
+\item{SH0_all}{Initial number of Human: susceptible}
+
+\item{IH0_all}{Initial number of Human: T +  C-}
 
 \item{E0}{The equilibrium number of eggs in the environment}
 
 \item{RR}{Risk multiplier for Cysticercosis if human has Taeniasis}
-
-\item{SHC0}{Initial number of Human: T- C +}
-
-\item{IHC0}{Initial number of Human: T +  C +}
-
-\item{SH0}{Initial number of Human: susceptible}
-
-\item{IH0}{Initial number of Human: T +  C-}
 }
 \value{
 The equilibrium egg to human transmission parameter

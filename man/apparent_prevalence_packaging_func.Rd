@@ -12,8 +12,6 @@ apparent_prevalence_packaging_func(sens, spec, TP)
 \item{spec}{specificity of diagnostic}
 
 \item{TP}{model generated prevalence}
-
-\item{model_out}{model run dataframe as input (specific prevalence column in dataframe from PCC, HCC, HT)}
 }
 \value{
 Apparent / observed prevalence

@@ -47,11 +47,29 @@ run_model(
 )
 }
 \arguments{
+\item{params}{List of model parameters}
+
+\item{initial_states}{List of intitial state values}
+
+\item{time}{The number of years to run the model for (from equilibrium). Default is at the halfway point.}
+
+\item{intervention}{A vector of interventions to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat}
+
+\item{intervention_time}{specify when intervention begins (year)}
+
+\item{intervention_effect}{A list of intervention effect sizes, see \code{Intervention_effect_size} for details}
+
+\item{intervention_frequency}{Frequency of intervention implementation (i.e. 12 = every year)}
+
 \item{step}{Time step (months)}
+
+\item{burn_in}{A burn in period run before model run (years)}
 
 \item{age_target_pig_MDA}{Vector of age classes to target with pig MDA intervention (months)}
 
 \item{age_target_pig_vaccine}{Vector of age classes to target with pig vaccine intervention (months)}
+
+\item{num_intervention_rounds}{Specify number of rounds of intervention}
 
 \item{pig_MDA_cov}{Specify pig MDA coverage}
 
@@ -59,15 +77,39 @@ run_model(
 
 \item{pig_vaccine_ds2_cov}{Specify pig vaccine (dose 2) coverage}
 
+\item{pig_MDA_prop_noimmunity}{proportion of pigs without immunity following treatment}
+
 \item{human_testtreat_cov}{Specify human test and treat coverage}
 
 \item{human_MDAnic_cov}{Specify human MDA with niclosamide coverage}
 
 \item{human_MDApzq_cov}{Specify human MDA with praziquantel coverage}
 
+\item{age_target_human_MDA}{specify age groups for human treatment}
+
+\item{age_target_human_test_and_treat}{specify age group for human test and treat}
+
+\item{intervention_stage1}{A vector of interventions (multistage stage 1) to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat}
+
+\item{intervention_stage2}{A vector of interventions (multistage stage 2)to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat}
+
+\item{intervention_time_stage1}{specify when intervention stage 1 begins (years)}
+
+\item{intervention_time_stage2}{specify when intervention stage 2 begins (years)}
+
+\item{intervention_frequency_stage1}{Frequency of intervention (multistage stage 1) implementation (i.e. 12 = every year)}
+
+\item{intervention_frequency_stage2}{Frequency of intervention (multistage stage 2) implementation (i.e. 12 = every year)}
+
+\item{num_intervention_rounds_stage1}{Specify number of rounds of intervention (multistage stage 1)}
+
+\item{num_intervention_rounds_stage2}{Specify number of rounds of intervention (multistage stage 2)}
+
 \item{age_target_pig_MDA_stage1}{Vector of age classes to target with pig MDA (multistage stage 1) intervention (months)}
 
 \item{age_target_pig_MDA_stage2}{Vector of age classes to target with pig MDA (multistage stage 2) intervention (months)}
+
+\item{age_target_pig_vaccine_stage1}{Vector of age classes to target with pig vaccine (multistage stage 1)intervention (months)}
 
 \item{age_target_pig_vaccine_stage2}{Vector of age classes to target with pig vaccine (multistage stage 2)intervention (months)}
 
@@ -82,34 +124,6 @@ run_model(
 \item{pig_vaccine_ds2_cov_stage1}{Specify pig vaccine (dose 2) coverage (multistage stage 1)}
 
 \item{pig_vaccine_ds2_cov_stage2}{Specify pig vaccine (dose 2) coverage (multistage stage 2)}
-
-\item{Params}{List of model parameters}
-
-\item{Initial_states}{List of intitial state values}
-
-\item{Time}{The number of years to run the model for (from equilibrium). Default is at the halfway point.}
-
-\item{Intervention}{A vector of interventions to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat}
-
-\item{Intervention_effect}{A list of intervention effect sizes, see \code{Intervention_effect_size} for details}
-
-\item{Intervention_frequency}{Frequency of intervention implementation (i.e. 12 = every year)}
-
-\item{Burn_in}{A burn in period run before model run (years)}
-
-\item{Num_intervention_rounds}{Specify number of rounds of intervention}
-
-\item{Intervention_stage1}{A vector of interventions (multistage stage 1) to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat}
-
-\item{Intervention_stage2}{A vector of interventions (multistage stage 2)to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat}
-
-\item{Intervention_frequency_stage1}{Frequency of intervention (multistage stage 1) implementation (i.e. 12 = every year)}
-
-\item{Intervention_frequency_stage2}{Frequency of intervention (multistage stage 2) implementation (i.e. 12 = every year)}
-
-\item{Num_intervention_rounds_stage1}{Specify number of rounds of intervention (multistage stage 1)}
-
-\item{Num_intervention_rounds_stage2}{Specify number of rounds of intervention (multistage stage 2)}
 }
 \description{
 Runs the ODE Cysticercosis model
@@ -117,15 +131,18 @@ Runs the ODE Cysticercosis model
 \examples{
 # Run the baseline model:
 M1 <- run_model(time=50, burn_in=50)
-plot(M1$t / 12, M1$Humans_Cysticercosis, t = 'l', ylim = c(0,1000), ylab = 'Humans with Cysticercosis', xlab='Time (years)')
+plot(M1$t / 12, M1$Humans_Cysticercosis, t = 'l', ylim = c(0 , 1000), 
+ylab = 'Humans with Cysticercosis', xlab='Time (years)')
 
 # Run the model with a single intervention:
 M2 <- run_model(time = 50, intervention = 'Sanitation', intervention_time = 20, burn_in = 50)
-lines(M2$t / 12, M2$Humans_Cysticercosis, col='deeppink')
+lines(M2$t / 12, M2$Humans_Cysticercosis, col ='deeppink')
 
 # Run the model with multiple interventions:
-M3 <- run_model(time = 50, intervention = c('Human_test_and_treat', 'Pig_MDA'), intervention_time = 20, burn_in = 50)
-lines(M3$t / 12, M3$Humans_Cysticercosis, col='dodgerblue')
-legend('topright', c('Baseline','Sanitation','Human test & treat and Pig MDA'), lty = c(1,1,1), col = c('black','deeppink', 'dodgerblue'))
+M3 <- run_model(time = 50, intervention = c('Human_test_and_treat', 'Pig_MDA'), 
+intervention_time = 20, burn_in = 50)
+lines(M3$t / 12, M3$Humans_Cysticercosis, col ='dodgerblue')
+legend('topright', c('Baseline','Sanitation','Human test & treat and Pig MDA'), lty = c(1,1,1), 
+col = c('black','deeppink', 'dodgerblue'))
 
 }

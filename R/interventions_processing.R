@@ -2,10 +2,10 @@
 #' Pre_pig_MDA
 #' @description
 #' Takes processed Tail states (following burn-in and a run) and selects specific age groups to implement pig MDA moves
-#' @param Tail_states output from Inter_run_processing
+#' @param tail_states output from Inter_run_processing
 #' @param age_target numeric of specific age groups to target/ select 
 #'
-#' @return Tail states targetted for age-structured pig MDA intervention 
+#' @return Tail states targeted for age-structured pig MDA intervention 
 #' @export
 
 pre_pig_MDA <- function(age_target, tail_states) {
@@ -24,14 +24,14 @@ pre_pig_MDA <- function(age_target, tail_states) {
   )
   
   return(tail_states_age)
-} # isolating relevant age classes
+} 
 
 
 #' @title
 #' Pre_pig_vaccine
 #' @description
 #' Takes processed Tail states (following burn-in and a run) and selects specific age groups to implement pig vaccine moves
-#' @param Tail_states output from Inter_run_processing
+#' @param tail_states output from Inter_run_processing
 #' @param age_target numeric of specific age groups to target/ select 
 #'
 #' @return Tail states targetted for age-structured pig vaccine intervention 
@@ -70,7 +70,7 @@ update_states <- function(states_move, tail_states){
     
     # if there are then move those across
     if (any(!is.na(mtchs))) {
-      tail_states[na.omit(mtchs)] <- states_move[[i]][which(!is.na(mtchs))]
+      tail_states[stats::na.omit(mtchs)] <- states_move[[i]][which(!is.na(mtchs))]
     } 
     
     # were there any occurrences that did not appear in tail_states (i.e. if NA)
@@ -91,7 +91,7 @@ update_states <- function(states_move, tail_states){
         
         # and if there were any matches within that then move the across. 
         if (any(!is.na(ins_matches))) {
-          tail_states[[int_matches]][na.omit(ins_matches)] <- states_move[[i]][which(!is.na(ins_matches))]
+          tail_states[[int_matches]][stats::na.omit(ins_matches)] <- states_move[[i]][which(!is.na(ins_matches))]
         }
       }
     }
@@ -107,7 +107,7 @@ update_states <- function(states_move, tail_states){
 #' @description
 #' define age structure for pig vaccine if no age structure included (to account for vaccination from 2 months, and interval between 1st + 2nd dose which must be < 4 months)
 #' @param oldest_age oldest_age - upper limit of age vector
-#' @param Intervention_frequency and 2 months to this to define lowest limit for age vector
+#' @param intervention_frequency and 2 months to this to define lowest limit for age vector
 #'
 #' @return age_target_pig_vaccine : vector defining lower and upper age limits for pig vaccination 
 #' @export
@@ -127,10 +127,10 @@ age_struc_pig_vacc_func <-function(oldest_age, intervention_frequency) {
 #' Pre_human_MDA
 #' @description
 #' Takes processed Tail states (following burn-in and a run) and selects specific age groups to implement human MDA moves
-#' @param Tail_states output from Inter_run_processing
+#' @param tail_states output from Inter_run_processing
 #' @param age_target numeric of specific age groups to target/ select 
 #'
-#' @return Tail states targetted for age-structured human MDA intervention 
+#' @return Tail states targeted for age-structured human MDA intervention 
 #' @export
 
 pre_human_MDA <- function(age_target, tail_states) {
@@ -147,18 +147,17 @@ pre_human_MDA <- function(age_target, tail_states) {
   )
   
   return(tail_states_age)
-} # isolating relevant age classes
+} 
 
 #' @title
 #' Pre_human_test_and_treat
 #' @description
 #' Takes processed Tail states (following burn-in and a run) and selects specific age groups to implement human T&T moves
-#' @param Tail_states output from Inter_run_processing
+#' @param tail_states output from Inter_run_processing
 #' @param age_target numeric of specific age groups to target/ select 
 #'
 #' @return Tail states targeted for age-structured human T&T intervention 
 #' @export
-
 pre_human_test_and_treat <- function(age_target, tail_states){
   IH0_age <- (unlist(tail_states$IH0[grep("IH", names(tail_states$IH0))][age_target]))
   SH0_age <- (unlist(tail_states$SH0[grep("SH", names(tail_states$SH0))][age_target]))
@@ -169,4 +168,4 @@ pre_human_test_and_treat <- function(age_target, tail_states){
   )
   
   return(tail_states_age)
-} # isolating relevant age classes
+} 

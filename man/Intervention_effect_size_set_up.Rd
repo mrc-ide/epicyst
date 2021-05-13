@@ -14,6 +14,21 @@ intervention_effect_size_set_up(
   pig_MDA_prop_noimmunity
 )
 }
+\arguments{
+\item{pig_MDA_cov}{pig treatment coverage}
+
+\item{pig_vaccine_ds1_cov}{pig vaccine coverage (dose 1)}
+
+\item{pig_vaccine_ds2_cov}{pig vaccine coverage (dose 2)}
+
+\item{human_testtreat_cov}{human test and treat coverage}
+
+\item{human_MDAnic_cov}{human MDA (with niclosamide) coverage}
+
+\item{human_MDApzq_cov}{human MDA (with praziquantel) coverage}
+
+\item{pig_MDA_prop_noimmunity}{proportion of pigs without immunity following treatment}
+}
 \value{
 A list Intervention effects
 }

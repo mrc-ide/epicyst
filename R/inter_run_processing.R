@@ -11,7 +11,7 @@
 #' @export
 inter_run_setup <- function(model_output, na_pig, na_human) { 
   
-  states_output <- as.list(tail(model_output, 1))
+  states_output <- as.list(utils::tail(model_output, 1))
   names(states_output) <- paste(colnames(model_output), '0', sep = '')
   
   # set number of age classes (pig compartments)

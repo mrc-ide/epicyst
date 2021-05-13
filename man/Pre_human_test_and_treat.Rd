@@ -9,7 +9,7 @@ pre_human_test_and_treat(age_target, tail_states)
 \arguments{
 \item{age_target}{numeric of specific age groups to target/ select}
 
-\item{Tail_states}{output from Inter_run_processing}
+\item{tail_states}{output from Inter_run_processing}
 }
 \value{
 Tail states targeted for age-structured human T&T intervention

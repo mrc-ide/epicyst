@@ -9,7 +9,7 @@ age_struc_pig_vacc_func(oldest_age, intervention_frequency)
 \arguments{
 \item{oldest_age}{oldest_age - upper limit of age vector}
 
-\item{Intervention_frequency}{and 2 months to this to define lowest limit for age vector}
+\item{intervention_frequency}{and 2 months to this to define lowest limit for age vector}
 }
 \value{
 age_target_pig_vaccine : vector defining lower and upper age limits for pig vaccination
