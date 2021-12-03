@@ -124,21 +124,20 @@ set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2, delta=960000,
   
   # for non-age structured model # 
   if (slaughter_age_min == 0 && number_age_classes_pig == 1) {
-    slgtage_bfr <- 0
-    slgtage <- 0
+    slgtage_bfr <- 1
+    slgtage <- 3
     slgage_foi <- 1
   }
   
   # set up age classes at which pigs slaughtered and contribute exposure to humans
   if (slaughter_age_min == 0 && number_age_classes_pig > 1) {
     # Slaughter age min for age classes (in months- age-classes in 1 month intervals)
-    slgtage_bfr <- 2 # age class before slaughter rate occurs
-    slgtage <- 3 # age class where slaughter rate begins from
+    slgtage_bfr <- 1 # age class before slaughter rate occurs
+    slgtage <- 2 # age class where slaughter rate begins from
     slgage_foi <- 1 # pig age classes contributing to expsoure to humans b/c slaughtered
   }
   
 
-  
   if (slaughter_age_min == 1) {
     # Slaughter age min for age classes (in months- age-classes in 1 month intervals)
     slgtage_bfr <- 2
@@ -281,6 +280,11 @@ set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2, delta=960000,
   # }
   
   if (number_age_classes_pig > 1) {
+    
+    if (slaughter_age_min == 0) {
+      age1toslg <- 0
+      ageslgtoN <- length(c(1:na_pig))
+    }
     
     if (slaughter_age_min == 1) {
       age1toslg <- length(c(1:1))
