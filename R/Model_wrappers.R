@@ -240,6 +240,16 @@ run_model <-
       stopifnot(is.numeric(age_target_human_test_and_treat))
     }
     
+    # if non-age structured model specified, but age_target input provided, throw an error message
+    
+    if('Pig_MDA' %in% intervention && is.numeric(age_target_pig_MDA) && params$na_pig == 1) {
+      stop('Cannot specify age target for MDA in non age-structured pig model')
+    }
+    
+    if('Pig_vaccine' %in% intervention && is.numeric(age_target_pig_vaccine) && params$na_pig == 1) {
+      stop('Cannot specify age target for vaccine in non age-structured pig model')
+    }
+    
     # Set time vectors for pre- intervention
     tt1 <- seq(0, (intervention_time * 12) - step, step)
     
@@ -752,6 +762,21 @@ run_model <-
     
     if(is.numeric(age_target_human_test_and_treat)) {
       stopifnot(is.numeric(age_target_human_test_and_treat))
+    }
+    
+    # if non-age structured model specified, but age_target input provided, throw an error message
+    
+    if('Pig_MDA' %in% intervention_stage1 && is.numeric(age_target_pig_MDA_stage1) && 
+       'Pig_MDA' %in% intervention_stage2 && is.numeric(age_target_pig_MDA_stage2) && 
+       params$na_pig == 1) {
+      stop('Cannot specify age target for MDA in non age-structured pig model')
+    }
+    
+    
+    if('Pig_vaccine' %in% intervention_stage1 && is.numeric(age_target_pig_vaccine_stage1) && 
+       'Pig_vaccine' %in% intervention_stage2 && is.numeric(age_target_pig_vaccine_stage2) && 
+       params$na_pig == 1) {
+      stop('Cannot specify age target for vaccine in non age-structured pig model')
     }
     
     # Set time vectors for pre- intervention
