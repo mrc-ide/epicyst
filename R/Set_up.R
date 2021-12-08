@@ -455,7 +455,35 @@ set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2, delta=960000,
   
   #================================================================#
   # Set - up human age classes: note life-tables approach not used #
-
+  
+  #================================================================#
+  # Human non age-structured model set-up                          #
+  
+  # create vector of length n age classes for ODIN (& create dimensions for other variables)
+  if (number_age_classes_human == 1) {
+    
+    na_human <- 1
+    age_rate_human <- 0
+    
+    SH_eq <- SH0_total
+    SHC_eq <- SHC0_total
+    IH_eq <- IH0_total
+    IHC_eq <- IHC0_total
+    
+    # quantities needed for equilibrium calcs (redefined in age-structured calculations below)
+    SH0_all <- SH_eq   # all susceptible humans at baseline
+    SHC0_all <- SHC_eq # all cysticercosis infected humans at baseline
+    IH0_all <- IH_eq   # all taeniasis infected humans at baseline
+    IHC0_all <- IHC_eq # all cysticercosis & taeniasis infected humans at baseline
+    
+  }
+  
+  #================================================================#
+  # Human age-structured model set-up                              #
+  
+  
+  if (number_age_classes_human > 1) {
+  
   # vector of specified no. of months in each age compartment 
   if (number_age_classes_human == 7) {
     age_width_human <- c()
@@ -508,11 +536,13 @@ set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2, delta=960000,
     IHC_eq[i] <- den_human[i] * IHC0_total
   }
   
-  # key quantities
+  # key quantities for transmission (equilibrium) parameters
   SH0_all <- sum(SH_eq)   # all susceptible humans at baseline
   SHC0_all <- sum(SHC_eq) # all cysticercosis infected humans at baseline
   IH0_all <- sum(IH_eq)   # all taeniasis infected humans at baseline
   IHC0_all <- sum(IHC_eq) # all cysticercosis & taeniasis infected humans at baseline
+  
+  }
   
   #=========================================#
   # Define other transmission parameters    #
