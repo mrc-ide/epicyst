@@ -423,6 +423,7 @@ set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2, delta=960000,
     IPL0_all <- sum(IPL_eq[1:na_pig]) # all infected (patent) pigs low burden at baseline
     IPH0_all <- sum(IPH_eq[1:na_pig]) # all infected (patent) pigs high burden at baseline
     PP0_all <- sum(PP_eq[1:na_pig]) # all pre-patent pigs at baseline
+    PP0_slgt <- PP0_slgt # total pre-patent pigs of slaughter age
     IP0_all <- IPL0_all + IPH0_all # total infected (patent) pigs at baseline
     IP0_nonslgt <- IPL0_nonslgt + IPH0_nonslgt # total infected (patent) pigs of non slaughter age at baseline
     SP0_all <- sum(SP_eq[1:na_pig]) # total susceptible pigs at baseline
@@ -435,8 +436,10 @@ set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2, delta=960000,
   # calculate key quanities of pigs for non-age structured model #
   if (number_age_classes_pig == 1) {
     IP0_slgt <- 0
+    PP0_slgt <- 0
     IP0_all <- IP0_total
     SP0_all <- SP0_total
+    PP0_all <- PP0_total
   }
   
   
@@ -549,7 +552,7 @@ set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2, delta=960000,
   
   # Egg to pig transmission parameter (tau)
   if (is.null(tau_input)) {
-    tau <- tau_equilibrium(dP, dPslg, IP0_nonslgt, IP0_slgt, IP0_all, SP0_all, E0)
+    tau <- tau_equilibrium(dP, dPslg, IP0_nonslgt, IP0_slgt, IP0_all, SP0_all, PP0_all, PP0_slgt, E0)
   }
   
   if (!is.null(tau_input)) {
@@ -558,7 +561,7 @@ set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2, delta=960000,
   
   # Pork to human transmission parameter (beta)
   if (is.null(beta_input)) {
-    beta<-beta_equilibrium(alpha, IH0_all, IHC0_all, eta, dH, IP0_all, PPS, SH0_all, SHC0_all)
+    beta <- beta_equilibrium(alpha, IH0_all, IHC0_all, eta, dH, IP0_all, PPS, SH0_all, SHC0_all)
   }
   
   if (!is.null(beta_input)) {

@@ -26,11 +26,13 @@ e0_equilibrium <- function(delta, HPS, TPrev, CPrev, dE) {
 #' @param IP0_nonslgt Initial number of infected pigs (non slaughter age pigs)
 #' @param IP0_slgt Initial number of infected pigs (slaughter age pigs)
 #' @param SP0_all Initial number of susceptible pigs
+#' @param PP0_all Initial number of pre-patent pigs
+#' @param PP0_slgt initial number of pre-patent pigs (slaughter age)
 #' @param E0 The equilibrium number of eggs in the environment
 #'
 #' @return The equilibrium egg to pig transmission parameter
-tau_equilibrium <- function(dP, dPslg, IP0_nonslgt, IP0_slgt, IP0_all, SP0_all, E0) {
-  ((dP * IP0_all) + (dPslg * IP0_slgt)) / (SP0_all * E0)
+tau_equilibrium <- function(dP, dPslg, IP0_nonslgt, IP0_slgt, IP0_all, SP0_all, PP0_all, PP0_slgt, E0) {
+  ((dP * IP0_all) + (dPslg * IP0_slgt) + (dP * PP0_all) + (dPslg * PP0_slgt)) / (SP0_all * E0)
 }
 
 #' @title
@@ -50,7 +52,7 @@ tau_equilibrium <- function(dP, dPslg, IP0_nonslgt, IP0_slgt, IP0_all, SP0_all, 
 #'
 #' @return The equilibrium pig to human transmission parameter
 beta_equilibrium <- function(alpha, IH0_all, IHC0_all, eta, dH, IP0_all, PPS, SH0_all, SHC0_all) {
-  (alpha * (IH0_all + IHC0_all) + eta * IHC0_all + dH * (IH0_all + IHC0_all)) / ((IP0_all / PPS) * (SH0_all + SHC0_all))
+  (alpha * (IH0_all + IHC0_all) + eta * IHC0_all + dH * (IH0_all + IHC0_all)) / ((IP0_all  / PPS) * (SH0_all + SHC0_all))
 }
 
 #' @title
