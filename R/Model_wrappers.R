@@ -310,11 +310,18 @@ run_model <-
           model_output = runs[[i]], na_pig = params$na_pig, na_human = params$na_human
         )
       
-      # Alter states/params for single interventions
+      # Alter states/params for single NPI interventions (during first year of intervention)
       if (i == 1 && !'Pig_vaccine' %in% intervention && !'Pig_MDA' %in% intervention &&
           !'Human_MDA_nic' %in% intervention && !'Human_MDA_pzq' %in% intervention &&
           !'Human_test_and_treat' %in% intervention) {
         params <- intervention_event_param(params = params, intervention, intervention_effect = int_effect_size_list)
+        states <- intervention_event_state(states = tail_states, intervention, intervention_effect)
+      }
+      
+      # Alter states/params for single NPI interventions (subsequent years of intervention if continuous)
+      if (i > 1 && !'Pig_vaccine' %in% intervention && !'Pig_MDA' %in% intervention &&
+          !'Human_MDA_nic' %in% intervention && !'Human_MDA_pzq' %in% intervention &&
+          !'Human_test_and_treat' %in% intervention) {
         states <- intervention_event_state(states = tail_states, intervention, intervention_effect)
       }
       
