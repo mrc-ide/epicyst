@@ -115,6 +115,9 @@ set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2, delta=960000,
       )
   } 
   
+  PCPrev <- PCPrev
+  CPrev <- CPrev
+  TPrev <- TPrev
   #===============#
   #  PARAMETERS   #
   #===============#
@@ -621,7 +624,11 @@ set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2, delta=960000,
     C_sens = C_sens,
     C_spec = C_spec,
     T_sens = T_sens,
-    T_spec = T_spec
+    T_spec = T_spec,
+    PCPrev_new = PCPrev,
+    CPrev_new = CPrev,
+    TPrev_new = TPrev
+    
   )
   
   states <- list(
