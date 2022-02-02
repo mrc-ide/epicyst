@@ -259,7 +259,6 @@ set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2, delta=960000,
   }
   
  
-  
   #========================================================#
   #    calculating quanitites for pig population           #
   if (number_age_classes_pig > 1) {
@@ -366,60 +365,22 @@ set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2, delta=960000,
   #================================================================#
   # Human age-structured model set-up                              #
   
-  
   if (number_age_classes_human > 1) {
   
-  # vector of specified no. of months in each age compartment 
-  if (number_age_classes_human == 7) {
-    age_width_human <- c()
-    age_width_human[1] <- 5 * 12 # 0 - 4.99 yrs (in months)
-    age_width_human[2] <- 5 * 12 # 5 - 9.99 yrs
-    age_width_human[3] <- 5 * 12 # 10- 14.99 yrs
-    age_width_human[4] <- 15 * 12 # 15 - 29.99 yrs
-    age_width_human[5] <- 20 * 12 # 30 - 49.99 yrs
-    age_width_human[6] <- 20 * 12 # 50 - 69.99 yrs
-    age_width_human[7] <- 20 * 12 # 70 - 89.99 yrs
-  }
+    # calculate age rates and age widths
+  human_age_parameters <- age_parameters_human_func(number_age_classes = number_age_classes_human)
   
-  # create vector of length n age classes for ODIN (& create dimensions for other variables)
-  na_human <- as.integer(length(age_width_human)) 
+  age_rate_human <- human_age_parameters[[3]]
+  na_human <- human_age_parameters[[2]]
   
-  # calculate age rate (function of age width)
-  age_rate_human <- c()
+  # calculate proportions of humans in each age class
+  human_ageclass_proportions <- human_age_class_proportions_func(age_rate = age_rate_human, na_human = na_human, dH = dH,
+                                                                 HPS = HPS, SHC0_total = SHC0_total, IH0_total = IH0_total, IHC0_total = IHC0_total)
   
-  for (i in na_human) {
-    age_rate_human[1:(na_human - 1)] <- 1 / age_width_human[1:i - 1]
-    age_rate_human[na_human] <- 0
-  }
-  
-  # proportion of population in age classes 
-  den_human <- c()
-  den_human[1] <- 1 / (1 + age_rate_human[1] / dH)
-  
-  for (i in 2:na_human) {
-    den_human[i] <- age_rate_human[i - 1] * den_human[i - 1] / (age_rate_human[i] + dH)
-  }
-  
-  # calculate numbers in each age class for each state (SH, SHC, IH, IHC)
-  SH_eq <- c()
-  for (i in 1:na_human) {
-    SH_eq[i] <- den_human[i] * ((HPS) - (SHC0_total + IH0_total + IHC0_total))
-  }
-  
-  SHC_eq <- c()
-  for (i in 1:na_human) {
-    SHC_eq[i] <- den_human[i] * SHC0_total
-  }
-  
-  IH_eq <- c()
-  for (i in 1:na_human) {
-    IH_eq[i] <- den_human[i] * IH0_total
-  }
-  
-  IHC_eq <- c()
-  for (i in 1:na_human) {
-    IHC_eq[i] <- den_human[i] * IHC0_total
-  }
+  SH_eq <- human_ageclass_proportions[[1]]
+  SHC_eq <- human_ageclass_proportions[[2]]
+  IH_eq <- human_ageclass_proportions[[3]]
+  IHC_eq <- human_ageclass_proportions[[4]]
   
   # key quantities for transmission (equilibrium) parameters
   SH0_all <- sum(SH_eq)   # all susceptible humans at baseline
@@ -428,7 +389,7 @@ set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2, delta=960000,
   IHC0_all <- sum(IHC_eq) # all cysticercosis & taeniasis infected humans at baseline
   
   }
-  
+
   #=========================================#
   # Define other transmission parameters    #
   

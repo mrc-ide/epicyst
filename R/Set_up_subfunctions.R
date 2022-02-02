@@ -236,3 +236,102 @@ for (i in 1:na_pig) {
 return(list(SP_eq, PP_eq, IPL_eq, IPH_eq, RP_eq, VP_eq))
 
 }
+
+
+#' @title
+#' Calculate key age parameters to for human population
+#' @description
+#' Calculate age rate and age widths for human compartments depending on number of age groups 
+#'
+#' @param number_age_classes the number of age classes (humans)
+#'
+#' @return age rate and age width
+#' @export
+age_parameters_human_func <- function(number_age_classes){
+
+if (number_age_classes > 1) {
+  
+  # vector of specified no. of months in each age compartment 
+  if (number_age_classes == 7) {
+    age_width_human <- c()
+    age_width_human[1] <- 5 * 12 # 0 - 4.99 yrs (in months)
+    age_width_human[2] <- 5 * 12 # 5 - 9.99 yrs
+    age_width_human[3] <- 5 * 12 # 10- 14.99 yrs
+    age_width_human[4] <- 15 * 12 # 15 - 29.99 yrs
+    age_width_human[5] <- 20 * 12 # 30 - 49.99 yrs
+    age_width_human[6] <- 20 * 12 # 50 - 69.99 yrs
+    age_width_human[7] <- 20 * 12 # 70 - 89.99 yrs
+  }
+  
+  # create vector of length n age classes for ODIN (& create dimensions for other variables)
+  na_human <- as.integer(length(age_width_human)) 
+  
+  # calculate age rate (function of age width)
+  age_rate_human <- c()
+  
+  for (i in na_human) {
+    age_rate_human[1:(na_human - 1)] <- 1 / age_width_human[1:i - 1]
+    age_rate_human[na_human] <- 0
+    }
+  
+  }
+  return(list(age_width_human, na_human, age_rate_human))
+}
+
+#' @title
+#' Calculate proportions of humnas in each age class
+#' @description
+#' Calculate proprtion of humans in each age class for each state using age rates
+#' 
+#' @param age_rate age rate for humans between age classes
+#' @param na_human number of human age classes
+#' @param dH natural death rate of humans
+#' @param HPS human populations size
+#' @param SHC0_total susceptible (taeniasis) human
+#' @param IH0_total infected humans (taeniasis) at t0
+#' @param IHC0_total infected humans (cysticercosis) at t0
+#'
+#' @return proportions of humans in each age class and state
+#' @export
+# proportion of population in age classes 
+
+human_age_class_proportions_func <- function(age_rate, na_human, dH, HPS, SHC0_total, IH0_total, IHC0_total){
+
+  # create vector to contain proportions
+  den_human <- c()
+  
+  den_human[1] <- 1 / (1 + age_rate[1] / dH)
+  
+  for (i in 2:na_human) {
+    den_human[i] <- age_rate[i - 1] * den_human[i - 1] / (age_rate[i] + dH)
+    }
+  
+  # calculate numbers in each age class for each state (SH, SHC, IH, IHC)
+  
+  SH_eq <- c()
+  
+  for (i in 1:na_human) {
+    SH_eq[i] <- den_human[i] * ((HPS) - (SHC0_total + IH0_total + IHC0_total))
+    }
+
+  SHC_eq <- c()
+
+  for (i in 1:na_human) {
+    SHC_eq[i] <- den_human[i] * SHC0_total
+    }
+  
+  IH_eq <- c()
+  
+  for (i in 1:na_human) {
+    IH_eq[i] <- den_human[i] * IH0_total
+    }
+  
+  IHC_eq <- c()
+  
+  for (i in 1:na_human) {
+    IHC_eq[i] <- den_human[i] * IHC0_total
+    }
+  
+  return(list(SH_eq, SHC_eq, IH_eq, IHC_eq))
+
+}

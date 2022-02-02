@@ -31,3 +31,27 @@ test_that("check pig_ageclass_proportions works", {
                                                                           IPL0_total = 80, IPH0_total = 320))
   
 })
+
+
+test_that("check age_parameters_human_func works", {
+  s1 <- set_up(PCPrev_true = 0.2)
+  human_age_parameters <- age_parameters_human_func(number_age_classes = 7) 
+  expect_is(human_age_parameters, "list")
+  expect_error(human_age_parameters <- age_parameters_human_func(number_age_classes = 0))
+  
+})
+
+test_that("check human_ageclass_proportions works", {
+  s1 <- set_up(PCPrev_true = 0.2)
+  human_age_parameters <- age_parameters_human_func(number_age_classes = 7) 
+  human_ageclass_proportions <- human_age_class_proportions_func(age_rate = human_age_parameters[[3]], na_human = human_age_parameters[[2]], 
+                                                                 dH = s1[[1]]$dH, HPS = s1[[1]]$HPS, SHC0_total = 686, 
+                                                                 IH0_total = 186, IHC0_total = 14)
+  expect_is(human_ageclass_proportions, "list")
+  expect_error(human_ageclass_proportions <- human_age_class_proportions_func(age_rate = human_age_parameters[[3]], na_human = 1, 
+                                                                              dH = s1[[1]]$dH, HPS = s1[[1]]$HPS, SHC0_total = 686, 
+                                                                              IH0_total = 186, IHC0_total = 14))
+  expect_length(human_ageclass_proportions, 4)
+  
+  
+})
