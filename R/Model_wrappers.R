@@ -262,6 +262,13 @@ run_model <-
       stop('Cannot specify age target for test & treat in non age-structured human model')
     }
     
+    if('Pig_MDA' %in% intervention && params$na_pig == 1 && is.numeric(age_target_pig_MDA_stage1)) {
+      stop('Cannot specify age target for MDA in non age-structured pig model')
+    }
+    
+    if('Pig_vaccine' %in% intervention && params$na_pig == 1 && is.numeric(age_target_pig_vaccine_stage1)) {
+      stop('Cannot specify age target for vaccine in non age-structured pig model')
+    }
     
     # Set time vectors for pre- intervention
     tt1 <- seq(0, (intervention_time * 12) - step, step)

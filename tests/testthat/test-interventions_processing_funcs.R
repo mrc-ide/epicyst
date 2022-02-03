@@ -88,5 +88,52 @@ test_that("check age_struc_pig_vacc_func works", {
   s1 <- set_up(PCPrev_true = 0.2)
   age_target_pig_vaccine <- age_struc_pig_vacc_func(oldest_age = s1[[1]]$na_pig, intervention_frequency = 12)
   expect_vector(age_target_pig_vaccine)
+  intervention_frequency_test <- 12+2
+  length_expect_test <- length(c(intervention_frequency_test:s1[[1]]$na_pig))
+  expect_length(age_target_pig_vaccine, length_expect_test)
   
 })
+
+test_that("check pre_human_MDA function", {
+  
+  s1 <- set_up(PCPrev_true = 0.2)
+  tt1 <- seq(0, (11/2 * 12) - 1 / 30, 1 / 30)
+  # set-up tail states
+  bl <- single_run(tt1, params = s1[[1]], states = s1[[2]])
+  runs <- list()
+  runs[[1]] <- bl
+  tail_states <- inter_run_setup(
+    model_output = runs[[1]], na_pig = s1[[1]]$na_pig, na_human = s1[[1]]$na_human
+  )
+  
+  # run function to test
+  p <- pre_human_MDA(age_target = c(2:4), tail_states = tail_states)
+  
+  # tests
+  expect_is(p, "list")
+  expect_length(p, 4)
+  
+})
+
+test_that("check pre_human_test_and_treat function", {
+  
+  s1 <- set_up(PCPrev_true = 0.2)
+  tt1 <- seq(0, (11/2 * 12) - 1 / 30, 1 / 30)
+  # set-up tail states
+  bl <- single_run(tt1, params = s1[[1]], states = s1[[2]])
+  runs <- list()
+  runs[[1]] <- bl
+  tail_states <- inter_run_setup(
+    model_output = runs[[1]], na_pig = s1[[1]]$na_pig, na_human = s1[[1]]$na_human
+  )
+  
+  # run function to test
+  p <- pre_human_test_and_treat(age_target = c(2:4), tail_states = tail_states)
+  
+  # tests
+  expect_is(p, "list")
+  expect_length(p, 2)
+  
+})
+
+
