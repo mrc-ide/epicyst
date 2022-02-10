@@ -8,6 +8,8 @@ age_parameters_pig_func(number_age_classes, pig_age_class_width)
 }
 \arguments{
 \item{number_age_classes}{the number of age classes (pigs)}
+
+\item{pig_age_class_width}{vector for mean no. of months in each age compartment}
 }
 \value{
 age rate and age width

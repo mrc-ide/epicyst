@@ -23,11 +23,11 @@ life_tables_pigs_func(
 
 \item{slgtage_bfr}{age-class before slaughter age first begins}
 
+\item{dP}{pig death rate (natural)}
+
+\item{dPslg}{pig slaughter-age death rate}
+
 \item{na_pig}{number age classes for pigs (processed)}
-
-\item{dp}{pig death rate (natural)}
-
-\item{dplsg}{pig slaughter-age death rate}
 }
 \value{
 life table output

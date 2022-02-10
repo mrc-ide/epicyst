@@ -4,6 +4,7 @@
 #' Calculate age rate and age widths for pig compartments depending on number of age groups 
 #'
 #' @param number_age_classes the number of age classes (pigs)
+#' @param pig_age_class_width vector for mean no. of months in each age compartment 
 #'
 #' @return age rate and age width
 #' @export
@@ -67,8 +68,8 @@ age_parameters_pig_func <- function(number_age_classes, pig_age_class_width){
 #' @param slgt_age_min the age from which pigs are slaughtered (months), user-specified
 #' @param slgtage age-class where slaughter rate first applied to
 #' @param slgtage_bfr age-class before slaughter age first begins
-#' @param dp pig death rate (natural)
-#' @param dplsg pig slaughter-age death rate
+#' @param dP pig death rate (natural)
+#' @param dPslg pig slaughter-age death rate
 #' @param na_pig number age classes for pigs (processed)
 #'
 #' @return life table output
