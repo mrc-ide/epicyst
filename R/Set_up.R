@@ -33,16 +33,13 @@ month_rate <- function(dur) {
 #' @param RR_consumption Decreased RR of consumption of high cyst burden pork, compared with low cyst burden pork
 #' @param number_age_classes_pig Number of age classes for pig population structure
 #' @param slaughter_age_min Minimum age (in months) from which pigs are slaughtered
-#' @param PCPrev_obs Observed pig cysticercosis prevaelnce option
-#' @param PCPrev_true Cysticercosis prevalence in pigs (true underlying prevalence)
+#' @param PCPrev Cysticercosis prevalence in pigs (true underlying prevalence)
 #' @param PC_sens Sensitivity of pig cysticercosis diagnostic
 #' @param PC_spec Specificity of pig cysticercosis diagnostic
-#' @param CPrev_obs Observed human cysticercosis prevalence option
-#' @param CPrev_true Cysticercosis prevalence in humans (true underlying prevalence)
+#' @param CPrev Cysticercosis prevalence in humans (true underlying prevalence)
 #' @param C_sens Sensitivity of human cysticercosis diagnostic
 #' @param C_spec Specificity of human cysticercosis diagnostic
-#' @param TPrev_obs Observed human taeniasis prevalence option
-#' @param TPrev_true Taeniasis prevalence (true underlying prevalence)
+#' @param TPrev Taeniasis prevalence (true underlying prevalence)
 #' @param T_sens Sensitivity of human taeniasis diagnostic
 #' @param T_spec Specificity of human taeniasis diagnostic
 #' @param psi Pig rate of transition from prepatent to infectious (average duration for maturation of cysts)
@@ -60,64 +57,9 @@ set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2, delta=960000,
                    ATL=2, ADI=3, LEH=54, phi=0.8, chi=0.5, RR_cysticercosis=1, epsilon=0.01, 
                    RR_infection=1, RR_consumption=-0.25, number_age_classes_pig = 100, 
                    slaughter_age_min=6, pig_age_class_width=1, number_age_classes_human = 7,
-                   PCPrev_obs=NULL, PCPrev_true=0.2, PC_sens=NULL, PC_spec=NULL, 
-                   CPrev_obs=NULL, CPrev_true=0.07, C_sens=NULL, C_spec=NULL, 
-                   TPrev_obs=NULL, TPrev_true=0.02, T_sens=NULL, T_spec=NULL){
-  
-  #=============================================================================#
-  # First make any adjustments to observed prevalence inputs to true prevalence #
-  
-  # Pig cysticercosis prevalence adjustment #
-  if (is.null(PCPrev_obs)) {
-    PCPrev <- PCPrev_true
-  }
-  
-  if (!is.null(PCPrev_obs)) {
-    PC_obs_positive <- round(PCPrev_obs * PPS)
-    PCPrev <-
-      prev_adjustment_TP_func(
-        sens = PC_sens,
-        spec = PC_spec,
-        positive = PC_obs_positive,
-        total = PPS
-      )
-  }
-  
-  # Human cysticercosis prevalence adjustment #
-  if(is.null(CPrev_obs)) {
-    CPrev <- CPrev_true
-  }
-  
-  if (!is.null(CPrev_obs)) {
-    C_obs_positive <- round(CPrev_obs * HPS)
-    CPrev <-
-      prev_adjustment_TP_func(
-        sens = C_sens,
-        spec = C_spec,
-        positive = C_obs_positive,
-        total = HPS
-      )
-  }
-  
-  # Human taeniasis prevalence adjustment #
-  if(is.null(TPrev_obs)) {
-    TPrev <- TPrev_true
-  }
-  
-  if (!is.null(TPrev_obs)) {
-    T_obs_positive <- round(TPrev_obs * HPS)
-    TPrev <-
-      prev_adjustment_TP_func(
-        sens = T_sens,
-        spec = T_spec,
-        positive = T_obs_positive,
-        total = HPS
-      )
-  } 
-  
-  PCPrev <- PCPrev
-  CPrev <- CPrev
-  TPrev <- TPrev
+                   PCPrev=0.2, PC_sens=NULL, PC_spec=NULL, 
+                   CPrev=0.07, C_sens=NULL, C_spec=NULL, 
+                   TPrev=0.02, T_sens=NULL, T_spec=NULL){
   
   #===============#
   #  PARAMETERS   #

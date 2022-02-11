@@ -27,5 +27,5 @@ Pig_age_class_proportions_func(
 proportions of pigs in each age class and state
 }
 \description{
-Using age stable values from life table, calculate proprtion of pigs in eahc age class for each state
+Using age stable values from life table, calculate proprtion of pigs in each age class for each state
 }

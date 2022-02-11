@@ -2,7 +2,7 @@
 % Please edit documentation in R/interventions_processing.R
 \name{pre_human_MDA}
 \alias{pre_human_MDA}
-\title{Pre_human_MDA}
+\title{pre_human_MDA}
 \usage{
 pre_human_MDA(age_target, tail_states)
 }
@@ -12,8 +12,8 @@ pre_human_MDA(age_target, tail_states)
 \item{tail_states}{output from Inter_run_processing}
 }
 \value{
-Tail states targeted for age-structured human MDA intervention
+tail states targeted for age-structured human MDA intervention
 }
 \description{
-Takes processed Tail states (following burn-in and a run) and selects specific age groups to implement human MDA moves
+Takes processed tail states (following burn-in and a run) and selects specific age groups to implement human MDA moves
 }

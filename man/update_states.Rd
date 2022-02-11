@@ -2,7 +2,7 @@
 % Please edit documentation in R/interventions_processing.R
 \name{update_states}
 \alias{update_states}
-\title{Update_states}
+\title{update_states}
 \usage{
 update_states(states_move, tail_states)
 }
@@ -12,8 +12,8 @@ update_states(states_move, tail_states)
 \item{tail_states}{output from Inter_run_processing (to update specific age-classes)}
 }
 \value{
-overall Tail states list with new / updated specific age - classes following intervention moves
+overall tail states list with new / updated specific age - classes following intervention moves
 }
 \description{
-Identifies age targetted states and updates these specific states in the overall Tail states from the initial model run
+Identifies age targetted states and updates these specific states in the overall tail states from the initial model run
 }

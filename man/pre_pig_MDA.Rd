@@ -2,7 +2,7 @@
 % Please edit documentation in R/interventions_processing.R
 \name{pre_pig_MDA}
 \alias{pre_pig_MDA}
-\title{Pre_pig_MDA}
+\title{pre_pig_MDA}
 \usage{
 pre_pig_MDA(age_target, tail_states)
 }
@@ -12,8 +12,8 @@ pre_pig_MDA(age_target, tail_states)
 \item{tail_states}{output from Inter_run_processing}
 }
 \value{
-Tail states targeted for age-structured pig MDA intervention
+tail states targeted for age-structured pig MDA intervention
 }
 \description{
-Takes processed Tail states (following burn-in and a run) and selects specific age groups to implement pig MDA moves
+Takes processed tail states (following burn-in and a run) and selects specific age groups to implement pig MDA moves
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/interventions_processing.R
 \name{pre_human_test_and_treat}
 \alias{pre_human_test_and_treat}
-\title{Pre_human_test_and_treat}
+\title{pre_human_test_and_treat}
 \usage{
 pre_human_test_and_treat(age_target, tail_states)
 }
@@ -12,8 +12,8 @@ pre_human_test_and_treat(age_target, tail_states)
 \item{tail_states}{output from Inter_run_processing}
 }
 \value{
-Tail states targeted for age-structured human T&T intervention
+tail states targeted for age-structured human T&T intervention
 }
 \description{
-Takes processed Tail states (following burn-in and a run) and selects specific age groups to implement human T&T moves
+Takes processed tail states (following burn-in and a run) and selects specific age groups to implement human T&T moves
 }

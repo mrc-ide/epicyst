@@ -1,27 +1,3 @@
-# library(prevalence) # note need prevalence package installed or called
-
-#' @title
-#' Adjustment observed prevalence to true prevalence
-#' @description
-#' Uses MCMC from prevalence package to adjust observed positives/ total sampled and diagnostic se and sp to true prevalence
-#' see for more info: http://prevalence.cbra.be/?main=download
-#'
-#' @param sens sensitivty of diagnostic
-#' @param spec specifcity of diagnostic
-#' @param positive number of positive observed
-#' @param total total sampled
-#'
-#' @return True prevalence median from MCMC
-#' @export
-prev_adjustment_TP_func <- function(sens, spec, positive, total) {
-  p <- prevalence::truePrev(x=positive, n=total, SE= sens, SP= spec)
-  p_matrix <- prevalence::as.matrix(p)
-  TPrev <- stats::median(p_matrix[,1])
-  remove(p)
-  
-  return(TPrev)
-}
-
 #' @title
 #' Apparent prevalence adjustment
 #' @description

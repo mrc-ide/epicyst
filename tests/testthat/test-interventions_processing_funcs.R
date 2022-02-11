@@ -1,7 +1,7 @@
 
 test_that("check pre_pig_MDA function", {
   
-  s1 <- set_up(PCPrev_true = 0.2)
+  s1 <- set_up(PCPrev = 0.3)
   tt1 <- seq(0, (11/2 * 12) - 1 / 30, 1 / 30)
   # set-up tail states
   bl <- single_run(tt1, params = s1[[1]], states = s1[[2]])
@@ -24,7 +24,7 @@ test_that("check pre_pig_MDA function", {
 
 test_that("check pre_pig_vaccine function works", {
   
-  s1 <- set_up(PCPrev_true = 0.2)
+  s1 <- set_up(PCPrev = 0.3)
   tt1 <- seq(0, (11/2 * 12) - 1 / 30, 1 / 30)
   
   # set-up tail states
@@ -48,7 +48,7 @@ test_that("check pre_pig_vaccine function works", {
 test_that("check update_states function works", {
   
   # set up initial params and timings
-  s1 <- set_up(PCPrev_true = 0.2)
+  s1 <- set_up(PCPrev = 0.3)
   tt1 <- seq(0, (11/2 * 12) - 1 / 30, 1 / 30)
   
   # set-up tail states
@@ -85,7 +85,7 @@ test_that("check update_states function works", {
 
 test_that("check age_struc_pig_vacc_func works", {
   
-  s1 <- set_up(PCPrev_true = 0.2)
+  s1 <- set_up(PCPrev = 0.3)
   age_target_pig_vaccine <- age_struc_pig_vacc_func(oldest_age = s1[[1]]$na_pig, intervention_frequency = 12)
   expect_vector(age_target_pig_vaccine)
   intervention_frequency_test <- 12+2
@@ -96,7 +96,7 @@ test_that("check age_struc_pig_vacc_func works", {
 
 test_that("check pre_human_MDA function", {
   
-  s1 <- set_up(PCPrev_true = 0.2)
+  s1 <- set_up(PCPrev = 0.2)
   tt1 <- seq(0, (11/2 * 12) - 1 / 30, 1 / 30)
   # set-up tail states
   bl <- single_run(tt1, params = s1[[1]], states = s1[[2]])
@@ -117,7 +117,7 @@ test_that("check pre_human_MDA function", {
 
 test_that("check pre_human_test_and_treat function", {
   
-  s1 <- set_up(PCPrev_true = 0.2)
+  s1 <- set_up(PCPrev = 0.3)
   tt1 <- seq(0, (11/2 * 12) - 1 / 30, 1 / 30)
   # set-up tail states
   bl <- single_run(tt1, params = s1[[1]], states = s1[[2]])

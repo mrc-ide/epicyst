@@ -17,5 +17,5 @@ inter_run_setup(model_output, na_pig, na_human)
 single lists of state variable values
 }
 \description{
-Converts output from odin into Initial_states (all initial states and converts age-strcutured states & age_rates into vectors) to re-supply odin
+Converts output from odin into initial_states (all initial states and converts age-strcutured states & age_rates into vectors) to re-supply odin
 }

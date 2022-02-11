@@ -2,7 +2,7 @@
 % Please edit documentation in R/interventions_processing.R
 \name{pre_pig_vaccine}
 \alias{pre_pig_vaccine}
-\title{Pre_pig_vaccine}
+\title{pre_pig_vaccine}
 \usage{
 pre_pig_vaccine(age_target, tail_states)
 }
@@ -12,8 +12,8 @@ pre_pig_vaccine(age_target, tail_states)
 \item{tail_states}{output from Inter_run_processing}
 }
 \value{
-Tail states targetted for age-structured pig vaccine intervention
+tail states targetted for age-structured pig vaccine intervention
 }
 \description{
-Takes processed Tail states (following burn-in and a run) and selects specific age groups to implement pig vaccine moves
+Takes processed tail states (following burn-in and a run) and selects specific age groups to implement pig vaccine moves
 }

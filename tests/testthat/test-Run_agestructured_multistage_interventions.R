@@ -39,7 +39,7 @@ test_that("Model run (with intervention; age-structured pig intervention) tests 
   expect_is(mi_1c, "data.frame")
   expect_is(mi_1c[, 1], "numeric")
   
-  mi_2 <-run_model(time = 11, burn_in = 50, intervention_stage1 = c('Pig_vaccine'), 
+  mi_2 <- run_model(time = 11, burn_in = 50, intervention_stage1 = c('Pig_vaccine'), 
             intervention_stage2 = c('Pig_vaccine'),
             intervention_time_stage1 = 1, intervention_frequency_stage1 = 3, 
             num_intervention_rounds_stage1 = 3, 

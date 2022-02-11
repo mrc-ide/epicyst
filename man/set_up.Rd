@@ -28,16 +28,13 @@ set_up(
   slaughter_age_min = 6,
   pig_age_class_width = 1,
   number_age_classes_human = 7,
-  PCPrev_obs = NULL,
-  PCPrev_true = 0.2,
+  PCPrev = 0.2,
   PC_sens = NULL,
   PC_spec = NULL,
-  CPrev_obs = NULL,
-  CPrev_true = 0.07,
+  CPrev = 0.07,
   C_sens = NULL,
   C_spec = NULL,
-  TPrev_obs = NULL,
-  TPrev_true = 0.02,
+  TPrev = 0.02,
   T_sens = NULL,
   T_spec = NULL
 )
@@ -89,25 +86,19 @@ set_up(
 
 \item{number_age_classes_human}{number of age classes for human population structure}
 
-\item{PCPrev_obs}{Observed pig cysticercosis prevaelnce option}
-
-\item{PCPrev_true}{Cysticercosis prevalence in pigs (true underlying prevalence)}
+\item{PCPrev}{Cysticercosis prevalence in pigs (true underlying prevalence)}
 
 \item{PC_sens}{Sensitivity of pig cysticercosis diagnostic}
 
 \item{PC_spec}{Specificity of pig cysticercosis diagnostic}
 
-\item{CPrev_obs}{Observed human cysticercosis prevalence option}
-
-\item{CPrev_true}{Cysticercosis prevalence in humans (true underlying prevalence)}
+\item{CPrev}{Cysticercosis prevalence in humans (true underlying prevalence)}
 
 \item{C_sens}{Sensitivity of human cysticercosis diagnostic}
 
 \item{C_spec}{Specificity of human cysticercosis diagnostic}
 
-\item{TPrev_obs}{Observed human taeniasis prevalence option}
-
-\item{TPrev_true}{Taeniasis prevalence (true underlying prevalence)}
+\item{TPrev}{Taeniasis prevalence (true underlying prevalence)}
 
 \item{T_sens}{Sensitivity of human taeniasis diagnostic}
 
