@@ -1,11 +1,11 @@
 #' @title
-#' Pre_pig_MDA
+#' pre_pig_MDA
 #' @description
-#' Takes processed Tail states (following burn-in and a run) and selects specific age groups to implement pig MDA moves
+#' Takes processed tail states (following burn-in and a run) and selects specific age groups to implement pig MDA moves
 #' @param tail_states output from Inter_run_processing
 #' @param age_target numeric of specific age groups to target/ select 
 #'
-#' @return Tail states targeted for age-structured pig MDA intervention 
+#' @return tail states targeted for age-structured pig MDA intervention 
 #' @export
 
 pre_pig_MDA <- function(age_target, tail_states) {
@@ -28,13 +28,13 @@ pre_pig_MDA <- function(age_target, tail_states) {
 
 
 #' @title
-#' Pre_pig_vaccine
+#' pre_pig_vaccine
 #' @description
-#' Takes processed Tail states (following burn-in and a run) and selects specific age groups to implement pig vaccine moves
+#' Takes processed tail states (following burn-in and a run) and selects specific age groups to implement pig vaccine moves
 #' @param tail_states output from Inter_run_processing
 #' @param age_target numeric of specific age groups to target/ select 
 #'
-#' @return Tail states targetted for age-structured pig vaccine intervention 
+#' @return tail states targetted for age-structured pig vaccine intervention 
 #' @export
 
 pre_pig_vaccine <- function(age_target, tail_states) {
@@ -51,13 +51,13 @@ pre_pig_vaccine <- function(age_target, tail_states) {
 
 
 #' @title
-#' Update_states
+#' update_states
 #' @description
-#' Identifies age targetted states and updates these specific states in the overall Tail states from the initial model run
+#' Identifies age targetted states and updates these specific states in the overall tail states from the initial model run
 #' @param tail_states output from Inter_run_processing (to update specific age-classes)
 #' @param states_move new age-specific states (updated following intervention moves) 
 #'
-#' @return overall Tail states list with new / updated specific age - classes following intervention moves 
+#' @return overall tail states list with new / updated specific age - classes following intervention moves 
 #' @export
 
 update_states <- function(states_move, tail_states){
@@ -124,13 +124,13 @@ age_struc_pig_vacc_func <-function(oldest_age, intervention_frequency) {
 
 
 #' @title
-#' Pre_human_MDA
+#' pre_human_MDA
 #' @description
-#' Takes processed Tail states (following burn-in and a run) and selects specific age groups to implement human MDA moves
+#' Takes processed tail states (following burn-in and a run) and selects specific age groups to implement human MDA moves
 #' @param tail_states output from Inter_run_processing
 #' @param age_target numeric of specific age groups to target/ select 
 #'
-#' @return Tail states targeted for age-structured human MDA intervention 
+#' @return tail states targeted for age-structured human MDA intervention 
 #' @export
 
 pre_human_MDA <- function(age_target, tail_states) {
@@ -150,13 +150,13 @@ pre_human_MDA <- function(age_target, tail_states) {
 } 
 
 #' @title
-#' Pre_human_test_and_treat
+#' pre_human_test_and_treat
 #' @description
-#' Takes processed Tail states (following burn-in and a run) and selects specific age groups to implement human T&T moves
+#' Takes processed tail states (following burn-in and a run) and selects specific age groups to implement human T&T moves
 #' @param tail_states output from Inter_run_processing
 #' @param age_target numeric of specific age groups to target/ select 
 #'
-#' @return Tail states targeted for age-structured human T&T intervention 
+#' @return tail states targeted for age-structured human T&T intervention 
 #' @export
 pre_human_test_and_treat <- function(age_target, tail_states){
   IH0_age <- (unlist(tail_states$IH0[grep("IH", names(tail_states$IH0))][age_target]))

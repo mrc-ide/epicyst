@@ -1,7 +1,7 @@
 #' @title
 #' Inter-run setup
 #' @description
-#' Converts output from odin into Initial_states (all initial states and converts age-strcutured states & age_rates into vectors) to re-supply odin
+#' Converts output from odin into initial_states (all initial states and converts age-strcutured states & age_rates into vectors) to re-supply odin
 #'
 #' @param model_output large desolve element generated from odin run (ODE output)
 #' @param na_pig number of age classes

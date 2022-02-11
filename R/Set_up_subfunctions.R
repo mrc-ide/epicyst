@@ -172,7 +172,7 @@ if (number_age_classes_pig > 1) {
 #' @title
 #' Calculate proportions of pigs in each age class
 #' @description
-#' Using age stable values from life table, calculate proprtion of pigs in eahc age class for each state 
+#' Using age stable values from life table, calculate proprtion of pigs in each age class for each state 
 #' 
 #' @param PPS pig population size
 #' @param pig_demography pig life-table
@@ -240,7 +240,7 @@ return(list(SP_eq, PP_eq, IPL_eq, IPH_eq, RP_eq, VP_eq))
 
 
 #' @title
-#' Calculate key age parameters to for human population
+#' Calculate key age parameters for human population
 #' @description
 #' Calculate age rate and age widths for human compartments depending on number of age groups 
 #'
@@ -280,7 +280,7 @@ if (number_age_classes > 1) {
 }
 
 #' @title
-#' Calculate proportions of humnas in each age class
+#' Calculate proportions of humans in each age class
 #' @description
 #' Calculate proprtion of humans in each age class for each state using age rates
 #' 

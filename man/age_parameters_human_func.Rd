@@ -2,7 +2,7 @@
 % Please edit documentation in R/Set_up_subfunctions.R
 \name{age_parameters_human_func}
 \alias{age_parameters_human_func}
-\title{Calculate key age parameters to for human population}
+\title{Calculate key age parameters for human population}
 \usage{
 age_parameters_human_func(number_age_classes)
 }

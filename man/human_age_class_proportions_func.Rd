@@ -2,7 +2,7 @@
 % Please edit documentation in R/Set_up_subfunctions.R
 \name{human_age_class_proportions_func}
 \alias{human_age_class_proportions_func}
-\title{Calculate proportions of humnas in each age class}
+\title{Calculate proportions of humans in each age class}
 \usage{
 human_age_class_proportions_func(
   age_rate,
