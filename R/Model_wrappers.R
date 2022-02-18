@@ -201,7 +201,7 @@ run_model <-
     )
     # check on inputs
     check_interventions(intervention)
-    check_effect(intervention_effect = int_effect_size_list)
+    #check_effect(intervention_effect = int_effect_size_list)
     stopifnot(
       is.numeric(time),
       is.numeric(intervention_time),
@@ -323,7 +323,7 @@ run_model <-
       if (i == 1 && !'Pig_vaccine' %in% intervention && !'Pig_MDA' %in% intervention &&
           !'Human_MDA_nic' %in% intervention && !'Human_MDA_pzq' %in% intervention &&
           !'Human_test_and_treat' %in% intervention) {
-        params <- intervention_event_param(params = params, intervention, intervention_effect = int_effect_size_list)
+        params <- intervention_event_param(params = params, intervention, intervention_effect)
         states <- intervention_event_state(states = tail_states, intervention, intervention_effect)
       }
       
@@ -339,7 +339,7 @@ run_model <-
       if('Human_MDA_nic' %in% intervention || 'Human_MDA_pzq' %in% intervention || 'Human_test_and_treat' %in% intervention) {
         # first param changes (non-biomedical interventions)
         if (i == 1) {
-          params <- intervention_event_param(params = params, intervention, intervention_effect = int_effect_size_list)
+          params <- intervention_event_param(params = params, intervention, intervention_effect)
         }
         
         # A) Non age-structured human interventions
@@ -530,7 +530,7 @@ run_model <-
       if('Pig_MDA' %in% intervention || 'Pig_vaccine' %in% intervention) {
         
         if(i == 1) {
-          params <- intervention_event_param(params = params, intervention, intervention_effect = int_effect_size_list)
+          params <- intervention_event_param(params = params, intervention, intervention_effect)
         }
         
         # IF statements for pig interventions WITH HUMAN INTERVENTIONS ALREADY RUN 
@@ -545,7 +545,8 @@ run_model <-
         } 
         
         if('Pig_MDA' %in% intervention && !is.numeric(age_target_pig_MDA) && !'Pig_vaccine' %in% intervention) {
-          states <- intervention_event_state(states = tail_states, intervention, intervention_effect = int_effect_size_list)
+          #states <- intervention_event_state(states = tail_states, intervention, intervention_effect = int_effect_size_list)
+          age_target_pig_MDA <- c(4:params$na_pig)
         }
         
         if('Pig_vaccine' %in% intervention && !is.numeric(age_target_pig_vaccine) && !'Pig_MDA' %in% intervention) {
@@ -554,7 +555,8 @@ run_model <-
         
         if('Pig_MDA' %in% intervention && !is.numeric(age_target_pig_MDA) &&
            'Pig_vaccine' %in% intervention && !is.numeric(age_target_pig_vaccine)) {
-          states <- intervention_event_state(states = tail_states, intervention, intervention_effect = int_effect_size_list)
+          #states <- intervention_event_state(states = tail_states, intervention, intervention_effect = int_effect_size_list)
+          age_target_pig_MDA <- c(4:params$na_pig)
         }
         
         # B) Age-structured pig interventions (user specified) combinations
@@ -824,7 +826,7 @@ run_model <-
       if(i == 1 && !'Pig_vaccine' %in% intervention_stage1 && !'Pig_MDA' %in% intervention_stage1 &&
          !'Human_MDA_nic' %in% intervention_stage1 && !'Human_MDA_pzq' %in% intervention_stage1 &&
          !'Human_test_and_treat' %in% intervention_stage1) {
-        params <- intervention_event_param(params = params, intervention = intervention_stage1, intervention_effect = int_effect_size_list)
+        params <- intervention_event_param(params = params, intervention = intervention_stage1, intervention_effect)
         states <- intervention_event_state(states = tail_states, intervention = intervention_stage1, intervention_effect)
       }
       
@@ -847,7 +849,7 @@ run_model <-
         
         # first param changes (non-biomedical interventions)
         if(i == 1) {
-          params <- intervention_event_param(params = params, intervention = intervention_stage1, intervention_effect = int_effect_size_list)
+          params <- intervention_event_param(params = params, intervention = intervention_stage1, intervention_effect)
           states <- intervention_event_state(states = tail_states, intervention = intervention_stage1, intervention_effect)
         }
 
@@ -865,7 +867,8 @@ run_model <-
         } 
         
         if('Pig_MDA' %in% intervention_stage1 && !is.numeric(age_target_pig_MDA_stage1) && !'Pig_vaccine' %in% intervention_stage1) {
-          states <- intervention_event_state(states = tail_states, intervention = intervention_stage1, intervention_effect = int_effect_size_list)
+          #states <- intervention_event_state(states = tail_states, intervention = intervention_stage1, intervention_effect = int_effect_size_list)
+          age_target_pig_MDA_stage1 <- c(4:params$na_pig)
         }
         
         if('Pig_vaccine' %in% intervention_stage1 && !is.numeric(age_target_pig_vaccine_stage1) && !'Pig_MDA' %in% intervention_stage1) {
@@ -874,7 +877,8 @@ run_model <-
         
         if('Pig_MDA' %in% intervention_stage1 && !is.numeric(age_target_pig_MDA_stage1) && 'Pig_vaccine' %in% intervention_stage1 &&
            !is.numeric(age_target_pig_vaccine_stage1)) {
-          states <- intervention_event_state(states = tail_states, intervention = intervention_stage1, intervention_effect = int_effect_size_list)
+          #states <- intervention_event_state(states = tail_states, intervention = intervention_stage1, intervention_effect = int_effect_size_list)
+          age_target_pig_MDA_stage1 <- c(4:params$na_pig)
         }
         
         # B) Age-structured pig interventions (user specified) combinations
@@ -1039,7 +1043,7 @@ run_model <-
         
         # first param changes (non-biomedical interventions)
         if(i == 1) {
-          params <- intervention_event_param(params = params, intervention = intervention_stage2, intervention_effect = int_effect_size_list)
+          params <- intervention_event_param(params = params, intervention = intervention_stage2, intervention_effect)
           states <- intervention_event_state(states = tail_states, intervention = intervention_stage2, intervention_effect)
         }
         
@@ -1057,7 +1061,8 @@ run_model <-
         } 
         
         if('Pig_MDA' %in% intervention_stage2 && !is.numeric(age_target_pig_MDA_stage2) && !'Pig_vaccine' %in% intervention_stage2) {
-          states <- intervention_event_state(states = tail_states, intervention = intervention_stage2, intervention_effect = int_effect_size_list)
+          #states <- intervention_event_state(states = tail_states, intervention = intervention_stage2, intervention_effect = int_effect_size_list)
+          age_target_pig_MDA_stage2 <- c(4:params$na_pig)
         }
         
         if('Pig_vaccine' %in% intervention_stage2 && !is.numeric(age_target_pig_vaccine_stage2) && !'Pig_MDA' %in% intervention_stage2) {
@@ -1065,7 +1070,8 @@ run_model <-
         }
         
         if('Pig_MDA' %in% intervention_stage2 && !is.numeric(age_target_pig_MDA_stage2) && 'Pig_vaccine' %in% intervention_stage2 &&!is.numeric(age_target_pig_vaccine_stage2)) {
-          states <- intervention_event_state(states = tail_states, intervention = intervention_stage2, intervention_effect = int_effect_size_list)
+          #states <- intervention_event_state(states = tail_states, intervention = intervention_stage2, intervention_effect = int_effect_size_list)
+          age_target_pig_MDA_stage2 <- c(4:params$na_pig)
         }
         
         # B) Age-structured pig interventions (user specified) combinations

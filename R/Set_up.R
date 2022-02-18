@@ -52,14 +52,14 @@ month_rate <- function(dur) {
 #'
 #' @return Two lists of parameters and state variable values
 #' @export
-set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2, delta=960000,
-                   tau_input=NULL, theta_input=NULL, beta_input=NULL, psi=0.5,
-                   ATL=2, ADI=3, LEH=54, phi=0.8, chi=0.5, RR_cysticercosis=1, epsilon=0.01, 
-                   RR_infection=1, RR_consumption=-0.25, number_age_classes_pig = 100, 
-                   slaughter_age_min=6, pig_age_class_width=1, number_age_classes_human = 7,
-                   PCPrev=0.2, PC_sens=NULL, PC_spec=NULL, 
-                   CPrev=0.07, C_sens=NULL, C_spec=NULL, 
-                   TPrev=0.02, T_sens=NULL, T_spec=NULL){
+set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta = 960000,
+                   tau_input = NULL, theta_input = NULL, beta_input = NULL, psi = 0.5,
+                   ATL = 2, ADI = 3, LEH = 54, phi = 0.8, chi = 0.5, RR_cysticercosis = 1, epsilon = 0.01, 
+                   RR_infection = 1, RR_consumption = -0.25, number_age_classes_pig = 150, 
+                   slaughter_age_min = 6, pig_age_class_width = 1, number_age_classes_human = 7,
+                   PCPrev = 0.2, PC_sens = NULL, PC_spec = NULL, 
+                   CPrev = 0.07, C_sens = NULL, C_spec = NULL, 
+                   TPrev = 0.02, T_sens = NULL, T_spec = NULL){
   
   #===============#
   #  PARAMETERS   #
@@ -109,9 +109,9 @@ set_up <- function(LEP=10, slgEP=1,  HPS=10000, PPS=2000, AEL=2, delta=960000,
   }
   
   # If Min slaughter age > 0 then use both dP and dPslg
-  if(slaughter_age_min>0){
+  if(slaughter_age_min > 0){
     # Pig natural mortality rate
-    dP<-month_rate(LEP)
+    dP <- month_rate(LEP)
     # Pig mortality rate (from min slaughter age class)
     dPslg <- month_rate(slgEP)
     }

@@ -31,6 +31,7 @@ initialise[[2]][6:7]
 ```
 
 Input arguments for `set_up()` are documented in the help file `?set_up()`. Certain combinations of input prevalence may not be possible to fit, in which case an error message will be thrown.
+
     
 -----
   

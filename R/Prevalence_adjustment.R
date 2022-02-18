@@ -10,7 +10,9 @@
 #' @return Apparent / observed prevalence 
 #' @export
 prev_adjustment_AP_func <- function(sens, spec, TP) {
-  AP <- (1-spec) + (sens+spec-1)*TP      # observed/apparent prevalence Diggle et al 2011 Epi Res Int
+  #AP <- (1-spec) + (sens+spec-1)*TP      # observed/apparent prevalence Diggle et al 2011 Epi Res Int & Speybroeck et al. 2012
+  AP <- sens * TP + (1 - spec) * (1 - TP)
+  
   
   return(AP)
 }

@@ -24,7 +24,7 @@ set_up(
   epsilon = 0.01,
   RR_infection = 1,
   RR_consumption = -0.25,
-  number_age_classes_pig = 100,
+  number_age_classes_pig = 150,
   slaughter_age_min = 6,
   pig_age_class_width = 1,
   number_age_classes_human = 7,
