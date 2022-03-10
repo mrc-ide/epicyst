@@ -9,7 +9,7 @@
 #' @param states list of states
 #' @export
 single_run <- function(tt, params, states) {
-  mod <- cyst_generator(user = c(params[c(1:27)], states))
+  mod <- cyst_generator$new(user = c(params[c(1:26)], states))
   y <- mod$run(tt)
   return(y)
 }

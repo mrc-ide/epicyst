@@ -378,7 +378,7 @@ set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta
     PPS = PPS,
     HPS = HPS,
     bH = bH,
-    bP = bP,
+    #bP = bP,
     dH = dH,
     dP = dP,
     dPslg = dPslg,

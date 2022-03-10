@@ -184,7 +184,7 @@ dPslg <- user()
 # Human births (per month):
 bH <- user()
 # Pig births (per month):
-bP <- user()
+bP <- (dP*sum(SP)+dP*sum(PP)+dP*sum(IPL)+dP*sum(IPH)+dP*sum(RP)+dP*sum(VP))+(dPslg*sum(SP[slgage_foi:na_pig]))+(dPslg*sum(PP[slgage_foi:na_pig]))+(dPslg*sum(IPL[slgage_foi:na_pig]))+(dPslg*sum(IPH[slgage_foi:na_pig]))+(dPslg*sum(RP[slgage_foi:na_pig]))+(dPslg*sum(VP[slgage_foi:na_pig]))
 # Egg mortality rate
 dE <- user()
 # Egg production rate
@@ -235,5 +235,11 @@ output(Pig_Cysticercosis_prev) <- (sum(IPH) + sum(IPL)) / PPS
 output(Human_total) <- sum(IH) + sum(IHC) + sum(SH) + sum(SHC) # track to ensure stable population
 output(Pig_total) <- sum(SP) + sum(PP) + sum(IPH) + sum(IPL) + sum(RP) + sum(VP) # track to ensure stable population
 output(birthrate) <- bP # track
-
-
+output(pig_deaths) <- (dP*sum(SP[1:na_pig]))+(dP*sum(PP[1:na_pig]))+(dP*sum(IPL[1:na_pig]))+(dP*sum(IPH[1:na_pig]))+(dP*sum(RP[1:na_pig]))+(dP*sum(VP[1:na_pig]))+(dPslg*sum(SP[slgage_foi:na_pig]))+(dPslg*sum(PP[slgage_foi:na_pig]))+(dPslg*sum(IPL[slgage_foi:na_pig]))+(dPslg*sum(IPH[slgage_foi:na_pig]))+(dPslg*sum(RP[slgage_foi:na_pig]))+(dPslg*sum(VP[slgage_foi:na_pig]))
+# output(pig_age1) <- SP[1]
+# output(SP_total) <- sum(SP) # track
+# output(PP_total) <- sum(PP) # track
+# output(IPH_total) <- sum(IPH) # track
+# output(IPL_total) <- sum(IPL) # track
+# output(RP_total) <- sum(RP) # track
+# output(VP_total) <- sum(VP) # track
