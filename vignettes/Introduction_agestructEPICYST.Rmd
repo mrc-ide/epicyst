@@ -17,7 +17,7 @@ library(epicyst)
 
 The `set_up()` function provides the user a means to specify parameters and starting conditions for a model run. Input parameters, as well as starting prevalence for Taeniasis, and Cysticercosis (in the porcine and human populations) may be left at the default values or specified in the function call. 
 
-Changes to default prevalence values will initiate to re-estimation of transmission parameters to allow the system to run at the newly specified endemic equilibrium. The `set_up()` function returns a list of two elements: 1) The input parameters for a model run (standardised time units and dependent parameters included) and 2) Initial state variable values.
+Changes to default prevalence values will initiate a re-estimation of transmission parameters to allow the system to run at the newly specified endemic equilibrium. The `set_up()` function returns a list of two elements: 1) The input parameters for a model run (standardized time units and dependent parameters included) and 2) Initial state variable values.
 
 To initiate and view default parameters:
 
@@ -37,9 +37,9 @@ Input arguments for `set_up()` are documented in the help file `?set_up()`. Cert
 
 ## Age-structured model inputs for human and pig demographics
 
-In the age-structured model, human and pig compartments are stratified into age groups. For pigs, there are 150 age groups (one month per group) in the default model, which can be viewed (and modified) through the following `set_up(number_age_classes_pig = 150)` for the number of pig age classes, and `set_up(pig_age_class_width = 1)` for the width (in months) of these age group.
+In the age-structured model, human and pig compartments are stratified into age groups. For pigs, there are 150 age groups (one month per group) in the default model, which can be viewed (and modified) through the following input `number_age_classes_pig = 150` for the number of pig age classes, and `pig_age_class_width = 1` for the width (in months) of these age groups.
 
-For humans in the default model, there are 7 age groups, representing 0 - 4.99, 5 - 9.99, 10 - 14.99, 15 - 29.99, 30 - 49.99, 50 - 69.99 and 70 - 89.99 years. These age groups are structured to include school-age children (5 - 9.99 & 10 - 14.99 yrs). While there is an input to change these `set_up(number_age_classes_human = 7)`, leaving this default model for human age-structuring is recommended. 
+For humans in the default model, there are 7 age groups, representing 0 - 4.99, 5 - 9.99, 10 - 14.99, 15 - 29.99, 30 - 49.99, 50 - 69.99 and 70 - 89.99 years. These age groups are structured to include school-age children (5 - 9.99 & 10 - 14.99 yrs). While there is an input to change these `number_age_classes_human = 7`, currently EPICYST is not configured to enable differing numbers of human age classes (future developments will address this). 
 
 Figure 1 below provides a representation of the age-structure in the model, including demographic and transmission parameters. 
 
@@ -49,10 +49,10 @@ knitr::include_graphics('./EPICYST_schematic_legend.jpg')
 
 ## Other key input parameters in the age-structured pig model
 
-Input parameters into `set_up()` specify additional age-specific features in the pig age-structured model. Firstly, the `set_up(slaughter_age_min = 6)` input
-specifies the minimum age (in months) in which pigs are slaughtered, which is set to 6 months in the default model. Secondly, the `set_up(slgEP = 1)` specifies the number of years pigs are expected live, on average, after reaching slaughter age (a default for the average natural life expectancy for pigs is also specified by `set_up(LEP = 10)`). 
+Input parameters into `set_up()` specify additional age-specific features in the pig age-structured model. Firstly, the `slaughter_age_min = 6` input
+specifies the minimum age (in months) in which pigs are slaughtered, which is set to 6 months in the default model. Secondly, the `slgEP = 1` specifies the number of years pigs are expected live, on average, after reaching slaughter age (a default for the average natural life expectancy for pigs is also specified by `LEP = 10`). 
 
-Figure 2 below highlights how pig demographics have been incorporated into the age-structured EPICYST, which simyulates pigs before the minimum slaughter age experiencing a constant natural mortality rate (dP; the reciprocal of the natural life expectancy parameter, `LEP`), and pigs after reaching the minimum slaughter age experiencing an additional mortality rate associated with reduced survival due to slaughter (dPslg; the reciprocal of the average life expectancy after reaching slaughter age, `slgEP`). Equally, humans are only exposed to infected pork from slaughter age animals. 
+Figure 2 below highlights how pig demographics have been incorporated into the age-structured EPICYST, which simulates pigs before the minimum slaughter age experiencing a constant natural mortality rate (dP; the reciprocal of the natural life expectancy parameter, `LEP`), and pigs after reaching the minimum slaughter age experiencing an additional mortality rate associated with reduced survival due to slaughter (dPslg; the reciprocal of the average life expectancy after reaching slaughter age, `slgEP`). Equally, humans are only exposed to infected pork from slaughter age animals. 
 
 ```{r echo=FALSE, out.width='100%'}
 knitr::include_graphics('./Pig_demographic_legendFig2.jpg')
@@ -83,7 +83,7 @@ m2 <- run_model(time = 50, burn_in = 100)
 
 Model output starts after this burn in period.
 
-The model can be run with different starting parameters or endemic prevalences. For example to run the model with an prevalence of Taeniasis of 4%:
+The model can be run with different starting parameters or endemic prevalence's. For example to run the model with an prevalence of Taeniasis of 4%:
 
 ```{r}
 # Set up the model, specifying the new Taeniasis prevalence
@@ -92,7 +92,7 @@ s1 <- set_up(TPrev = 0.04)
 m3 <- run_model(time = 50, burn_in = 100, params = s1[[1]], initial_states = s1[[2]])
 ```
 
-Model runs return a `data.frame` of model output for each time step. The model output data.frame facilitates visualisation using general base `R` or other plotting methods (eg `ggplot2`).
+Model runs return a `data.frame` of model output for each time step. The model output data.frame facilitates visualization using general base `R` or other plotting methods (e.g., `ggplot2`).
 
 ```{r, fig.align='center',fig.width=7, fig.height=5}
 # Plot the output in base R
@@ -107,13 +107,13 @@ legend('topright', c('porcine cysticercosis', 'human cysticercosis', 'human taen
 
 ## Diagnostic adjustment to adjust true modelled prevalence to observed modelled prevalence
 
-The user can also specify diagnostic parameters in `set_up()` to adjust modelled prevalence to observed/apparent prevalence by providing the sensitvity and specificity characteristics of a particular diagnostic test. This will allow the user to plot both the true modelled prevalence, and adjusted observed/apparent prevalence, as described in Figure 3 below
+The user can also specify diagnostic parameters in `set_up()` to adjust modelled prevalence to observed/apparent prevalence by providing the sensitivity and specificity characteristics of a particular diagnostic test. This will allow the user to plot both the true modelled prevalence, and adjusted observed/apparent prevalence, as described in Figure 3 below
 
 ```{r echo=FALSE, out.width='100%'}
 knitr::include_graphics('./diagnostic_adjustment.jpg')
 ```
 
-To run this in the model, this can be specified as (e.g. with a hypothetical 90% sensitivity and 80% specificty of a porcine cysticercosis diagnostic test) :
+To run this in the model, this can be specified as (e.g. with a hypothetical 90% sensitivity and 80% specificity of a porcine cysticercosis diagnostic test) :
 
 ```{r}
 # Set up the model, specifying diagnostic parameters for pig cysticerosis prevalence adjustment
@@ -138,12 +138,12 @@ This will collapse age groups so that only one age group is modelled for human a
 knitr::kable(utils::head(m5[, c(1,5:14)], 10), caption = 'All state variables, collapsed to one age group', digits = 1)
 ```
 
-If the user wishes to specify the complete original model presented in Winskill et al. 2017 with no age-strcuturing, and no pre-patent compartment in pigs (Pp compartments in Figure 1), then the user can set the rate at whicb pigs progress from the pre-patent compartment to a very high value (by setting the average duration pig remain in the pre-patent compartment parameter `psi`to a very small value i.e. 1 / 0.00000001) to effectively negate the use of this compartment as follows:
+If the user wishes to specify the complete original model presented in Winskill et al. 2017 with no age-structuring, and no pre-patent compartment in pigs (Pp compartments in Figure 1), then the user can set the rate at which pigs progress from the pre-patent compartment to a very high value (by setting the average duration pig remain in the pre-patent compartment parameter `psi` to a very small value i.e. 1 / 0.0000001) to effectively negate the use of this compartment as follows:
 
 ```{r}
 # Set up the model, specifying the non age-structured model
  s1 <- set_up( number_age_classes_human = 1, number_age_classes_pig = 1, slaughter_age_min = 0,
-               psi = 1/ 0.00000001)
+               psi = 1/ 0.0000001)
 # Run the model, with new input parameters and initial conditions
  m6 <- run_model(time = 50, burn_in = 100, params = s1[[1]], initial_states = s1[[2]])
 ```
@@ -156,7 +156,7 @@ legend('topright', c('porcine cysticercosis', 'human cysticercosis', 'human taen
        col=c('darkmagenta', 'deeppink', 'dodgerblue'))
 ```
 
-The user should note that the model has been updated to include a pre-patent period in pigs given that pigs are generally slaughtered within 6-36 months of age, and the pre-patent period (time from oncosphere/egg exposure to developing a mature larval-stage infection) is 2-3 months, so this is a non-negligble time period compared to the life-expectancy of the pig. Therefore, the pre-patent period should be included in the model. 
+The user should note that the model has been updated to include a pre-patent period in pigs given that pigs are generally slaughtered within 6-36 months of age, and the pre-patent period (time from oncosphere/egg exposure to developing a mature larval-stage infection) is 2-3 months, so this is a non-negligible time period compared to the life-expectancy of the pig. Therefore, the pre-patent period should be included in the model. 
 
 -----
 

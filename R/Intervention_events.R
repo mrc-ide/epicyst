@@ -228,10 +228,10 @@ intervention_effect_size <- function() {
     Pig_vaccine = 0.9 * 1.0 * (0.99), # Assumed coverage (0.9) dose 1 * assumed coverage round2 * vaccine efficacy (0.99) WITHOUT ADJUSTMENT
     Human_test_and_treat = 0.9 * 0.97 * 0.98 * 0.99, # Proportion of people tested that are T+ and C- (Assumed therapeutic coverage (0.9) * Taeniasis sensitivity (0.97) * Cysticercosis specificity (0.98)) * drug efficacy (0.99)
     Human_MDA_nic = c(Proportion_sucess_treated = 0.75 * 0.779), # Successfully treated = the assumed therapeutic coverage (0.75) from literature × the anthelmintic efficacy with niclosamide - efficacy estimate from Bustos et al, 2012 (0.779).
-    Human_MDA_pzq = c(Proportion_sucess_treated_pzq_taenneg_cystneg = 0.75 * 0.7 * 0.8,
-                      Proportion_success_treated_pzq_taenneg_cystpos = 0.75 * 0.7 * (1 - 0.8),
-                      Proportion_success_treated_pzq_taenpos_cystneg = (0.75 * (1 - 0.7) * 0.8),
-                      Proportion_success_treated_pzq_taenneg = 0.75 * 0.7, 
+    Human_MDA_pzq = c(Proportion_sucess_treated_pzq_taenneg_cystneg = 0.75 * 0.99 * 0.8,
+                      Proportion_success_treated_pzq_taenneg_cystpos = 0.75 * 0.99 * (1 - 0.8),
+                      Proportion_success_treated_pzq_taenpos_cystneg = (0.75 * (1 - 0.99) * 0.8),
+                      Proportion_success_treated_pzq_taenneg = 0.75 * 0.99, 
                       Proportion_success_treated_pzq_cystneg = 0.75 * 0.8) # proportions 1-4 are treatment of those with cysticercosis +, taeniasis + 
     # to different states, proportion 5 is treatment of those with just taeniasis +, proportion 6 is treatment of those with just cysticercosis +
   )
@@ -297,10 +297,10 @@ intervention_effect_size_set_up <- function(pig_MDA_cov, pig_vaccine_ds1_cov, pi
     Pig_vaccine = pig_vaccine_ds1_cov * pig_vaccine_ds2_cov * (0.99), # Assumed coverage (0.9) dose 1 * assumed coverage round2 * vaccine efficacy (0.99) WITHOUT ADJUSTMENT
     Human_test_and_treat = human_testtreat_cov * 0.97 * 0.98 * 0.99, # Proportion of people tested that are T+ and C- (Assumed therapeutic coverage (0.9) * Taeniasis sensitivity (0.97) * Cysticercosis specificity (0.98)) * drug efficacy (0.99)
     Human_MDA_nic = c(Proportion_sucess_treated = human_MDAnic_cov * 0.779), # Successfully treated = the assumed therapeutic coverage (0.75) from literature × the anthelmintic efficacy with niclosamide - efficacy estimate from Bustos et al, 2012 (0.779).
-    Human_MDA_pzq = c(Proportion_sucess_treated_pzq_taenneg_cystneg = human_MDApzq_cov * 0.7 * 0.8, 
-                      Proportion_success_treated_pzq_taenneg_cystpos = human_MDApzq_cov * 0.7 * (1 - 0.8), 
-                      Proportion_success_treated_pzq_taenpos_cystneg = (human_MDApzq_cov * (1 - 0.7) * 0.8),
-                      Proportion_success_treated_pzq_taenneg = human_MDApzq_cov * 0.7, 
+    Human_MDA_pzq = c(Proportion_sucess_treated_pzq_taenneg_cystneg = human_MDApzq_cov * 0.99 * 0.8, 
+                      Proportion_success_treated_pzq_taenneg_cystpos = human_MDApzq_cov * 0.99 * (1 - 0.8), 
+                      Proportion_success_treated_pzq_taenpos_cystneg = (human_MDApzq_cov * (1 - 0.99) * 0.8),
+                      Proportion_success_treated_pzq_taenneg = human_MDApzq_cov * 0.99, 
                       Proportion_success_treated_pzq_cystneg = human_MDApzq_cov * 0.8) # proportions 1-4 are treatment of those with cysticercosis +, taeniasis + 
     # to different states, proportion 5 is treatment of those with just taeniasis +, proportion 6 is treatment of those with just cysticercosis +
   )

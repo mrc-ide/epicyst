@@ -63,7 +63,7 @@ p1 <- run_model(time = 11, burn_in = 100, intervention ='Pig_MDA',
 
 Within `run_model`, parameters to specify the time at which interventions begin (in years) `intervention_time` and the frequency of occurrence in months e.g. the intervention to occur every 12 months `intervention_frequency` need to be included. Additional intervention parameters that may be called include specifying the coverage, using (with an example coverage of 70%) `pig_MDA_cov = 0.7` in `run_model`.
 
-Model runs return a `data.frame` of model output for each time step. The model output data.frame facilitates visualisation using general base `R` or other plotting methods (eg `ggplot2`).
+Model runs return a `data.frame` of model output for each time step. The model output data.frame facilitates visualization using general base `R` or other plotting methods (e.g., `ggplot2`).
 
 ```{r, fig.align='center',fig.width=7, fig.height=5}
 # Plot the output in base R; pig MDA
@@ -121,7 +121,7 @@ p3 <- run_model(time = 11, burn_in = 100, intervention ='Pig_vaccine',
 plot(p3$Pig_Cysticercosis_prev*100 ~ p3$t, type="l", col="blue", ylim=c(0,15), ylab = 'prevalence (%)', xlab = 'time (months)')
 ```
 
-A coverage for dose 1 and dose 2 (for the 2-dose TSOL18 vaccination schedule) can therefore be specified, with `pig_vaccine_ds1_cov` and `pig_vaccine_ds2_cov` in `run_model`, along with age-targetting using `age_target_pig_MDA = c()` in `run_model`. The following example details dose 1 coverage of 70%, dose 2 coverage of 90%, and targetted age groups between 4 and 7 months (i.e. young pigs only):
+A coverage for dose 1 and dose 2 (for the 2-dose TSOL18 vaccination schedule) can therefore be specified, with `pig_vaccine_ds1_cov` and `pig_vaccine_ds2_cov` in `run_model`, along with age-targeting using `age_target_pig_MDA = c()` in `run_model`. The following example details dose 1 coverage of 70%, dose 2 coverage of 90%, and targeted age groups between 4 and 7 months (i.e. young pigs only):
 
 ```{r}
 # Run pig vaccine
@@ -149,15 +149,15 @@ Mass drug administration (MDA) can be modelled using two different taenicides. H
 knitr::include_graphics('./Human_MDA_PZQ.jpg')
 ```
 
-    In Figure 4, PZQ efficacy against taeniasis is set to a conservative 70%; however depending on the doseage used i.e. 40 mg/kg, 10 mg/kg or 5 mg/kg, efficacy could be modified in EPICYST (further functionality to be incorporated to enable this), in light of emerging evidence on efficacy/cure rates e.g. Haby et al. (2020). Literature on the efficacy of PZQ against both cerebral and dermal human cysticercosis in combination is very limited, with one meta-analysis showing that treatments including both PZQ and albendazole resulted in a 44% total resolution of all cystic lesions after computerised tomography (CT) or magnetic resonance imaging (MRI) scans in treated patients across six trials (Del Brutto et al., 2006). The efficacy was therefore set to a hypothetical 80%.
+    In Figure 4, PZQ efficacy against taeniasis is set to 99% (assuming 10mg/kg dose) based on Haby et al. (2020). Literature on the efficacy of PZQ against both cerebral and dermal human cysticercosis in combination is very limited, with one meta-analysis showing that treatments including both PZQ and albendazole resulted in a 44% total resolution of all cystic lesions after computerised tomography (CT) or magnetic resonance imaging (MRI) scans in treated patients across six trials (Del Brutto et al., 2006). The efficacy was therefore set to a hypothetical 80%.
 
-Human interventions can also be age-targetted, for example to simulate MDA in school-age children (SAC). The age-structuring within human compartments is such that the following age groups can be included or excluded: 0 - 4.99, 5 - 9.99, 10 - 14.99, 15 - 29.99, 30 - 49.99, 50 - 69.99 and 70 - 89.99 years, so for example if the user wishes to target MDA to SAC, then age groups 2 and 3 should be chosen. Figure 5 below provides a schematic to demonstrate how age-targetting works for MDA in EPICYST:
+Human interventions can also be age-targeted, for example to simulate MDA in school-age children (SAC). The age-structuring within human compartments is such that the following age groups can be included or excluded: 0 - 4.99, 5 - 9.99, 10 - 14.99, 15 - 29.99, 30 - 49.99, 50 - 69.99 and 70 - 89.99 years, so for example if the user wishes to target MDA to SAC, then age groups 2 and 3 should be chosen. Figure 5 below provides a schematic to demonstrate how age-targeting works for MDA in EPICYST:
 
 ```{r echo=FALSE, out.width='100%'}
 knitr::include_graphics('./Human_MDA_age.jpg')
 ```
 
-The model with (or without) specified age-targetting for human MDA can therefore be called (for either human MDA with PZQ or NIC), with coverage (for PZQ as `human_MDApzq_cov` or for NIC as `human_MDAnic_cov`) as follows:
+The model with (or without) specified age-targeting for human MDA can therefore be called (for either human MDA with PZQ or NIC), with coverage (for PZQ as `human_MDApzq_cov` or for NIC as `human_MDAnic_cov`) as follows:
 
 ```{r}
 # Run human MDA
@@ -203,7 +203,7 @@ legend('topright', c('Porcine cysticercosis','Human cysticercosis', 'Human taeni
 
 ## Interventions in the NON age-structured EPICYST
 
-Interventions can also be specfied in the non age-structured model, by first specifying the non age-structured model in `set_up()` (as described in the "Introduction to age-structured EPICYST: model set up and running without interventions" vignette), and then calling the intervention as before in `intervention`, without specifying the age-targetting intervention parameters in `run_model`: 
+Interventions can also be specified in the non age-structured model, by first specifying the non age-structured model in `set_up()` (as described in the "Introduction to age-structured EPICYST: model set up and running without interventions" vignette), and then calling the intervention as before in `intervention`, without specifying the age-targeting intervention parameters in `run_model`: 
 
 ```{r}
 # Set up the model, specifying the non age-structured model
@@ -222,7 +222,7 @@ knitr::kable(utils::head(p5[, c(1, 18:20)], 10), caption = 'Tracked prevalence',
 
 Non-biomedical interventions can also be modelled, including improved sanitation, husbandry and meat inspection. These interventions are simulated by altering a specific parameter in the model most influenced by the implementation of one of these three non-biomedical interventions. 
 
-For improved sanitation, delta (egg production rate) paramater is changed according to the effect size of santitation i.e. an effect size of 0.8 (which is default in the model) corresponds to a 20% reduction in delta. For improved husbandry, the parameter tau (egg to pig transmission coefficient; reduced by 20% as default) is changed, and for improved meat inspection, the parameter beta (pork to human transmission coefficient) is changed (40% reduction in pork infected with high-burden, and 20% reduction in pork infected with low-burden).
+For improved sanitation, delta (egg production rate) parameter is changed according to the effect size of sanitation i.e. an effect size of 0.8 (which is default in the model) corresponds to a 20% reduction in delta. For improved husbandry, the parameter tau (egg to pig transmission coefficient; reduced by 20% as default) is changed, and for improved meat inspection, the parameter beta (pork to human transmission coefficient) is changed (40% reduction in pork infected with high-burden, and 20% reduction in pork infected with low-burden).
 
 Running the model, with default intervention effect sizes, requires the intervention and implementation time (year) to be specified:
 ```{r}
