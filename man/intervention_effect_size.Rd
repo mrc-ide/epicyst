@@ -7,7 +7,7 @@
 intervention_effect_size()
 }
 \value{
-A list intervention effects
+A list Intervention effects
 }
 \description{
 Provides preset intervention effect

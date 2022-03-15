@@ -18,7 +18,7 @@ e0_equilibrium(delta, HPS, TPrev, CPrev, dE)
 \item{dE}{The egg mortlality / removal rate (per month)}
 }
 \value{
-The Equilbirum number of eggs in the environment
+The Equilibrium number of eggs in the environment
 }
 \description{
 Calculate the number of eggs in the environment at equlibrium

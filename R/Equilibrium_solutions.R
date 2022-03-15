@@ -10,7 +10,7 @@
 #' @param CPrev Cysticercosis prevalence in human population
 #' @param dE The egg mortlality / removal rate (per month)
 #'
-#' @return The Equilbirum number of eggs in the environment
+#' @return The Equilibrium number of eggs in the environment
 e0_equilibrium <- function(delta, HPS, TPrev, CPrev, dE) {
   ((delta * HPS * TPrev * (1 - CPrev)) + (delta * HPS * TPrev * CPrev)) / dE
 }
@@ -21,13 +21,18 @@ e0_equilibrium <- function(delta, HPS, TPrev, CPrev, dE) {
 #' Calculate the transmission parameter (egg->pig) at equiliberium
 #'
 #' @param dP Pig mortality rate (per month)
-#' @param IP0 Initial number of infected pigs
-#' @param SP0 Intitial number of susceptible pigs
+#' @param dPslg Pig mortality rate due to slaughter (per month)
+#' @param IP0_all Initial number of infected pigs
+#' @param IP0_nonslgt Initial number of infected pigs (non slaughter age pigs)
+#' @param IP0_slgt Initial number of infected pigs (slaughter age pigs)
+#' @param SP0_all Initial number of susceptible pigs
+#' @param PP0_all Initial number of pre-patent pigs
+#' @param PP0_slgt initial number of pre-patent pigs (slaughter age)
 #' @param E0 The equilibrium number of eggs in the environment
 #'
 #' @return The equilibrium egg to pig transmission parameter
-tau_equilibrium <- function(dP, IP0, SP0, E0) {
-  (dP * IP0) / (SP0 * E0)
+tau_equilibrium <- function(dP, dPslg, IP0_nonslgt, IP0_slgt, IP0_all, SP0_all, PP0_all, PP0_slgt, E0) {
+  ((dP * IP0_all) + (dPslg * IP0_slgt) + (dP * PP0_all) + (dPslg * PP0_slgt)) / (SP0_all * E0)
 }
 
 #' @title
@@ -36,18 +41,18 @@ tau_equilibrium <- function(dP, IP0, SP0, E0) {
 #' Calculate the transmission parameter (pig->human) at equiliberium
 #'
 #' @param alpha Human recovery rate from Taenisasis (per month)
-#' @param IH0 Initial number of Human: T +  C-
-#' @param IHC0 Initial number of Human: T +  C +
+#' @param IH0_all Initial number of Human: T +  C-
+#' @param IHC0_all Initial number of Human: T +  C +
 #' @param eta Human recovery rate from Cysticercosis (oer month)
 #' @param dH Human mortality rate (per month)
-#' @param IP0 Initial number of infected pigs
+#' @param IP0_all Initial number of infected pigs
 #' @param PPS Pig popultion size
-#' @param SH0 Initial number of Human: susceptible
-#' @param SHC0 Initial number of Human: T- C +
+#' @param SH0_all Initial number of Human: susceptible
+#' @param SHC0_all Initial number of Human: T- C +
 #'
 #' @return The equilibrium pig to human transmission parameter
-beta_equilibrium <- function(alpha, IH0, IHC0, eta, dH, IP0, PPS, SH0, SHC0) {
-  (alpha * (IH0 + IHC0) + eta * IHC0 + dH * (IH0 + IHC0)) / ((IP0 / PPS) * (SH0 + SHC0))
+beta_equilibrium <- function(alpha, IH0_all, IHC0_all, eta, dH, IP0_all, PPS, SH0_all, SHC0_all) {
+  (alpha * (IH0_all + IHC0_all) + eta * IHC0_all + dH * (IH0_all + IHC0_all)) / ((IP0_all  / PPS) * (SH0_all + SHC0_all))
 }
 
 #' @title
@@ -57,17 +62,17 @@ beta_equilibrium <- function(alpha, IH0, IHC0, eta, dH, IP0, PPS, SH0, SHC0) {
 #'
 #' @param bH Births of humans (net)
 #' @param eta Human recovery rate from Cysticercosis (oer month)
-#' @param SHC0 Initial number of Human: T- C +
-#' @param IHC0 Initial number of Human: T +  C +
+#' @param SHC0_all Initial number of Human: T- C +
+#' @param IHC0_all Initial number of Human: T +  C +
 #' @param dH Human mortality rate (per month)
-#' @param SH0 Initial number of Human: susceptible
-#' @param IH0 Initial number of Human: T +  C-
+#' @param SH0_all Initial number of Human: susceptible
+#' @param IH0_all Initial number of Human: T +  C-
 #' @param E0 The equilibrium number of eggs in the environment
 #' @param RR Risk multiplier for Cysticercosis if human has Taeniasis
 #'
 #' @return The equilibrium egg to human transmission parameter
-theta_equilibrium <- function(bH, eta, SHC0, IHC0, dH, SH0, IH0, E0, RR) {
-  (bH + eta * (SHC0 + IHC0) - dH * (SH0 + IH0)) / ((SH0 * E0) + ((1 + RR) * IH0 * E0))
+theta_equilibrium <- function(bH, eta, SHC0_all, IHC0_all, dH, SH0_all, IH0_all, E0, RR) {
+  (bH + eta * (SHC0_all + IHC0_all) - dH * (SH0_all + IH0_all)) / ((SH0_all * E0) + ((1 + RR) * IH0_all * E0))
 }
 
 #' @title
@@ -84,5 +89,7 @@ pil_equilibrium <- function(beta, chi, phi, CRR) {
   chil <- chi * phi
   chih <- chi * (1 - phi)
   pil <- beta / (chil + CRR * chih)
+  
   return(pil)
 }
+

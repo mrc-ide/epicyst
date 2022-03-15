@@ -4,14 +4,34 @@
 \alias{tau_equilibrium}
 \title{Egg to pig transmission paramter}
 \usage{
-tau_equilibrium(dP, IP0, SP0, E0)
+tau_equilibrium(
+  dP,
+  dPslg,
+  IP0_nonslgt,
+  IP0_slgt,
+  IP0_all,
+  SP0_all,
+  PP0_all,
+  PP0_slgt,
+  E0
+)
 }
 \arguments{
 \item{dP}{Pig mortality rate (per month)}
 
-\item{IP0}{Initial number of infected pigs}
+\item{dPslg}{Pig mortality rate due to slaughter (per month)}
 
-\item{SP0}{Intitial number of susceptible pigs}
+\item{IP0_nonslgt}{Initial number of infected pigs (non slaughter age pigs)}
+
+\item{IP0_slgt}{Initial number of infected pigs (slaughter age pigs)}
+
+\item{IP0_all}{Initial number of infected pigs}
+
+\item{SP0_all}{Initial number of susceptible pigs}
+
+\item{PP0_all}{Initial number of pre-patent pigs}
+
+\item{PP0_slgt}{initial number of pre-patent pigs (slaughter age)}
 
 \item{E0}{The equilibrium number of eggs in the environment}
 }
