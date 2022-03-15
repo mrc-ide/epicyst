@@ -232,8 +232,8 @@ intervention_effect_size <- function() {
                       Proportion_success_treated_pzq_taenneg_cystpos = 0.75 * 0.7 * (1 - 0.8),
                       Proportion_success_treated_pzq_taenpos_cystneg = (0.75 * (1 - 0.7) * 0.8),
                       Proportion_success_treated_pzq_taenneg = 0.75 * 0.7, 
-                      Proportion_success_treated_pzq_cystneg = 0.75 * 0.8) ## proportions 1-4 are treatment of those with cysticercosis +, taeniasis + 
-    #to different states, proportion 5 is treatment of those with just taeniasis +, proportion 6 is treatment of those with just cysticercosis +
+                      Proportion_success_treated_pzq_cystneg = 0.75 * 0.8) # proportions 1-4 are treatment of those with cysticercosis +, taeniasis + 
+    # to different states, proportion 5 is treatment of those with just taeniasis +, proportion 6 is treatment of those with just cysticercosis +
   )
   
 }
@@ -257,7 +257,7 @@ intervention_effect_size_set_up <- function(pig_MDA_cov, pig_vaccine_ds1_cov, pi
                                           human_testtreat_cov, human_MDAnic_cov, human_MDApzq_cov, 
                                           pig_MDA_prop_noimmunity){
   
-  ### set up default coverage values if non specified ##
+  # set up default coverage values if non specified #
   if (is.null(pig_MDA_cov)) {
     pig_MDA_cov = 0.9
   }
@@ -301,8 +301,8 @@ intervention_effect_size_set_up <- function(pig_MDA_cov, pig_vaccine_ds1_cov, pi
                       Proportion_success_treated_pzq_taenneg_cystpos = human_MDApzq_cov * 0.7 * (1 - 0.8), 
                       Proportion_success_treated_pzq_taenpos_cystneg = (human_MDApzq_cov * (1 - 0.7) * 0.8),
                       Proportion_success_treated_pzq_taenneg = human_MDApzq_cov * 0.7, 
-                      Proportion_success_treated_pzq_cystneg = human_MDApzq_cov * 0.8) ## proportions 1-4 are treatment of those with cysticercosis +, taeniasis + 
-    #to different states, proportion 5 is treatment of those with just taeniasis +, proportion 6 is treatment of those with just cysticercosis +
+                      Proportion_success_treated_pzq_cystneg = human_MDApzq_cov * 0.8) # proportions 1-4 are treatment of those with cysticercosis +, taeniasis + 
+    # to different states, proportion 5 is treatment of those with just taeniasis +, proportion 6 is treatment of those with just cysticercosis +
   )
   return(list)
 }

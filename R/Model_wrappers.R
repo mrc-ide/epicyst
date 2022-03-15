@@ -23,7 +23,7 @@ single_run <- function(tt, params, states) {
 #' @param initial_states List of intitial state values
 #' @param time The number of years to run the model for (from equilibrium). Default is at the halfway point.
 #' @param intervention A vector of interventions to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat
-#' @param intervention_time specify when intervention begins (year)
+#' @param intervention_time Specify when intervention begins (year)
 #' @param intervention_effect A list of intervention effect sizes, see \code{Intervention_effect_size} for details
 #' @param intervention_frequency Frequency of intervention implementation (i.e. 12 = every year)
 #' @param step Time step (months)
@@ -37,12 +37,12 @@ single_run <- function(tt, params, states) {
 #' @param human_testtreat_cov Specify human test and treat coverage
 #' @param human_MDAnic_cov Specify human MDA with niclosamide coverage
 #' @param human_MDApzq_cov Specify human MDA with praziquantel coverage
-#' @param intervention_stage1 A vector of interventions (multistage stage 1) to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat
-#' @param intervention_stage2 A vector of interventions (multistage stage 2)to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat
+#' @param intervention_stage1 A vector of interventions (multistage stage 1) to include from: Husbandry, Sanitation, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat
+#' @param intervention_stage2 A vector of interventions (multistage stage 2)to include from: Husbandry, Sanitation, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat
 #' @param intervention_frequency_stage1 Frequency of intervention (multistage stage 1) implementation (i.e. 12 = every year)
 #' @param intervention_frequency_stage2 Frequency of intervention (multistage stage 2) implementation (i.e. 12 = every year)
-#' @param intervention_time_stage1 specify when intervention stage 1 begins (years)
-#' @param intervention_time_stage2 specify when intervention stage 2 begins (years)
+#' @param intervention_time_stage1 Specify when intervention stage 1 begins (years)
+#' @param intervention_time_stage2 Specify when intervention stage 2 begins (years)
 #' @param age_target_pig_MDA_stage1 Vector of age classes to target with pig MDA (multistage stage 1) intervention (months)
 #' @param age_target_pig_MDA_stage2 Vector of age classes to target with pig MDA (multistage stage 2) intervention (months)
 #' @param age_target_pig_vaccine_stage1 Vector of age classes to target with pig vaccine (multistage stage 1)intervention (months)
@@ -118,7 +118,7 @@ run_model <-
            pig_vaccine_ds2_cov_stage1 = NULL,
            pig_vaccine_ds2_cov_stage2 = NULL) {
     
-  # Calculate parmaters and initial state variables (if not provided)
+  # Calculate parameters and initial state variables (if not provided)
   initialise <- set_up()
   if (is.null(params)) {
     params <- initialise[[1]]
@@ -185,10 +185,7 @@ run_model <-
   
   # If interventions DO NOT change over time (in model run), proceed
   if (is.null(intervention_stage1)) {
-    
-    # if (is.null(intervention_stage1) || is.null(intervention_time_stage1) || 
-    #     is.null(intervention_frequency_stage1) || is.null(num_intervention_rounds_stage1)) 
-    
+
     # User specified coverage values for age-structured model
     int_effect_size_list <- intervention_effect_size_set_up(
       pig_MDA_cov = pig_MDA_cov,
@@ -201,7 +198,6 @@ run_model <-
     )
     # check on inputs
     check_interventions(intervention)
-    #check_effect(intervention_effect = int_effect_size_list)
     stopifnot(
       is.numeric(time),
       is.numeric(intervention_time),
@@ -220,27 +216,6 @@ run_model <-
       length(intervention_frequency) == 1,
       intervention_frequency > 0
     )
-    
-    # additional checks on new intervention arguments
-    if(is.numeric(age_target_pig_MDA)) {
-      stopifnot(is.numeric(age_target_pig_MDA))
-    }
-    
-    if (is.numeric(age_target_pig_vaccine)) {
-      stopifnot(is.numeric(age_target_pig_vaccine))
-    }
-    
-    if (is.numeric(age_target_pig_MDA) && !is.numeric(age_target_pig_vaccine)) {
-      stopifnot(is.numeric(age_target_pig_MDA))
-    }
-    
-    if (is.numeric(age_target_human_MDA)) {
-      stopifnot(is.numeric(age_target_human_MDA))
-    }
-    
-    if (is.numeric(age_target_human_test_and_treat)) {
-      stopifnot(is.numeric(age_target_human_test_and_treat))
-    }
     
     # if non-age structured model specified, but age_target input provided, throw an error message
     
@@ -327,7 +302,7 @@ run_model <-
         states <- intervention_event_state(states = tail_states, intervention, intervention_effect)
       }
       
-      # Alter states/params for single NPI interventions (subsequent years of intervention if continuous)
+      # Alter states/params for single NPI interventions (subsequent years of intervention if continuously applied)
       if (i > 1 && !'Pig_vaccine' %in% intervention && !'Pig_MDA' %in% intervention &&
           !'Human_MDA_nic' %in% intervention && !'Human_MDA_pzq' %in% intervention &&
           !'Human_test_and_treat' %in% intervention) {
@@ -429,7 +404,7 @@ run_model <-
             p <- pre_human_MDA(age_target = age_target_human_MDA, tail_states = tail_states)
             states_move_age_human_MDA <- intervention_event_state(states = p, intervention='Human_MDA_nic', intervention_effect = int_effect_size_list)
             states <- update_states(states_move = states_move_age_human_MDA, tail_states = tail_states)
-            p <- pre_human_test_and_treat(age_target = age_target_human_test_and_treat, tail_states = tail_states) # check: should tail_states = states
+            p <- pre_human_test_and_treat(age_target = age_target_human_test_and_treat, tail_states = tail_states) 
             states_move_age_human_test_and_treat <- intervention_event_state(states = p, intervention='Human_test_and_treat', intervention_effect = int_effect_size_list)
             states <- update_states(states_move = states_move_age_human_test_and_treat, tail_states = tail_states)
           }
@@ -493,7 +468,7 @@ run_model <-
             states <- update_states(states_move = states_move_age_human_test_and_treat, tail_states = tail_states)
           }
           
-          # Throw error messages with specific combinations (non-appropriate)
+          # Throw error messages with specific combinations (i.e. where combinations are non-feasible)
           if('Human_MDA_nic' %in% intervention && is.numeric(age_target_human_MDA) && 
              'Human_MDA_pzq' %in% intervention && is.numeric(age_target_human_MDA) && 
              !'Human_test_and_treat' %in% intervention){
@@ -523,8 +498,8 @@ run_model <-
       
       } 
       
-      #========================================================================================#
-      # IF statements for pig interventions (either after or in absence of human interventions #
+      #=========================================================================================#
+      # IF statements for pig interventions (either after or in absence of human interventions) #
       
       # IF statements for pig interventions (including age-structured interventions)
       if('Pig_MDA' %in% intervention || 'Pig_vaccine' %in% intervention) {
@@ -545,7 +520,6 @@ run_model <-
         } 
         
         if('Pig_MDA' %in% intervention && !is.numeric(age_target_pig_MDA) && !'Pig_vaccine' %in% intervention) {
-          #states <- intervention_event_state(states = tail_states, intervention, intervention_effect = int_effect_size_list)
           age_target_pig_MDA <- c(4:params$na_pig)
         }
         
@@ -555,7 +529,6 @@ run_model <-
         
         if('Pig_MDA' %in% intervention && !is.numeric(age_target_pig_MDA) &&
            'Pig_vaccine' %in% intervention && !is.numeric(age_target_pig_vaccine)) {
-          #states <- intervention_event_state(states = tail_states, intervention, intervention_effect = int_effect_size_list)
           age_target_pig_MDA <- c(4:params$na_pig)
         }
         
@@ -610,7 +583,7 @@ run_model <-
     runs <- as.data.frame(runs)
     
     
-    # If no number of intervention rounds specified #
+    # If number of intervention rounds NOT specified #
     if((is.null(num_intervention_rounds))) {
       
       # proceed to true prevalence to apparent prevalence adjustment (if specified)
@@ -651,7 +624,7 @@ run_model <-
     }
     
     #================================================================================================#
-    # If number of interventions specified: compute rest of model run from end of last intervention 
+    # If number of interventions specified: compute rest of model run from end of last intervention  # 
     if((num_intervention_rounds >= 1)) {
       num_intervention_rounds_split <- num_intervention_rounds + 1
       splits1 <- splits[1:num_intervention_rounds_split]
@@ -703,17 +676,13 @@ run_model <-
   #       Multi-stage interventions (Diff intervention applied over model run) i.e. different dataframes  #
   #=======================================================================================================#
   # Note only pig intervention can currently be structured with two different stages
-  # TO DO: Repeat for human interventions (need for human MDA to SAC then human MDA to all)
   
   #======================================================================================#
   #                             Prepare pre-STAGE 1 and STAGE 1intervention period       #
   
-  # If interventions DO change over time (in model run), proceed
+  # If interventions DO change over time (i.e. in model run), proceed
   if(!is.null(intervention_stage1)) {
-    
-  # if(!is.null(intervention_stage1) || !is.null(intervention_time_stage1) || 
-  #     !is.null(intervention_frequency_stage1) || !is.null(num_intervention_rounds_stage1))
-    
+ 
     # User specified coverage values for age-structured model
     int_effect_size_list <-
       intervention_effect_size_set_up(
@@ -729,10 +698,10 @@ run_model <-
     # check on inputs
     check_interventions_stg1(intervention_stage1)
     check_effect(intervention_effect = int_effect_size_list)
-    stopifnot("CHECK: 1) intervention_time_stage1 & intervention_time_stage2, 2) intervention_frequency_stage1 & intervention_frequency_stage2, 3)
-              age_target_stage1 & age_target_stage2 4) num_intervention_rounds_stage1 & num_intervention_rounds_stage2 5) intervention_time_stage1 &
-              intervention_time_stage2 6) intervention_frequency_stage1 & intervention_frequency_stage2" =
-                is.numeric(time),
+    stopifnot("CHECK: 1) intervention_time_stage1 & intervention_time_stage2; 2) intervention_frequency_stage1 & intervention_frequency_stage2; 3)
+              age_target_stage1 & age_target_stage2; 4) num_intervention_rounds_stage1 & num_intervention_rounds_stage2; 5) intervention_time_stage1 &
+              intervention_time_stage2; 6) intervention_frequency_stage1 & intervention_frequency_stage2" =
+              is.numeric(time),
               is.numeric(intervention_time_stage1),
               is.numeric(step),
               length(time) == 1,length(intervention_time_stage1) == 1,
@@ -775,18 +744,7 @@ run_model <-
        !isTRUE('Pig_MDA' %in% intervention_stage2) && !isTRUE('Pig_vaccine' %in% intervention_stage2)) {
       stop('need to specify interventions for stage 2')
     }
-    
-    
-    # if('Pig_MDA' %in% intervention_stage1 && !is.numeric(age_target_pig_MDA_stage1) || 
-    #    'Pig_MDA' %in% intervention_stage2 && !is.numeric(age_target_pig_MDA_stage2)) {
-    #   stop('need to specify age target for each stage')
-    # }
-    # 
-    # if('Pig_vaccine' %in% intervention_stage1 && !is.numeric(age_target_pig_vaccine_stage1) || 
-    #    'Pig_vaccine' %in% intervention_stage2 && !is.numeric(age_target_pig_vaccine_stage2)) {
-    #   stop('need to specify age target for each stage')
-    # }
-    
+
     # Set time vectors for pre- intervention
     tt1 <- seq(0, (intervention_time_stage1 * 12) - step, step)
     
@@ -867,7 +825,6 @@ run_model <-
         } 
         
         if('Pig_MDA' %in% intervention_stage1 && !is.numeric(age_target_pig_MDA_stage1) && !'Pig_vaccine' %in% intervention_stage1) {
-          #states <- intervention_event_state(states = tail_states, intervention = intervention_stage1, intervention_effect = int_effect_size_list)
           age_target_pig_MDA_stage1 <- c(4:params$na_pig)
         }
         
@@ -877,7 +834,6 @@ run_model <-
         
         if('Pig_MDA' %in% intervention_stage1 && !is.numeric(age_target_pig_MDA_stage1) && 'Pig_vaccine' %in% intervention_stage1 &&
            !is.numeric(age_target_pig_vaccine_stage1)) {
-          #states <- intervention_event_state(states = tail_states, intervention = intervention_stage1, intervention_effect = int_effect_size_list)
           age_target_pig_MDA_stage1 <- c(4:params$na_pig)
         }
         
@@ -1047,8 +1003,7 @@ run_model <-
           states <- intervention_event_state(states = tail_states, intervention = intervention_stage2, intervention_effect)
         }
         
- 
-        # IF statements for pig interventions WITH HUMAN INTERVENTIONS ALREADY RUN (?)
+         # IF statements for pig interventions WITH HUMAN INTERVENTIONS ALREADY RUN (?)
         if('Human_MDA_nic' %in% intervention_stage2 || 'Human_MDA_pzq' %in% intervention_stage2 || 'Human_test_and_treat' %in% intervention_stage2) {
           tail_states <- states # set-up 
         }
@@ -1061,7 +1016,6 @@ run_model <-
         } 
         
         if('Pig_MDA' %in% intervention_stage2 && !is.numeric(age_target_pig_MDA_stage2) && !'Pig_vaccine' %in% intervention_stage2) {
-          #states <- intervention_event_state(states = tail_states, intervention = intervention_stage2, intervention_effect = int_effect_size_list)
           age_target_pig_MDA_stage2 <- c(4:params$na_pig)
         }
         
@@ -1070,7 +1024,6 @@ run_model <-
         }
         
         if('Pig_MDA' %in% intervention_stage2 && !is.numeric(age_target_pig_MDA_stage2) && 'Pig_vaccine' %in% intervention_stage2 &&!is.numeric(age_target_pig_vaccine_stage2)) {
-          #states <- intervention_event_state(states = tail_states, intervention = intervention_stage2, intervention_effect = int_effect_size_list)
           age_target_pig_MDA_stage2 <- c(4:params$na_pig)
         }
         

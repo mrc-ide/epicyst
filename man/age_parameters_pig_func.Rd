@@ -4,10 +4,10 @@
 \alias{age_parameters_pig_func}
 \title{Calculate key age parameters to inform life tables (for pig population)}
 \usage{
-age_parameters_pig_func(number_age_classes, pig_age_class_width)
+age_parameters_pig_func(number_age_classes_pig, pig_age_class_width)
 }
 \arguments{
-\item{number_age_classes}{the number of age classes (pigs)}
+\item{number_age_classes_pig}{the number of age classes (pigs)}
 
 \item{pig_age_class_width}{vector for mean no. of months in each age compartment}
 }

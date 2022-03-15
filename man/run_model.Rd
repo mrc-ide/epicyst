@@ -55,7 +55,7 @@ run_model(
 
 \item{intervention}{A vector of interventions to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat}
 
-\item{intervention_time}{specify when intervention begins (year)}
+\item{intervention_time}{Specify when intervention begins (year)}
 
 \item{intervention_effect}{A list of intervention effect sizes, see \code{Intervention_effect_size} for details}
 
@@ -89,13 +89,13 @@ run_model(
 
 \item{age_target_human_test_and_treat}{specify age group for human test and treat}
 
-\item{intervention_stage1}{A vector of interventions (multistage stage 1) to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat}
+\item{intervention_stage1}{A vector of interventions (multistage stage 1) to include from: Husbandry, Sanitation, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat}
 
-\item{intervention_stage2}{A vector of interventions (multistage stage 2)to include from: Husbandry, Sanitatio, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat}
+\item{intervention_stage2}{A vector of interventions (multistage stage 2)to include from: Husbandry, Sanitation, Inspection, Pig_MDA, Pig_vaccine and Human_test_and_treat}
 
-\item{intervention_time_stage1}{specify when intervention stage 1 begins (years)}
+\item{intervention_time_stage1}{Specify when intervention stage 1 begins (years)}
 
-\item{intervention_time_stage2}{specify when intervention stage 2 begins (years)}
+\item{intervention_time_stage2}{Specify when intervention stage 2 begins (years)}
 
 \item{intervention_frequency_stage1}{Frequency of intervention (multistage stage 1) implementation (i.e. 12 = every year)}
 

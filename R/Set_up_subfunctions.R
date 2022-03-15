@@ -3,17 +3,14 @@
 #' @description
 #' Calculate age rate and age widths for pig compartments depending on number of age groups 
 #'
-#' @param number_age_classes the number of age classes (pigs)
+#' @param number_age_classes_pig the number of age classes (pigs)
 #' @param pig_age_class_width vector for mean no. of months in each age compartment 
 #'
 #' @return age rate and age width
 #' @export
-age_parameters_pig_func <- function(number_age_classes, pig_age_class_width){
-  
-  number_age_classes_pig = number_age_classes
+age_parameters_pig_func <- function(number_age_classes_pig, pig_age_class_width){
   
   # vector for mean no. of months in each age compartment 
-  
   age_width_pig <- c()
   
   #=======================================#
@@ -21,27 +18,27 @@ age_parameters_pig_func <- function(number_age_classes, pig_age_class_width){
   
   # age_width calc: Age-structured model #
   if (number_age_classes_pig > 1) {
-    for (i in number_age_classes_pig) {
-      # width of 1 month for each age class (symmetrical age classes)
-      age_width_pig[1:number_age_classes_pig] <- pig_age_class_width
-      }
+    
+    age_width_pig[1:number_age_classes_pig] <- pig_age_class_width
+    
     }
   
   # create vector of length n age classes for ODIN (& create dimensions for other variables)
+  
   if (number_age_classes_pig == 1) {
     na_pig <- 1
     }
-  
+
   if (number_age_classes_pig > 1) {
-    na_pig <- as.integer(length(age_width_pig)) 
-    }
+    na_pig <- as.integer(length(age_width_pig))
+  }
   
-  # calculate age rate (function of age width) for non age-strcutured model # 
+  # calculate age rate (function of age width) for non age-structured model # 
   if (number_age_classes_pig == 1) {
     age_rate_pig <- 0
     }
   
-  # calculate age rate (function of age width) for age-strcutured model # 
+  # calculate age rate (function of age width) for age-structured model # 
   if (number_age_classes_pig > 1) {
     age_rate_pig <- c()
     
@@ -64,8 +61,8 @@ age_parameters_pig_func <- function(number_age_classes, pig_age_class_width){
 #' Based on code from Verity et al: https://github.com/mrc-ide/covfefe 
 #' Further reference here FAO paper: http://www.fao.org/tempref/docrep/fao/008/a0212e/a0212E09.pdf  
 #' 
-#' @param number_age_classes the number of age classes (pigs)
-#' @param slgt_age_min the age from which pigs are slaughtered (months), user-specified
+#' @param number_age_classes_pig the number of age classes (pigs)
+#' @param slaughter_age_min the age from which pigs are slaughtered (months), user-specified
 #' @param slgtage age-class where slaughter rate first applied to
 #' @param slgtage_bfr age-class before slaughter age first begins
 #' @param dP pig death rate (natural)
@@ -74,31 +71,15 @@ age_parameters_pig_func <- function(number_age_classes, pig_age_class_width){
 #'
 #' @return life table output
 #' @export
-life_tables_pigs_func <- function(number_age_classes, slgt_age_min, slgtage, slgtage_bfr,
+life_tables_pigs_func <- function(number_age_classes_pig, slaughter_age_min, slgtage, slgtage_bfr,
                                   dP = dP, dPslg = dPslg, na_pig){
 
-  number_age_classes_pig <- number_age_classes
-  slaughter_age_min <- slgt_age_min
-  slgtage <- slgtage
-  slgtage_bfr <- slgtage_bfr
-  
 #==============================================================================================#
 # To set up population distribution at baseline: LIFE TABLES APPROACH for Age-structured model #
 #                                         #
 # FAO paper: http://www.fao.org/tempref/docrep/fao/008/a0212e/a0212E09.pdf                     #        
 #
 
-# non-age structured 
-# if (slaughter_age_min == 0) {
-#   age1toslg <- 0
-#   ageslgtoN <- length(c(1:na_pig))
-# }
-
-  if (number_age_classes_pig == 1){ 
-    stop("error: do not need life tables approach for 1 age class (non-age strcutured model")
-  }
-  
-  
 if (number_age_classes_pig > 1) {
   
   if (slaughter_age_min == 0) {
@@ -184,11 +165,7 @@ if (number_age_classes_pig > 1) {
 #' @export
 Pig_age_class_proportions_func <- function(PPS, pig_demography, na_pig, IPL0_total, IPH0_total){
   
-  if (na_pig == 1){ 
-    stop("error: do not calculate prooprtions across age-classes for 1 age class (non-age strcutured model)")
-  }
-  
-  
+  # Recovered (from treatment), vaccinated and pre-patent start as 0
   PP0_total <- 0
   RP0_total <- 0
   VP0_total <- 0
@@ -238,46 +215,6 @@ return(list(SP_eq, PP_eq, IPL_eq, IPH_eq, RP_eq, VP_eq))
 
 }
 
-
-#' @title
-#' Calculate key age parameters for human population
-#' @description
-#' Calculate age rate and age widths for human compartments depending on number of age groups 
-#'
-#' @param number_age_classes the number of age classes (humans)
-#'
-#' @return age rate and age width
-#' @export
-age_parameters_human_func <- function(number_age_classes){
-
-if (number_age_classes > 1) {
-  
-  # vector of specified no. of months in each age compartment 
-  if (number_age_classes == 7) {
-    age_width_human <- c()
-    age_width_human[1] <- 5 * 12 # 0 - 4.99 yrs (in months)
-    age_width_human[2] <- 5 * 12 # 5 - 9.99 yrs
-    age_width_human[3] <- 5 * 12 # 10- 14.99 yrs
-    age_width_human[4] <- 15 * 12 # 15 - 29.99 yrs
-    age_width_human[5] <- 20 * 12 # 30 - 49.99 yrs
-    age_width_human[6] <- 20 * 12 # 50 - 69.99 yrs
-    age_width_human[7] <- 20 * 12 # 70 - 89.99 yrs
-  }
-  
-  # create vector of length n age classes for ODIN (& create dimensions for other variables)
-  na_human <- as.integer(length(age_width_human)) 
-  
-  # calculate age rate (function of age width)
-  age_rate_human <- c()
-  
-  for (i in na_human) {
-    age_rate_human[1:(na_human - 1)] <- 1 / age_width_human[1:i - 1]
-    age_rate_human[na_human] <- 0
-    }
-  
-  }
-  return(list(age_width_human, na_human, age_rate_human))
-}
 
 #' @title
 #' Calculate proportions of humans in each age class

@@ -75,17 +75,17 @@ set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta
     slgage_foi <- 1
   }
   
-  # set up age classes at which pigs slaughtered and contribute exposure to humans
+  # Set-up age classes at which pigs slaughtered and contribute exposure to humans
+  
+  # Slaughter age min for age classes (in months- age-classes in 1 month intervals)
   if (slaughter_age_min == 0 && number_age_classes_pig > 1) {
-    # Slaughter age min for age classes (in months- age-classes in 1 month intervals)
     slgtage_bfr <- 1 # age class before slaughter rate occurs
     slgtage <- 2 # age class where slaughter rate begins from
     slgage_foi <- 1 # pig age classes contributing to expsoure to humans b/c slaughtered
   }
   
-
+  # Slaughter age min for age classes (in months- age-classes in 1 month intervals)
   if (slaughter_age_min == 1) {
-    # Slaughter age min for age classes (in months- age-classes in 1 month intervals)
     slgtage_bfr <- 2
     slgtage <- 2
     slgage_foi <- 2
@@ -160,8 +160,8 @@ set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta
   
   #==========================#
   # Set - up Pig age classes #
-  # calculate age rate and age widths
-  pig_age_parameters <- age_parameters_pig_func(number_age_classes = number_age_classes_pig, pig_age_class_width = pig_age_class_width) 
+  # 1) calculate age rate and age widths
+  pig_age_parameters <- age_parameters_pig_func(number_age_classes_pig = number_age_classes_pig, pig_age_class_width = pig_age_class_width) 
   
   #============================================================================================#
   # calculate pig population number for non-age strucutured model (not using life-tables)     #
@@ -175,22 +175,22 @@ set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta
   VP_eq <- VP0_total
   }
 
-  #========================================================================================#
-  # Calculate life-table for stable baseline pig population (where more than 1 age-class)  # 
+  #===========================================================================================#
+  # 2) Calculate life-table for stable baseline pig population (where more than 1 age-class)  # 
   if (number_age_classes_pig > 1) {
   
-  pig_lifetable_output <- life_tables_pigs_func(number_age_classes = number_age_classes_pig, slgt_age_min = slaughter_age_min, slgtage = slgtage, 
-                                                slgtage_bfr = slgtage_bfr, dP, dPslg, na_pig = pig_age_parameters[[2]])
+  pig_lifetable_output <- life_tables_pigs_func(number_age_classes_pig = number_age_classes_pig, slaughter_age_min = slaughter_age_min, 
+                                                slgtage = slgtage, slgtage_bfr = slgtage_bfr, dP, dPslg, na_pig = pig_age_parameters[[2]])
   
   }
   
   
   #===================================================================================================== #
-  # Calculate proportion of pigs in each age class for each state using life-tables (where >1 age class) # 
+  # 3) Calculate proportion of pigs in each age class for each state using life-tables (where >1 age class) # 
   if (number_age_classes_pig > 1) {
     pig_ageclass_proportions <- Pig_age_class_proportions_func(PPS = PPS, pig_demography = pig_lifetable_output, na_pig = pig_age_parameters[[2]], 
                                                                IPL0_total = IPL0_total, IPH0_total = IPH0_total)
-   # recode proportions for next calculations
+  # recode proportions for next calculations
   SP_eq <- pig_ageclass_proportions[[1]]
   PP_eq <-  pig_ageclass_proportions[[2]]
   IPL_eq <- pig_ageclass_proportions[[3]]
@@ -200,7 +200,6 @@ set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta
   
   }
   
- 
   #========================================================#
   #    calculating quanitites for pig population           #
   if (number_age_classes_pig > 1) {
@@ -249,7 +248,7 @@ set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta
     SP0_all <- sum(SP_eq[1:pig_age_parameters[[2]]]) # total susceptible pigs at baseline
     PCC_prev_eq <- (IPL0_all + IPH0_all) / (IPL0_all + IPH0_all + PP0_all + SP0_all) # quantity check: (patent) PCC prevalence at baseline (all ages)
     PPS_slgt_eq <- (sum(SP_eq[slgage_foi:pig_age_parameters[[2]]]) + sum(PP_eq[slgage_foi:pig_age_parameters[[2]]]) + sum(IPL_eq[slgage_foi:pig_age_parameters[[2]]]) + sum(IPH_eq[slgage_foi:pig_age_parameters[[2]]]) + sum(RP_eq[slgage_foi:pig_age_parameters[[2]]]) + sum(VP_eq[slgage_foi:pig_age_parameters[[2]]])) # quantity check: (patent) PCC prevalence at baseline (slaughter ages)
-    PPS_nonslgt_eq <- PPS - PPS_slgt_eq # quantity check: (patent) PCC prevalence at baseline (non-slaughter ages)
+    PPS_nonslgt_eq <- PPS - PPS_slgt_eq # (patent) PCC prevalence at baseline (non-slaughter ages)
     
   }
   
@@ -262,13 +261,11 @@ set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta
     PP0_all <- PP0_total
   }
   
-  
   #===========================================================#
   #    FINAL PARAMETERS TO MODIFY WITH AGE STRUCTURED NUMBERS #
   
-  # Birth (rate) of pigs
-  
-   na_pig <- pig_age_parameters[[2]]
+  # Birth (rate) of pigs #
+  na_pig <- pig_age_parameters[[2]]
   
   if (number_age_classes_pig > 1) {
     bP <- (dP * sum(SP_eq) + dP * sum(PP_eq) + dP * sum(IPL_eq) + dP * sum(IPH_eq) + dP * sum(RP_eq) + 
@@ -305,19 +302,37 @@ set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta
   }
   
   #================================================================#
-  # Human age-structured model set-up                              #
+  # Human age-structured model set-up  (7 age classes supported)   #
   
+  # 1) calculate age rates and age widths
   if (number_age_classes_human > 1) {
   
-    # calculate age rates and age widths
-  human_age_parameters <- age_parameters_human_func(number_age_classes = number_age_classes_human)
-  
-  age_rate_human <- human_age_parameters[[3]]
-  na_human <- human_age_parameters[[2]]
-  
-  # calculate proportions of humans in each age class
+    # vector of specified no. of months in each age compartment 
+    age_width_human <- c()
+    age_width_human[1] <- 5 * 12 # 0 - 4.99 yrs (in months)
+    age_width_human[2] <- 5 * 12 # 5 - 9.99 yrs
+    age_width_human[3] <- 5 * 12 # 10- 14.99 yrs
+    age_width_human[4] <- 15 * 12 # 15 - 29.99 yrs
+    age_width_human[5] <- 20 * 12 # 30 - 49.99 yrs
+    age_width_human[6] <- 20 * 12 # 50 - 69.99 yrs
+    age_width_human[7] <- 20 * 12 # 70 - 89.99 yrs
+    
+    
+    # create vector of length n age classes for ODIN (& create dimensions for other variables)
+    na_human <- as.integer(length(age_width_human)) 
+    
+    # calculate age rate (function of age width)
+    age_rate_human <- c()
+    
+    for (i in na_human) {
+      age_rate_human[1:(na_human - 1)] <- 1 / age_width_human[1:i - 1]
+      age_rate_human[na_human] <- 0
+    }
+    
+  # 2) calculate proportions of humans in each age class
   human_ageclass_proportions <- human_age_class_proportions_func(age_rate = age_rate_human, na_human = na_human, dH = dH,
-                                                                 HPS = HPS, SHC0_total = SHC0_total, IH0_total = IH0_total, IHC0_total = IHC0_total)
+                                                                 HPS = HPS, SHC0_total = SHC0_total, IH0_total = IH0_total, 
+                                                                 IHC0_total = IHC0_total)
   
   SH_eq <- human_ageclass_proportions[[1]]
   SHC_eq <- human_ageclass_proportions[[2]]
@@ -378,7 +393,6 @@ set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta
     PPS = PPS,
     HPS = HPS,
     bH = bH,
-    #bP = bP,
     dH = dH,
     dP = dP,
     dPslg = dPslg,

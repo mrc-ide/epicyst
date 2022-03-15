@@ -5,8 +5,8 @@
 \title{Calculate life table for pig population}
 \usage{
 life_tables_pigs_func(
-  number_age_classes,
-  slgt_age_min,
+  number_age_classes_pig,
+  slaughter_age_min,
   slgtage,
   slgtage_bfr,
   dP = dP,
@@ -15,9 +15,9 @@ life_tables_pigs_func(
 )
 }
 \arguments{
-\item{number_age_classes}{the number of age classes (pigs)}
+\item{number_age_classes_pig}{the number of age classes (pigs)}
 
-\item{slgt_age_min}{the age from which pigs are slaughtered (months), user-specified}
+\item{slaughter_age_min}{the age from which pigs are slaughtered (months), user-specified}
 
 \item{slgtage}{age-class where slaughter rate first applied to}
 

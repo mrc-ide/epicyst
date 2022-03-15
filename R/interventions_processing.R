@@ -15,6 +15,7 @@ pre_pig_MDA <- function(age_target, tail_states) {
   RP0_age  <- (unlist(tail_states$RP0[grep("RP", names(tail_states$RP0))][age_target]))
   PP0_age  <- (unlist(tail_states$PP0[grep("PP", names(tail_states$PP0))][age_target]))
   
+  # isolating relevant age classes
   tail_states_age <- list (
     SP0 = SP0_age,
     IPL0 = IPL0_age, 
@@ -41,13 +42,14 @@ pre_pig_vaccine <- function(age_target, tail_states) {
   SP0_age  <- (unlist(tail_states$SP0[grep("SP", names(tail_states$SP0))][age_target]))
   VP0_age  <- (unlist(tail_states$VP0[grep("VP", names(tail_states$VP0))][age_target]))
   
+  # isolating relevant age classes
   tail_states_age <- list (
     SP0 = SP0_age,
     VP0 = VP0_age
   )
   
   return(tail_states_age)
-} # isolating relevant age classes
+}
 
 
 #' @title
@@ -113,6 +115,7 @@ update_states <- function(states_move, tail_states){
 #' @export
 
 age_struc_pig_vacc_func <-function(oldest_age, intervention_frequency) {
+ 
   youngest <- intervention_frequency + 2   # pigs vaccinated from 2 months
   
   oldest <- oldest_age
@@ -139,6 +142,7 @@ pre_human_MDA <- function(age_target, tail_states) {
   SHC0_age  <- (unlist(tail_states$SHC0[grep("SHC", names(tail_states$SHC0))][age_target]))
   IHC0_age  <- (unlist(tail_states$IHC0[grep("IHC", names(tail_states$IHC0))][age_target]))
   
+  # isolating relevant age classes
   tail_states_age <- list (
     IH0 = IH0_age,
     SH0 = SH0_age, 
@@ -162,6 +166,7 @@ pre_human_test_and_treat <- function(age_target, tail_states){
   IH0_age <- (unlist(tail_states$IH0[grep("IH", names(tail_states$IH0))][age_target]))
   SH0_age <- (unlist(tail_states$SH0[grep("SH", names(tail_states$SH0))][age_target]))
   
+  # isolating relevant age classes
   tail_states_age <- list (
     IH0 = IH0_age,
     SH0 = SH0_age 
