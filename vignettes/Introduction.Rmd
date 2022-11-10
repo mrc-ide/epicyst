@@ -31,6 +31,7 @@ initialise[[2]][6:7]
 ```
 
 Input arguments for `set_up()` are documented in the help file `?set_up()`. Certain combinations of input prevalence may not be possible to fit, in which case an error message will be thrown.
+
     
 -----
   
@@ -45,8 +46,8 @@ m1 <- run_model(time = 50)
 ```{r, results='asis', echo=FALSE}
 knitr::kable(round(m1[1:5, 1:11]), caption = 'State variables')
 knitr::kable(round(m1[100:110, c(1,12:13)]), caption = 'Cumulative cases')
-knitr::kable(tail(m1[, c(1,14:16)], 10), caption = 'Tracked cases', digits = 0)
-knitr::kable(tail(m1[, c(1,17:19)], 10), caption = 'Tracked prevalence', digits = 2)
+knitr::kable(utils::tail(m1[, c(1,14:16)], 10), caption = 'Tracked cases', digits = 0)
+knitr::kable(utils::tail(m1[, c(1,17:19)], 10), caption = 'Tracked prevalence', digits = 2)
 ```
 
 It is suggested that a period of burn in (specified in years) is included to ensure small changes in endemic equilibrium at the start of a run are avoided:
@@ -72,7 +73,7 @@ Model runs return a `data.frame` of model output for each time step.
   
 # Call and view intervention effects
 
-The intervention effect sizes can be viewed using the `Intervention_effect_size()` function. Effect sizes can be modified if required:
+The intervention effect sizes can be viewed using the `intervention_effect_size()` function. Effect sizes can be modified if required:
 
 ```{r}
 # initialise default intervention effect sizes

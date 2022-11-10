@@ -2,7 +2,7 @@
 % Please edit documentation in R/Model_wrappers.R
 \name{single_run}
 \alias{single_run}
-\title{run Cysticercosis model ODE}
+\title{Run Cysticercosis model ODE}
 \usage{
 single_run(tt, params, states)
 }
@@ -14,5 +14,5 @@ single_run(tt, params, states)
 \item{states}{list of states}
 }
 \description{
-runs a single implementation of the ODE Cysticercosis model
+Runs a single implementation of the ODE Cysticercosis model
 }
