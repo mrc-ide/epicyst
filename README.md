@@ -68,6 +68,10 @@ package](https://mrc-ide.github.io/odin/)
 For a detailed practical guide please see the [epicyst introduction
 vignette](https://mrc-ide.github.io/epicyst/articles/Introduction.html)
 
+A detailed introduction to the age-strcutured model can be found here: [age-structured epicyst introduction vignette](https://rpubs.com/mad206/1192723) 
+and a guide to modelling interventions in the age-structured model here: [interventions in the age-structured EPICYST model vignette](https://rpubs.com/mad206/1192733). 
+Modelling complex (multi-stage) age-stratified interventions is covered in: [complex intervention modelling in the age-structured EPICYST model vignette](https://rpubs.com/mad206/1192729).
+
 -----
 
 Details on the model functionality and use can be found on the [epicyst
