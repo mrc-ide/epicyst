@@ -78,11 +78,16 @@ set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta
   # Set-up age classes at which pigs slaughtered and contribute exposure to humans
   
   # Slaughter age min for age classes (in months- age-classes in 1 month intervals)
-  if (slaughter_age_min == 0 && number_age_classes_pig > 1) {
-    slgtage_bfr <- 1 # age class before slaughter rate occurs
-    slgtage <- 2 # age class where slaughter rate begins from
-    slgage_foi <- 1 # pig age classes contributing to expsoure to humans b/c slaughtered
+  if (is.na(slaughter_age_min) || is.na(number_age_classes_pig)) {
+    stop("Error: Missing values in slaughter_age_min or number_age_classes_pig")
   }
+  
+  if (slaughter_age_min == 0 && number_age_classes_pig > 1) {
+    slgtage_bfr <- 1  # age class before slaughter rate occurs
+    slgtage <- 2      # age class where slaughter rate begins from
+    slgage_foi <- 1   # pig age classes contributing to exposure to humans b/c slaughtered
+  }
+  
   
   # Slaughter age min for age classes (in months- age-classes in 1 month intervals)
   if (slaughter_age_min == 1) {

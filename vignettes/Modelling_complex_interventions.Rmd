@@ -10,7 +10,8 @@ vignette: >
 ---
 
 ```{r, echo=FALSE}
-library(epicyst)
+#library(epicyst)
+devtools::load_all() # development mode
 ```
 
 -----

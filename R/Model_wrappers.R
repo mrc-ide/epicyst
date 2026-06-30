@@ -548,7 +548,7 @@ run_model <-
           }
           
           if('Pig_MDA' %in% intervention && is.numeric(age_target_pig_MDA) && 
-             'Pig_vaccine' %in% intervention) {
+             'Pig_vaccine' %in% intervention && !is.numeric(age_target_pig_vaccine)) {
             age_target_pig_vaccine <- c(1:params$na_pig)
             p <- pre_pig_vaccine(age_target = age_target_pig_vaccine, tail_states = states)
             states_move_age_pig_vaccine <- intervention_event_state(states = p, intervention ='Pig_vaccine', intervention_effect = int_effect_size_list)
@@ -1040,7 +1040,9 @@ run_model <-
           if('Pig_MDA' %in% intervention_stage2 && is.numeric(age_target_pig_MDA_stage2) && is.numeric(age_target_pig_vaccine_stage2)) {
             p <- pre_pig_vaccine(age_target = age_target_pig_vaccine_stage2, tail_states = states)
             states_move_age_pig_vaccine <- intervention_event_state(states = p, intervention ='Pig_vaccine', intervention_effect = int_effect_size_list)
-            states <- update_states(states_move = states_move_age_pig_vaccine, tail_states = states)
+            states <- update_states(states_move = states_move_age_pig_vaccine, tail_states = states) # shoudl tail_states be p?
+            #states <- update_states(states_move = states_move_age_pig_vaccine, tail_states = p) # shoudl tail_states be p?
+            
           }
           
           if('Pig_MDA' %in% intervention_stage2 && is.numeric(age_target_pig_MDA_stage2) && 'Pig_vaccine' %in% intervention_stage2 && !is.numeric(age_target_pig_vaccine_stage2)) {

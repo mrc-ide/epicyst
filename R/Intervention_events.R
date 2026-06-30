@@ -196,12 +196,16 @@ intervention_event_state <- function(states, intervention, intervention_effect) 
   
   if('Human_MDA_pzq' %in% intervention) {
     proportion <- intervention_effect[['Human_MDA_pzq']]
-    states <- move_state_triple(states, from ='IHC0', to_1 = "SH0", to_2 ="SHC0", to_3 ="IH0",
-                               proportion_1 = proportion[1],
-                               proportion_2 = proportion[2],
-                               proportion_3 = proportion[3])
-    states <- move_state(states, from = 'IH0', to ='SH0', proportion = proportion[4])
-    states <- move_state(states, from = 'SHC0', to = 'SH0', proportion = proportion[5])
+    
+    states <- move_state(states, from = 'IH0', to ='SH0', proportion = proportion[4]) # taeniasis + to taeniasis -
+    states <- move_state(states, from = 'IHC0', to = 'SHC0', proportion = proportion[4]) # taeniasis + HCC + to taeniasis - HCC +
+    
+    # below are # out because assume no impact of PZQ on HCC (directly)
+    #states <- move_state(states, from = 'SHC0', to = 'SH0', proportion = proportion[5])
+    # states <- move_state_triple(states, from ='IHC0', to_1 = "SH0", to_2 ="SHC0", to_3 ="IH0",
+    #                            proportion_1 = proportion[1],
+    #                            proportion_2 = proportion[2],
+    #                            proportion_3 = proportion[3])
   }
   
   return(states)

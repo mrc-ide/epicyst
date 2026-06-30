@@ -1,0 +1,107 @@
+-- R CMD INSTALL ----------------------------------------------------------------------------------------------------------------------
+  -  installing *source* package 'epicyst' ... (1.9s)
+     ** this is package 'epicyst' version '1.0.4'
+   ** using staged installation
+     ** libs
+     using C compiler: 'gcc.exe (GCC) 13.3.0'
+     C:/rtools44/x86_64-w64-mingw32.static.posix/bin/gcc  -I"C:/Users/MATTHE~1/AppData/Local/Programs/R/R-45~1.2/include" -DNDEBUG     -I"C:/rtools45/x86_64-w64-mingw32.static.posix/include"      -std=gnu99 -UNDEBUG -Wall -pedantic -g -O0 -c odin.c -o odin.o
+     In file included from C:/Users/MATTHE~1/AppData/Local/Programs/R/R-45~1.2/include/R.h:70,
+                    from odin.c:2:
+   C:/Users/MATTHE~1/AppData/Local/Programs/R/R-45~1.2/include/R_ext/Boolean.h:65:16: warning: ISO C does not support specifying 'enum' underlying types before C2X [-Wpedantic]
+      65 |   typedef enum :int { FALSE = 0, TRUE } Rboolean;  // so NOT NA
+         |                ^
+     In file included from C:/Users/MATTHE~1/AppData/Local/Programs/R/R-45~1.2/include/R.h:71:
+   C:/Users/MATTHE~1/AppData/Local/Programs/R/R-45~1.2/include/R_ext/Complex.h:80:6: warning: ISO C99 doesn't support unnamed structs/unions [-Wpedantic]
+      80 |     };
+         |      ^
+     In file included from C:/rtools45/x86_64-w64-mingw32.static.posix/include/string.h:194,
+                    from C:/Users/MATTHE~1/AppData/Local/Programs/R/R-45~1.2/include/R_ext/RS.h:34,
+                    from C:/Users/MATTHE~1/AppData/Local/Programs/R/R-45~1.2/include/R.h:78:
+   C:/rtools45/x86_64-w64-mingw32.static.posix/include/sec_api/string_s.h:50:138: warning: ISO C does not allow extra ';' outside of a function [-Wpedantic]
+      50 |   __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_3(errno_t, _strncpy_s_l, char, _Dest, const char *, _Source, size_t, _MaxCount, _locale_t, _Locale);
+         |                                                                                                                                          ^
+     C:/rtools45/x86_64-w64-mingw32.static.posix/include/sec_api/string_s.h:87:121: warning: ISO C does not allow extra ';' outside of a function [-Wpedantic]
+      87 |   __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_2(errno_t, wcsncpy_s, wchar_t, _Dest, const wchar_t *, _Source, size_t, _MaxCount);
+         |                                                                                                                         ^
+   C:/rtools45/x86_64-w64-mingw32.static.posix/include/sec_api/string_s.h:89:144: warning: ISO C does not allow extra ';' outside of a function [-Wpedantic]
+      89 |   __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_3(errno_t, _wcsncpy_s_l, wchar_t, _Dest, const wchar_t *, _Source, size_t, _MaxCount, _locale_t, _Locale);
+         |                                                                                                                                                ^
+     odin.c: In function 'cyst_generator_finalise':
+     odin.c:145:5: warning: implicit declaration of function 'Free'; did you mean 'free'? [-Wimplicit-function-declaration]
+     145 |     Free(internal->age_rate_human);
+         |     ^~~~
+         |     free
+   odin.c: In function 'cyst_generator_create':
+   odin.c:172:66: warning: implicit declaration of function 'Calloc'; did you mean 'calloc'? [-Wimplicit-function-declaration]
+     172 |   cyst_generator_internal *internal = (cyst_generator_internal*) Calloc(1, cyst_generator_internal);
+         |                                                                  ^~~~~~
+         |                                                                  calloc
+   odin.c:172:76: error: expected expression before 'cyst_generator_internal'
+     172 |   cyst_generator_internal *internal = (cyst_generator_internal*) Calloc(1, cyst_generator_internal);
+         |                                                                            ^~~~~~~~~~~~~~~~~~~~~~~
+     odin.c: In function 'cyst_generator_set_user':
+   odin.c:523:61: error: expected expression before 'double'
+     523 |   internal->initial_IH = (double*) Calloc(internal->dim_IH, double);
+         |                                                             ^~~~~~
+     odin.c:525:63: error: expected expression before 'double'
+     525 |   internal->initial_IHC = (double*) Calloc(internal->dim_IHC, double);
+         |                                                               ^~~~~~
+   odin.c:527:63: error: expected expression before 'double'
+     527 |   internal->initial_IPH = (double*) Calloc(internal->dim_IPH, double);
+         |                                                               ^~~~~~
+   odin.c:529:63: error: expected expression before 'double'
+     529 |   internal->initial_IPL = (double*) Calloc(internal->dim_IPL, double);
+         |                                                               ^~~~~~
+     odin.c:531:61: error: expected expression before 'double'
+     531 |   internal->initial_PP = (double*) Calloc(internal->dim_PP, double);
+         |                                                             ^~~~~~
+   odin.c:533:61: error: expected expression before 'double'
+     533 |   internal->initial_RP = (double*) Calloc(internal->dim_RP, double);
+         |                                                             ^~~~~~
+   odin.c:535:61: error: expected expression before 'double'
+     535 |   internal->initial_SH = (double*) Calloc(internal->dim_SH, double);
+         |                                                             ^~~~~~
+     odin.c:537:63: error: expected expression before 'double'
+     537 |   internal->initial_SHC = (double*) Calloc(internal->dim_SHC, double);
+         |                                                               ^~~~~~
+   odin.c:539:61: error: expected expression before 'double'
+     539 |   internal->initial_SP = (double*) Calloc(internal->dim_SP, double);
+         |                                                             ^~~~~~
+   odin.c:541:61: error: expected expression before 'double'
+     541 |   internal->initial_VP = (double*) Calloc(internal->dim_VP, double);
+         |                                                             ^~~~~~
+     odin.c: In function 'user_get_scalar_int':
+     odin.c:867:47: warning: format '%d' expects argument of type 'int', but argument 2 has type 'const char *' [-Wformat=]
+     867 |       Rf_error("Expected scalar integer for '%d'", name);
+         |                                              ~^    ~~~~
+         |                                               |    |
+         |                                               int  const char *
+         |                                              %s
+   odin.c: In function 'user_get_array_dim':
+     odin.c:971:24: error: expected expression before 'int'
+     971 |     dest = Calloc(len, int);
+         |                        ^~~
+   odin.c:974:24: error: expected expression before 'double'
+     974 |     dest = Calloc(len, double);
+         |                        ^~~~~~
+     odin.c: In function 'user_get_array':
+     odin.c:1011:48: warning: format '%d' expects argument of type 'int', but argument 2 has type 'size_t' {aka 'long long unsigned int'} [-Wformat=]
+    1011 |         Rf_error("Incorrect size of dimension %d of '%s' (expected %d)",
+         |                                               ~^
+         |                                                |
+         |                                                int
+         |                                               %lld
+    1012 |                  i + 1, name, dim_expected);
+         |                  ~~~~~                          
+         |                    |
+         |                    size_t {aka long long unsigned int}
+     odin.c:1023:24: error: expected expression before 'int'
+    1023 |     dest = Calloc(len, int);
+         |                        ^~~
+   odin.c:1026:24: error: expected expression before 'double'
+    1026 |     dest = Calloc(len, double);
+         |                        ^~~~~~
+     make: *** [C:/Users/MATTHE~1/AppData/Local/Programs/R/R-45~1.2/etc/x64/Makeconf:289: odin.o] Error 1
+     ERROR: compilation failed for package 'epicyst'
+  -  removing 'C:/Users/MATTHE~1/AppData/Local/Temp/RtmpgZYPT2/devtools_install_48b05f1f7338/epicyst'
+
