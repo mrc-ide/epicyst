@@ -252,16 +252,22 @@ intervention_effect_size <- function() {
 #' @param human_testtreat_cov human test and treat coverage
 #' @param human_MDAnic_cov human MDA (with niclosamide) coverage
 #' @param human_MDApzq_cov human MDA (with praziquantel) coverage
+#' @param pig_ofz_efficacy efficacy for oxfendazole for pig MDA
+#' @param human_pzq_efficacy efficacy for praziqunatel for human MDA
+#' @param human_nic_efficacy efficacy for niclosamide for human MDA
 #' @param pig_MDA_prop_noimmunity proportion of pigs without immunity following treatment
 #' 
 #' @return A list Intervention effects
 #' @export
 
 intervention_effect_size_set_up <- function(pig_MDA_cov, pig_vaccine_ds1_cov, pig_vaccine_ds2_cov,
-                                          human_testtreat_cov, human_MDAnic_cov, human_MDApzq_cov, 
+                                          human_testtreat_cov, human_MDAnic_cov, human_MDApzq_cov,
+                                          pig_ofz_efficacy, human_pzq_efficacy, human_nic_efficacy,
                                           pig_MDA_prop_noimmunity){
   
+  # =============================================== #
   # set up default coverage values if non specified #
+  
   if (is.null(pig_MDA_cov)) {
     pig_MDA_cov = 0.9
   }
@@ -290,6 +296,21 @@ intervention_effect_size_set_up <- function(pig_MDA_cov, pig_vaccine_ds1_cov, pi
     pig_MDA_prop_noimmunity = 0.1
   }
   
+  # =============================================== #
+  # set up default efficacy values if non specified #
+  
+  if (is.null(pig_ofz_efficacy)) {
+    pig_ofz_efficacy = 0.99 # from Assana E, Kyngdon CT, Gauci CG, Geerts S, Dorny P, De Deken R, et al. Elimination of Taenia solium transmission to pigs in a field trial of the TSOL18 vaccine in Cameroon. Int J Parasitol. 2010;40(5):515–9.
+  }
+  
+  if (is.null(human_pzq_efficacy)) {
+    human_pzq_efficacy = 0.99 # assumed in Winskill. et al. 2017; in Haby et al. 99.5% (https://journals.plos.org/plosntds/article?id=10.1371/journal.pntd.0007873)
+  }
+  
+  if (is.null(human_nic_efficacy)) {
+    human_nic_efficacy = 0.843 # efficacy estimate from Bustos et al, 2012 (0.779); Haby et al. 84.3% (https://journals.plos.org/plosntds/article?id=10.1371/journal.pntd.0007873)
+  }
+  
   # produce list for proportion moved (efficacy x coverage) #
   list <- list(
     Husbandry = 0.8,
@@ -300,11 +321,11 @@ intervention_effect_size_set_up <- function(pig_MDA_cov, pig_vaccine_ds1_cov, pi
                 Proportion_no_immunity = pig_MDA_prop_noimmunity), # Successfully treated = the assumed therapeutic coverage (0.9) × the anthelmintic efficacy (0.99).
     Pig_vaccine = pig_vaccine_ds1_cov * pig_vaccine_ds2_cov * (0.99), # Assumed coverage (0.9) dose 1 * assumed coverage round2 * vaccine efficacy (0.99) WITHOUT ADJUSTMENT
     Human_test_and_treat = human_testtreat_cov * 0.97 * 0.98 * 0.99, # Proportion of people tested that are T+ and C- (Assumed therapeutic coverage (0.9) * Taeniasis sensitivity (0.97) * Cysticercosis specificity (0.98)) * drug efficacy (0.99)
-    Human_MDA_nic = c(Proportion_sucess_treated = human_MDAnic_cov * 0.779), # Successfully treated = the assumed therapeutic coverage (0.75) from literature × the anthelmintic efficacy with niclosamide - efficacy estimate from Bustos et al, 2012 (0.779).
-    Human_MDA_pzq = c(Proportion_sucess_treated_pzq_taenneg_cystneg = human_MDApzq_cov * 0.99 * 0.8, 
-                      Proportion_success_treated_pzq_taenneg_cystpos = human_MDApzq_cov * 0.99 * (1 - 0.8), 
-                      Proportion_success_treated_pzq_taenpos_cystneg = (human_MDApzq_cov * (1 - 0.99) * 0.8),
-                      Proportion_success_treated_pzq_taenneg = human_MDApzq_cov * 0.99, 
+    Human_MDA_nic = c(Proportion_sucess_treated = human_MDAnic_cov * human_nic_efficacy), # Successfully treated = the assumed therapeutic coverage (0.75) from literature × the anthelmintic efficacy with niclosamide.
+    Human_MDA_pzq = c(Proportion_sucess_treated_pzq_taenneg_cystneg = human_MDApzq_cov * human_pzq_efficacy * 0.8, 
+                      Proportion_success_treated_pzq_taenneg_cystpos = human_MDApzq_cov * human_pzq_efficacy * (1 - 0.8), 
+                      Proportion_success_treated_pzq_taenpos_cystneg = (human_MDApzq_cov * (1 - human_pzq_efficacy) * 0.8),
+                      Proportion_success_treated_pzq_taenneg = human_MDApzq_cov * human_pzq_efficacy, 
                       Proportion_success_treated_pzq_cystneg = human_MDApzq_cov * 0.8) # proportions 1-4 are treatment of those with cysticercosis +, taeniasis + 
     # to different states, proportion 5 is treatment of those with just taeniasis +, proportion 6 is treatment of those with just cysticercosis +
   )
