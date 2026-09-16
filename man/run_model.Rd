@@ -18,14 +18,19 @@ run_model(
   age_target_pig_vaccine = NULL,
   num_intervention_rounds = NULL,
   pig_MDA_cov = NULL,
+  pig_ofz_efficacy = NULL,
   pig_vaccine_ds1_cov = NULL,
   pig_vaccine_ds2_cov = NULL,
   pig_MDA_prop_noimmunity = NULL,
   human_testtreat_cov = NULL,
   human_MDAnic_cov = NULL,
   human_MDApzq_cov = NULL,
+  human_pzq_efficacy = NULL,
+  human_nic_efficacy = NULL,
+  human_MDA_offset = NULL,
   age_target_human_MDA = NULL,
   age_target_human_test_and_treat = NULL,
+  age_target_human_MDA_multistage = NULL,
   intervention_stage1 = NULL,
   intervention_stage2 = NULL,
   intervention_time_stage1 = NULL,
@@ -73,6 +78,8 @@ run_model(
 
 \item{pig_MDA_cov}{Specify pig MDA coverage}
 
+\item{pig_ofz_efficacy}{efficacy for oxfendazole for pig MDA}
+
 \item{pig_vaccine_ds1_cov}{Specify pig vaccine (dose 1) coverage}
 
 \item{pig_vaccine_ds2_cov}{Specify pig vaccine (dose 2) coverage}
@@ -84,6 +91,12 @@ run_model(
 \item{human_MDAnic_cov}{Specify human MDA with niclosamide coverage}
 
 \item{human_MDApzq_cov}{Specify human MDA with praziquantel coverage}
+
+\item{human_pzq_efficacy}{efficacy for praziqunatel for human MDA}
+
+\item{human_nic_efficacy}{efficacy for niclosamide for human MDA}
+
+\item{human_MDA_offset}{month from which human MDA should start (counting from round 1) in multi-stage interventions}
 
 \item{age_target_human_MDA}{specify age groups for human treatment}
 

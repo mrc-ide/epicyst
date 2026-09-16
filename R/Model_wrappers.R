@@ -9,7 +9,11 @@
 #' @param states list of states
 #' @export
 single_run <- function(tt, params, states) {
-  mod <- cyst_generator$new(user = c(params[c(1:26)], states))
+  odin_pars <- setdiff(names(params),
+                       c("PC_sens", "PC_spec", "C_sens", "C_spec",
+                         "T_sens", "T_spec",
+                         "PCPrev_new", "CPrev_new", "TPrev_new"))
+  mod <- cyst_generator$new(user = c(params[odin_pars], states))
   y <- mod$run(tt)
   return(y)
 }
@@ -128,13 +132,11 @@ run_model <-
            pig_vaccine_ds2_cov_stage2 = NULL) {
     
   # Calculate parameters and initial state variables (if not provided)
-  initialise <- set_up()
-  if (is.null(params)) {
-    params <- initialise[[1]]
-  }
-  if (is.null(initial_states)) {
-    initial_states <- initialise[[2]]
-  }
+    if (is.null(params) || is.null(initial_states)) {
+      initialise <- set_up_analytic()               # only when needed
+      if (is.null(params))         params         <- initialise[[1]]
+      if (is.null(initial_states)) initial_states <- initialise[[2]]
+    }
   
   # run burn in period
   if(burn_in>0) {

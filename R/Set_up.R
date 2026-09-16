@@ -11,11 +11,25 @@ month_rate <- function(dur) {
 }
 
 
-
 #' @title
-#' Set up (age-structured model)
+#' Set up (age-structured model), analytic coefficients
+#'
 #' @description
-#' Caculates internal parameters and equilbirum staring values for state variables
+#' Calculates internal parameters and equilibrium starting values for state
+#' variables, deriving the transmission coefficients in closed form from the
+#' requested prevalences.
+#'
+#' @details
+#' The coefficients are obtained by inverting a reduced form of the
+#' transmission system. The integrated age-structured model therefore settles
+#' at an equilibrium somewhat below the requested prevalences: with
+#' `PCPrev = 0.25` the porcine prevalence settles near 0.15. Supply
+#' `tau_input`, `beta_input` and `theta_input` to override the derived values,
+#' or use [set_up()] with `tune = TRUE` to have them solved against the
+#' integrated system.
+#'
+#' @seealso [set_up()] for the tuned wrapper, [tune_transmission()] for the
+#'   solver.
 #'
 #' @param LEP Pig life expectancy (years)
 #' @param delta Egg production rate (per month)
@@ -50,17 +64,16 @@ month_rate <- function(dur) {
 #' @param pig_age_class_width duration/width of each pig age class (months) 
 #' @param number_age_classes_human number of age classes for human population structure
 #'
-#' @return Two lists of parameters and state variable values
+#' @return A list of two lists: model parameters, and initial state values.
 #' @export
-set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta = 960000,
-                   tau_input = NULL, theta_input = NULL, beta_input = NULL, psi = 0.5,
-                   ATL = 2, ADI = 3, LEH = 54, phi = 0.8, chi = 0.5, RR_cysticercosis = 1, epsilon = 0.01, 
-                   RR_infection = 1, RR_consumption = -0.25, number_age_classes_pig = 150, 
-                   slaughter_age_min = 6, pig_age_class_width = 1, number_age_classes_human = 7,
-                   PCPrev = 0.2, PC_sens = NULL, PC_spec = NULL, 
-                   CPrev = 0.07, C_sens = NULL, C_spec = NULL, 
-                   TPrev = 0.02, T_sens = NULL, T_spec = NULL){
-  
+set_up_analytic <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta = 960000,
+                            tau_input = NULL, theta_input = NULL, beta_input = NULL, psi = 0.5,
+                            ATL = 2, ADI = 3, LEH = 54, phi = 0.8, chi = 0.5, RR_cysticercosis = 1, epsilon = 0.01, 
+                            RR_infection = 1, RR_consumption = -0.25, number_age_classes_pig = 150, 
+                            slaughter_age_min = 6, pig_age_class_width = 1, number_age_classes_human = 7,
+                            PCPrev = 0.2, PC_sens = NULL, PC_spec = NULL, 
+                            CPrev = 0.07, C_sens = NULL, C_spec = NULL, 
+                            TPrev = 0.02, T_sens = NULL, T_spec = NULL) {
   #===============#
   #  PARAMETERS   #
   #===============#
@@ -119,7 +132,7 @@ set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta
     dP <- month_rate(LEP)
     # Pig mortality rate (from min slaughter age class)
     dPslg <- month_rate(slgEP)
-    }
+  }
   
   # Egg mortality rate
   dE <- month_rate(AEL * 7 / 365)
@@ -172,21 +185,21 @@ set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta
   # calculate pig population number for non-age strucutured model (not using life-tables)     #
   
   if (number_age_classes_pig == 1) {
-  SP_eq <- SP0_total
-  PP_eq <- PP0_total
-  IPL_eq <- IPL0_total
-  IPH_eq <- IPH0_total
-  RP_eq <- RP0_total
-  VP_eq <- VP0_total
+    SP_eq <- SP0_total
+    PP_eq <- PP0_total
+    IPL_eq <- IPL0_total
+    IPH_eq <- IPH0_total
+    RP_eq <- RP0_total
+    VP_eq <- VP0_total
   }
-
+  
   #===========================================================================================#
   # 2) Calculate life-table for stable baseline pig population (where more than 1 age-class)  # 
   if (number_age_classes_pig > 1) {
-  
-  pig_lifetable_output <- life_tables_pigs_func(number_age_classes_pig = number_age_classes_pig, slaughter_age_min = slaughter_age_min, 
-                                                slgtage = slgtage, slgtage_bfr = slgtage_bfr, dP, dPslg, na_pig = pig_age_parameters[[2]])
-  
+    
+    pig_lifetable_output <- life_tables_pigs_func(number_age_classes_pig = number_age_classes_pig, slaughter_age_min = slaughter_age_min, 
+                                                  slgtage = slgtage, slgtage_bfr = slgtage_bfr, dP, dPslg, na_pig = pig_age_parameters[[2]])
+    
   }
   
   
@@ -195,14 +208,14 @@ set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta
   if (number_age_classes_pig > 1) {
     pig_ageclass_proportions <- Pig_age_class_proportions_func(PPS = PPS, pig_demography = pig_lifetable_output, na_pig = pig_age_parameters[[2]], 
                                                                IPL0_total = IPL0_total, IPH0_total = IPH0_total)
-  # recode proportions for next calculations
-  SP_eq <- pig_ageclass_proportions[[1]]
-  PP_eq <-  pig_ageclass_proportions[[2]]
-  IPL_eq <- pig_ageclass_proportions[[3]]
-  IPH_eq <- pig_ageclass_proportions[[4]] 
-  RP_eq <- pig_ageclass_proportions[[5]]
-  VP_eq <- pig_ageclass_proportions[[6]]
-  
+    # recode proportions for next calculations
+    SP_eq <- pig_ageclass_proportions[[1]]
+    PP_eq <-  pig_ageclass_proportions[[2]]
+    IPL_eq <- pig_ageclass_proportions[[3]]
+    IPH_eq <- pig_ageclass_proportions[[4]] 
+    RP_eq <- pig_ageclass_proportions[[5]]
+    VP_eq <- pig_ageclass_proportions[[6]]
+    
   }
   
   #========================================================#
@@ -275,7 +288,7 @@ set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta
   if (number_age_classes_pig > 1) {
     bP <- (dP * sum(SP_eq) + dP * sum(PP_eq) + dP * sum(IPL_eq) + dP * sum(IPH_eq) + dP * sum(RP_eq) + 
              dP * sum(VP_eq)) + ((dPslg * sum(SP_eq[slgtage:na_pig])) + (dPslg * sum(PP_eq[slgtage:na_pig])) + (dPslg * sum(IPL_eq[slgtage:na_pig])) + (dPslg * sum(IPH_eq[slgtage:na_pig])) + (dPslg * sum(RP_eq[slgtage:na_pig])) + (dPslg * sum(VP_eq[slgtage:na_pig])))
-    }
+  }
   
   if (number_age_classes_pig == 1) {
     bP <- PPS * dP
@@ -311,7 +324,7 @@ set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta
   
   # 1) calculate age rates and age widths
   if (number_age_classes_human > 1) {
-  
+    
     # vector of specified no. of months in each age compartment 
     age_width_human <- c()
     age_width_human[1] <- 5 * 12 # 0 - 4.99 yrs (in months)
@@ -334,24 +347,24 @@ set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta
       age_rate_human[na_human] <- 0
     }
     
-  # 2) calculate proportions of humans in each age class
-  human_ageclass_proportions <- human_age_class_proportions_func(age_rate = age_rate_human, na_human = na_human, dH = dH,
-                                                                 HPS = HPS, SHC0_total = SHC0_total, IH0_total = IH0_total, 
-                                                                 IHC0_total = IHC0_total)
-  
-  SH_eq <- human_ageclass_proportions[[1]]
-  SHC_eq <- human_ageclass_proportions[[2]]
-  IH_eq <- human_ageclass_proportions[[3]]
-  IHC_eq <- human_ageclass_proportions[[4]]
-  
-  # key quantities for transmission (equilibrium) parameters
-  SH0_all <- sum(SH_eq)   # all susceptible humans at baseline
-  SHC0_all <- sum(SHC_eq) # all cysticercosis infected humans at baseline
-  IH0_all <- sum(IH_eq)   # all taeniasis infected humans at baseline
-  IHC0_all <- sum(IHC_eq) # all cysticercosis & taeniasis infected humans at baseline
-  
+    # 2) calculate proportions of humans in each age class
+    human_ageclass_proportions <- human_age_class_proportions_func(age_rate = age_rate_human, na_human = na_human, dH = dH,
+                                                                   HPS = HPS, SHC0_total = SHC0_total, IH0_total = IH0_total, 
+                                                                   IHC0_total = IHC0_total)
+    
+    SH_eq <- human_ageclass_proportions[[1]]
+    SHC_eq <- human_ageclass_proportions[[2]]
+    IH_eq <- human_ageclass_proportions[[3]]
+    IHC_eq <- human_ageclass_proportions[[4]]
+    
+    # key quantities for transmission (equilibrium) parameters
+    SH0_all <- sum(SH_eq)   # all susceptible humans at baseline
+    SHC0_all <- sum(SHC_eq) # all cysticercosis infected humans at baseline
+    IH0_all <- sum(IH_eq)   # all taeniasis infected humans at baseline
+    IHC0_all <- sum(IHC_eq) # all cysticercosis & taeniasis infected humans at baseline
+    
   }
-
+  
   #=========================================#
   # Define other transmission parameters    #
   
@@ -377,7 +390,7 @@ set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta
   pil <- pil_equilibrium(beta, chi, phi, CRR)
   pih <- CRR * pil
   if (pil > 1 |
-     pih > 1) {
+      pih > 1) {
     stop('pil or pih are >1, equilbirum not found')
   }
   
@@ -450,4 +463,87 @@ set_up <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL = 2, delta
   
   return(list(params, states))
 }
+
+
+#' @title
+#' Set up (age-structured model)
+#'
+#' @description
+#' Calculates internal parameters and equilibrium starting values for state
+#' variables. With `tune = TRUE`, the three transmission coefficients are
+#' solved so that the integrated model sits at the requested equilibrium
+#' prevalences rather than approximately at them.
+#'
+#' @details
+#' With `tune = FALSE` (the default) this is identical to
+#' [set_up_analytic()] and returns immediately.
+#'
+#' With `tune = TRUE`, [tune_transmission()] solves jointly for `tau`, `beta`
+#' and `theta` against `PCPrev`, `TPrev` and `CPrev`. This requires repeated
+#' integration of the model and takes minutes on a first call for a given
+#' configuration. Results are cached on disk keyed on the full argument set and
+#' the package version, so subsequent calls with the same configuration return
+#' immediately; changing any argument triggers a retune. See
+#' [epicyst_cache_clear()].
+#'
+#' Tuning supersedes the practice of inflating `PCPrev`, `TPrev` or `CPrev`
+#' above their intended values to compensate for drift during burn-in.
+#'
+#' @param ... Arguments passed to [set_up_analytic()], which documents them.
+#'   `tau_input`, `beta_input` and `theta_input` may not be combined with
+#'   `tune = TRUE`.
+#' @param tune Logical. Solve the transmission coefficients against the
+#'   requested prevalences? Defaults to `getOption("epicyst.tune", FALSE)`.
+#' @param cache Logical. Use the on-disk tuning cache. Set `FALSE` to force a
+#'   retune.
+#'
+#' @return A list of two lists: model parameters, and initial state values, as
+#'   from [set_up_analytic()]. When `tune = TRUE` the parameter list carries an
+#'   `"epicyst_targets"` attribute recording the three target prevalences,
+#'   which [run_model()] uses to check that the burn-in equilibrium matches.
+#'
+#' @seealso [set_up_analytic()], [tune_transmission()], [decompose_beta()]
+#'
+#' @examples
+#' s <- set_up(PCPrev = 0.25, TPrev = 0.03, CPrev = 0.06)
+#'
+#' \dontrun{
+#' s <- set_up(PCPrev = 0.25, TPrev = 0.03, CPrev = 0.06,
+#'             LEP = 15, slaughter_age_min = 6,
+#'             number_age_classes_pig = 150, tune = TRUE)
+#' }
+#' @export
+set_up <- function(..., tune = getOption("epicyst.tune", FALSE), cache = TRUE) {
+  
+  # Name everything. `...` preserves the call as written, including positional
+  # arguments; matching against set_up_analytic()'s formals turns
+  # set_up(10, 1, 10000) into LEP = 10, slgEP = 1, HPS = 10000.
+  supplied <- list(...)
+  named <- as.list(match.call(
+    set_up_analytic,
+    as.call(c(list(quote(set_up_analytic)), supplied))))[-1]
+  
+  s <- do.call(set_up_analytic, named)
+  if (!isTRUE(tune)) return(s)
+  
+  clash <- intersect(names(named), c("tau_input", "beta_input", "theta_input"))
+  if (length(clash))
+    stop("tune = TRUE solves for the coefficients; remove ",
+         paste(clash, collapse = ", "), call. = FALSE)
+  
+  co <- tuned_coefficients(named, cache = cache)
+  s  <- do.call(set_up_analytic,
+                c(named, list(tau_input   = co[["tau"]],
+                              beta_input  = co[["beta"]],
+                              theta_input = co[["theta"]])))
+  
+  # From the parameter list, not the call: works for positional arguments and
+  # for defaults the caller never mentioned.
+  attr(s[[1]], "epicyst_targets") <- c(PC = s[[1]]$PCPrev_new,
+                                       T  = s[[1]]$TPrev_new,
+                                       C  = s[[1]]$CPrev_new)
+  s
+}
+
+
 
