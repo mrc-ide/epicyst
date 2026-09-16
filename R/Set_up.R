@@ -496,6 +496,10 @@ set_up_analytic <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL =
 #'   requested prevalences? Defaults to `getOption("epicyst.tune", FALSE)`.
 #' @param cache Logical. Use the on-disk tuning cache. Set `FALSE` to force a
 #'   retune.
+#' @param pc_basis Whether `PCPrev` refers to all-age porcine prevalence or to
+#'   prevalence among pigs at or above the minimum slaughter age. Passed to
+#'   [tune_transmission()]. Only used when `tune = TRUE`. Deafult is PCC prev
+#'   set to all-age PCC prev.
 #'
 #' @return A list of two lists: model parameters, and initial state values, as
 #'   from [set_up_analytic()]. When `tune = TRUE` the parameter list carries an
@@ -513,7 +517,8 @@ set_up_analytic <- function(LEP = 10, slgEP = 1,  HPS = 10000, PPS = 2000, AEL =
 #'             number_age_classes_pig = 150, tune = TRUE)
 #' }
 #' @export
-set_up <- function(..., tune = getOption("epicyst.tune", FALSE), cache = TRUE) {
+set_up <- function(..., tune = getOption("epicyst.tune", FALSE), cache = TRUE,
+                   pc_basis = getOption("epicyst.pc_basis", "all_age")) {
   
   # Name everything. `...` preserves the call as written, including positional
   # arguments; matching against set_up_analytic()'s formals turns
@@ -531,7 +536,7 @@ set_up <- function(..., tune = getOption("epicyst.tune", FALSE), cache = TRUE) {
     stop("tune = TRUE solves for the coefficients; remove ",
          paste(clash, collapse = ", "), call. = FALSE)
   
-  co <- tuned_coefficients(named, cache = cache)
+  co <- tuned_coefficients(named, cache = cache, pc_basis = pc_basis)
   s  <- do.call(set_up_analytic,
                 c(named, list(tau_input   = co[["tau"]],
                               beta_input  = co[["beta"]],

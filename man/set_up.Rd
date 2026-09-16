@@ -4,7 +4,12 @@
 \alias{set_up}
 \title{Set up (age-structured model)}
 \usage{
-set_up(..., tune = getOption("epicyst.tune", FALSE), cache = TRUE)
+set_up(
+  ...,
+  tune = getOption("epicyst.tune", FALSE),
+  cache = TRUE,
+  pc_basis = getOption("epicyst.pc_basis", "all_age")
+)
 }
 \arguments{
 \item{...}{Arguments passed to [set_up_analytic()], which documents them.
@@ -16,6 +21,11 @@ requested prevalences? Defaults to `getOption("epicyst.tune", FALSE)`.}
 
 \item{cache}{Logical. Use the on-disk tuning cache. Set `FALSE` to force a
 retune.}
+
+\item{pc_basis}{Whether `PCPrev` refers to all-age porcine prevalence or to
+prevalence among pigs at or above the minimum slaughter age. Passed to
+[tune_transmission()]. Only used when `tune = TRUE`. Deafult is PCC prev
+set to all-age PCC prev.}
 }
 \value{
 A list of two lists: model parameters, and initial state values, as
