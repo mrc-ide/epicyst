@@ -4,109 +4,55 @@
 \alias{set_up}
 \title{Set up (age-structured model)}
 \usage{
-set_up(
-  LEP = 10,
-  slgEP = 1,
-  HPS = 10000,
-  PPS = 2000,
-  AEL = 2,
-  delta = 960000,
-  tau_input = NULL,
-  theta_input = NULL,
-  beta_input = NULL,
-  psi = 0.5,
-  ATL = 2,
-  ADI = 3,
-  LEH = 54,
-  phi = 0.8,
-  chi = 0.5,
-  RR_cysticercosis = 1,
-  epsilon = 0.01,
-  RR_infection = 1,
-  RR_consumption = -0.25,
-  number_age_classes_pig = 150,
-  slaughter_age_min = 6,
-  pig_age_class_width = 1,
-  number_age_classes_human = 7,
-  PCPrev = 0.2,
-  PC_sens = NULL,
-  PC_spec = NULL,
-  CPrev = 0.07,
-  C_sens = NULL,
-  C_spec = NULL,
-  TPrev = 0.02,
-  T_sens = NULL,
-  T_spec = NULL
-)
+set_up(..., tune = getOption("epicyst.tune", FALSE), cache = TRUE)
 }
 \arguments{
-\item{LEP}{Pig life expectancy (years)}
+\item{...}{Arguments passed to [set_up_analytic()], which documents them.
+`tau_input`, `beta_input` and `theta_input` may not be combined with
+`tune = TRUE`.}
 
-\item{slgEP}{life expectancy (years) after pigs reach slaughter age}
+\item{tune}{Logical. Solve the transmission coefficients against the
+requested prevalences? Defaults to `getOption("epicyst.tune", FALSE)`.}
 
-\item{HPS}{Human population size}
-
-\item{PPS}{Pig population size}
-
-\item{AEL}{Average life expectancy of egg in the environment (weeks)}
-
-\item{delta}{Egg production rate (per month)}
-
-\item{tau_input}{user specified egg to pig transmission coefficient}
-
-\item{theta_input}{user specified egg to human transmission coefficient}
-
-\item{beta_input}{user specified pig to human transmission coefficient}
-
-\item{psi}{Pig rate of transition from prepatent to infectious (average duration for maturation of cysts)}
-
-\item{ATL}{Average life expectancy of T. solium adult worm in human (years)}
-
-\item{ADI}{Average duration of cycticercosis infection in humans (years)}
-
-\item{LEH}{Average life expectancy of a human (years)}
-
-\item{phi}{Proportion of infected pigs with low-intensity cyst burden}
-
-\item{chi}{Average number of pork meals (200g portion) per person per month}
-
-\item{RR_cysticercosis}{Risk multiplier for Cysticercosis if human has Taeniasis}
-
-\item{epsilon}{Pig rate of loss of naturally aquired immunity}
-
-\item{RR_infection}{Increased RR of infection given consumption of high cyct burden pork, compared with low cyst burden}
-
-\item{RR_consumption}{Decreased RR of consumption of high cyst burden pork, compared with low cyst burden pork}
-
-\item{number_age_classes_pig}{Number of age classes for pig population structure}
-
-\item{slaughter_age_min}{Minimum age (in months) from which pigs are slaughtered}
-
-\item{pig_age_class_width}{duration/width of each pig age class (months)}
-
-\item{number_age_classes_human}{number of age classes for human population structure}
-
-\item{PCPrev}{Cysticercosis prevalence in pigs (true underlying prevalence)}
-
-\item{PC_sens}{Sensitivity of pig cysticercosis diagnostic}
-
-\item{PC_spec}{Specificity of pig cysticercosis diagnostic}
-
-\item{CPrev}{Cysticercosis prevalence in humans (true underlying prevalence)}
-
-\item{C_sens}{Sensitivity of human cysticercosis diagnostic}
-
-\item{C_spec}{Specificity of human cysticercosis diagnostic}
-
-\item{TPrev}{Taeniasis prevalence (true underlying prevalence)}
-
-\item{T_sens}{Sensitivity of human taeniasis diagnostic}
-
-\item{T_spec}{Specificity of human taeniasis diagnostic}
+\item{cache}{Logical. Use the on-disk tuning cache. Set `FALSE` to force a
+retune.}
 }
 \value{
-Two lists of parameters and state variable values
+A list of two lists: model parameters, and initial state values, as
+  from [set_up_analytic()]. When `tune = TRUE` the parameter list carries an
+  `"epicyst_targets"` attribute recording the three target prevalences,
+  which [run_model()] uses to check that the burn-in equilibrium matches.
 }
 \description{
-Caculates internal parameters and equilbirum staring values for state variables
+Calculates internal parameters and equilibrium starting values for state
+variables. With `tune = TRUE`, the three transmission coefficients are
+solved so that the integrated model sits at the requested equilibrium
+prevalences rather than approximately at them.
+}
+\details{
+With `tune = FALSE` (the default) this is identical to
+[set_up_analytic()] and returns immediately.
+
+With `tune = TRUE`, [tune_transmission()] solves jointly for `tau`, `beta`
+and `theta` against `PCPrev`, `TPrev` and `CPrev`. This requires repeated
+integration of the model and takes minutes on a first call for a given
+configuration. Results are cached on disk keyed on the full argument set and
+the package version, so subsequent calls with the same configuration return
+immediately; changing any argument triggers a retune. See
+[epicyst_cache_clear()].
+
+Tuning supersedes the practice of inflating `PCPrev`, `TPrev` or `CPrev`
+above their intended values to compensate for drift during burn-in.
+}
+\examples{
+s <- set_up(PCPrev = 0.25, TPrev = 0.03, CPrev = 0.06)
+
+\dontrun{
+s <- set_up(PCPrev = 0.25, TPrev = 0.03, CPrev = 0.06,
+            LEP = 15, slaughter_age_min = 6,
+            number_age_classes_pig = 150, tune = TRUE)
+}
+}
+\seealso{
+[set_up_analytic()], [tune_transmission()], [decompose_beta()]
 }

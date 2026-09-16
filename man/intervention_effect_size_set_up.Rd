@@ -11,6 +11,9 @@ intervention_effect_size_set_up(
   human_testtreat_cov,
   human_MDAnic_cov,
   human_MDApzq_cov,
+  pig_ofz_efficacy,
+  human_pzq_efficacy,
+  human_nic_efficacy,
   pig_MDA_prop_noimmunity
 )
 }
@@ -26,6 +29,12 @@ intervention_effect_size_set_up(
 \item{human_MDAnic_cov}{human MDA (with niclosamide) coverage}
 
 \item{human_MDApzq_cov}{human MDA (with praziquantel) coverage}
+
+\item{pig_ofz_efficacy}{efficacy for oxfendazole for pig MDA}
+
+\item{human_pzq_efficacy}{efficacy for praziqunatel for human MDA}
+
+\item{human_nic_efficacy}{efficacy for niclosamide for human MDA}
 
 \item{pig_MDA_prop_noimmunity}{proportion of pigs without immunity following treatment}
 }
