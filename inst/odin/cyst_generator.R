@@ -232,6 +232,7 @@ output(Pigs_Cysticercosis) <- sum(IPH) + sum(IPL) # only patent infection
 output(Human_Taeniasis_prev) <- (sum(IH) + sum(IHC)) / HPS
 output(Human_Cysticercosis_prev) <- (sum(SHC) + sum(IHC)) / HPS
 output(Pig_Cysticercosis_prev) <- (sum(IPH) + sum(IPL)) / PPS
+output(Pig_Cysticercosis_prev_slgt) <- (sum(IPL[slgage_foi:na_pig]) + sum(IPH[slgage_foi:na_pig])) / (sum(SP[slgage_foi:na_pig]) + sum(PP[slgage_foi:na_pig]) + sum(IPL[slgage_foi:na_pig]) + sum(IPH[slgage_foi:na_pig]) + sum(RP[slgage_foi:na_pig]) + sum(VP[slgage_foi:na_pig]))
 output(Human_total) <- sum(IH) + sum(IHC) + sum(SH) + sum(SHC) # track to ensure stable population
 output(Pig_total) <- sum(SP) + sum(PP) + sum(IPH) + sum(IPL) + sum(RP) + sum(VP) # track to ensure stable population
 output(birthrate) <- bP # track

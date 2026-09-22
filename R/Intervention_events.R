@@ -6,7 +6,8 @@
 #' @param intervention Vector of one or more parameter interventions
 check_interventions <- function(intervention) {
   param_interventions <- c('Husbandry', 'Sanitation', 'Inspection')
-  state_interventions <- c('Pig_MDA','Pig_vaccine','Human_test_and_treat','Human_MDA_nic','Human_MDA_pzq')
+  state_interventions <- c('Pig_MDA','Pig_vaccine', 'Pig_vaccine_MDA',
+                           'Human_test_and_treat','Human_MDA_nic','Human_MDA_pzq')
   present <- intervention %in% c(param_interventions, state_interventions)
   
   # Check the interventions supplied are proper and correct
@@ -30,7 +31,8 @@ check_interventions <- function(intervention) {
 #' @param intervention_effect Vector of one or more parameter interventions
 check_effect <- function(intervention_effect) {
   param_interventions <- c('Husbandry', 'Sanitation', 'Inspection')
-  state_interventions <- c('Pig_MDA','Pig_vaccine','Human_test_and_treat','Human_MDA_nic','Human_MDA_pzq')
+  state_interventions <- c('Pig_MDA','Pig_vaccine','Pig_vaccine_MDA',
+                           'Human_test_and_treat','Human_MDA_nic','Human_MDA_pzq')
   present <- names(intervention_effect) %in% c(param_interventions, state_interventions)
   
   # Check the intervcentions supplied are proper and correct
@@ -156,6 +158,39 @@ move_state_triple <- function(states, from, to_1, to_2, to_3, proportion_1, prop
 }
 
 #' @title
+#' blend_states
+#' @description
+#' Weighted combination of state lists sharing a layout. Used to assemble the
+#' three-cell round. Names are restored explicitly because Map() does not
+#' reliably preserve the names of inner vectors, and update_states() matches
+#' on them.
+#'
+#' @param parts list of state lists
+#' @param weights numeric vector of the same length, summing to 1
+#'
+#' @return a single state list
+#' @keywords internal
+blend_states <- function(parts, weights) {
+  
+  stopifnot(length(parts) == length(weights),
+            isTRUE(all.equal(sum(weights), 1)))
+  
+  keep <- weights > 0
+  parts   <- parts[keep]
+  weights <- weights[keep]
+  
+  nms <- names(parts[[1]])
+  out <- lapply(nms, function(cmp) {
+    v <- Reduce(`+`, Map(function(p, w) w * p[[cmp]], parts, weights))
+    names(v) <- names(parts[[1]][[cmp]])
+    v
+  })
+  names(out) <- nms
+  out
+}
+
+
+#' @title
 #' Implement parameter intervention
 #' @description
 #' Implements one or more interventions that involve a parameter value being altered
@@ -211,6 +246,58 @@ intervention_event_state <- function(states, intervention, intervention_effect) 
   return(states)
  
 }
+
+
+#' @title
+#' pig_combined_event
+#' @description
+#' Applies one coupled round to a set of pig states spanning the VACCINE age
+#' window, as a three-cell blend: untreated, medicated only, and medicated
+#' plus vaccinated.
+#'
+#' @param states list of pig states from pre_pig_combined()
+#' @param ofz_cov fraction receiving at least one drench
+#' @param vac_cov fraction completing vaccination; must be <= ofz_cov
+#' @param effects_full effect list at coverage 1
+#' @param vaccinate_recovered also move RP0 -> VP0 for treated animals. Inert
+#'   when pig_MDA_prop_noimmunity = 1, since RP0 is then never populated.
+#'
+#' @return list of updated pig states, ready for update_states()
+#' @export
+pig_combined_event <- function(states, ofz_cov, vac_cov,
+                               effects_full, vaccinate_recovered = FALSE) {
+  
+  stopifnot(
+    "ofz_cov must be a single number in [0, 1]" =
+      is.numeric(ofz_cov) && length(ofz_cov) == 1 && ofz_cov >= 0 && ofz_cov <= 1,
+    "vac_cov must be a single number in [0, 1]" =
+      is.numeric(vac_cov) && length(vac_cov) == 1 && vac_cov >= 0 && vac_cov <= 1,
+    "vac_cov cannot exceed ofz_cov" = vac_cov <= ofz_cov + 1e-12,
+    "effects_full must contain Pig_MDA and Pig_vaccine" =
+      all(c("Pig_MDA", "Pig_vaccine") %in% names(effects_full))
+  )
+  
+  if (ofz_cov == 0) return(states)
+  
+  # Cell 2: medicated only, at full coverage
+  ofz_only <- intervention_event_state(states = states,
+                                       intervention = "Pig_MDA",
+                                       intervention_effect = effects_full)
+  
+  # Cell 3: medicated then vaccinated, at full coverage
+  both <- ofz_only
+  if (isTRUE(vaccinate_recovered)) {
+    both <- move_state(both, from = "RP0", to = "VP0",
+                       proportion = effects_full[["Pig_vaccine"]])
+  }
+  both <- intervention_event_state(states = both,
+                                   intervention = "Pig_vaccine",
+                                   intervention_effect = effects_full)
+  
+  blend_states(list(states, ofz_only, both),
+               c(1 - ofz_cov, ofz_cov - vac_cov, vac_cov))
+}
+
 
 #' @title
 #' Pre-set intervention effects
@@ -332,6 +419,40 @@ intervention_effect_size_set_up <- function(pig_MDA_cov, pig_vaccine_ds1_cov, pi
   return(list)
 }
 
+
+#' @title
+#' pig_combined_effects_full
+#' @description
+#' Intervention effect list at coverage 1, holding efficacy and the immunity
+#' split at their run values. This is the operator the blends scale; it is NOT
+#' used to apply an intervention at full coverage directly.
+#'
+#' Only the Pig_MDA and Pig_vaccine entries are ever read.
+#'
+#' @param pig_MDA_prop_noimmunity proportion of cleared pigs returning to SP0
+#' @param pig_ofz_efficacy oxfendazole efficacy. NOTE:
+#'   intervention_effect_size_set_up() currently accepts this argument but does
+#'   not use it - the Pig_MDA entry hard-codes 0.99. Passed here so the combined
+#'   type inherits the corrected behaviour once that is fixed.
+#'
+#' @return intervention effect list at coverage 1
+#' @export
+pig_combined_effects_full <- function(pig_MDA_prop_noimmunity = NULL,
+                                      pig_ofz_efficacy = NULL) {
+  intervention_effect_size_set_up(
+    pig_MDA_cov             = 1,
+    pig_vaccine_ds1_cov     = 1,
+    pig_vaccine_ds2_cov     = 1,
+    human_testtreat_cov     = NULL,
+    human_MDAnic_cov        = NULL,
+    human_MDApzq_cov        = NULL,
+    pig_ofz_efficacy        = pig_ofz_efficacy,
+    human_pzq_efficacy      = NULL,
+    human_nic_efficacy      = NULL,
+    pig_MDA_prop_noimmunity = pig_MDA_prop_noimmunity
+  )
+}
+
 #=================================================================#
 #    Function for multi-stage interventions (stage 1 and stage 2) #                                                                        
 
@@ -344,7 +465,8 @@ intervention_effect_size_set_up <- function(pig_MDA_cov, pig_vaccine_ds1_cov, pi
 #' @param intervention_stage1 Vector of one or more parameter interventions (stage 1)
 check_interventions_stg1 <- function(intervention_stage1) {
   param_interventions <- c('Husbandry', 'Sanitation', 'Inspection')
-  state_interventions <- c('Pig_MDA', 'Pig_vaccine', 'Human_test_and_treat', 'Human_MDA_nic', 'Human_MDA_pzq')
+  state_interventions <- c('Pig_MDA', 'Pig_vaccine', 'Pig_vaccine_MDA',
+                           'Human_test_and_treat', 'Human_MDA_nic', 'Human_MDA_pzq')
   present <- intervention_stage1 %in% c(param_interventions, state_interventions)
   
   # Check the intervcentions supplied are proper and correct
@@ -362,7 +484,8 @@ check_interventions_stg1 <- function(intervention_stage1) {
 #' @param intervention_stage2 Vector of one or more parameter interventions (stage 2)
 check_interventions_stg2 <- function(intervention_stage2) {
   param_interventions <- c('Husbandry', 'Sanitation', 'Inspection')
-  state_interventions <- c('Pig_MDA', 'Pig_vaccine', 'Human_test_and_treat', 'Human_MDA_nic', 'Human_MDA_pzq')
+  state_interventions <- c('Pig_MDA', 'Pig_vaccine', 'Pig_vaccine_MDA',
+                           'Human_test_and_treat', 'Human_MDA_nic', 'Human_MDA_pzq')
   present <- intervention_stage2 %in% c(param_interventions, state_interventions)
   
   # Check the intervcentions supplied are proper and correct
@@ -373,3 +496,35 @@ check_interventions_stg2 <- function(intervention_stage2) {
 }
 
 
+#' @title
+#' resolve_combined_cov
+#' @description
+#' Resolves the nested pair of coverages for a coupled round.
+#'
+#' `vac_cov` is the fully-vaccinated fraction, taken as ds1 * ds2 where not
+#' given explicitly. `ofz_cov` is the fraction receiving at least one drench:
+#' equal to vac_cov for a round-1 style schedule (oxfendazole at the second
+#' dose only), or ds1 for a maintenance schedule (oxfendazole at every visit).
+#' It defaults to vac_cov, the conservative reading.
+#'
+#' @param vac_cov explicit fully-vaccinated coverage, or NULL
+#' @param ofz_cov explicit medicated coverage, or NULL
+#' @param ds1,ds2 pig vaccine dose coverages (may be NULL)
+#'
+#' @return named numeric c(ofz, vac)
+#' @export
+resolve_combined_cov <- function(vac_cov, ofz_cov, ds1, ds2) {
+  
+  if (is.null(ds1)) ds1 <- 0.9   # matches intervention_effect_size_set_up()
+  if (is.null(ds2)) ds2 <- 1.0
+  
+  v <- if (is.null(vac_cov)) ds1 * ds2 else vac_cov
+  o <- if (is.null(ofz_cov)) v         else ofz_cov
+  
+  if (o < v - 1e-12) {
+    stop("Medicated coverage (", o, ") cannot be below fully-vaccinated ",
+         "coverage (", v, "): the vaccinated animals are a subset of the ",
+         "medicated ones.")
+  }
+  c(ofz = o, vac = v)
+}

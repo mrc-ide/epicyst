@@ -66,6 +66,24 @@ single_run <- function(tt, params, states) {
 #' @param human_MDA_offset month from which human MDA should start (counting from round 1) in multi-stage interventions
 #' @param age_target_human_MDA specify age groups for human treatment
 #' @param age_target_human_test_and_treat specify age group for human test and treat
+#' @param pig_combined_vac_cov Fraction of the targeted pigs completing
+#'   vaccination in a `Pig_vaccine_MDA` round. Defaults to
+#'   `pig_vaccine_ds1_cov * pig_vaccine_ds2_cov`.
+#' @param pig_combined_ofz_cov Fraction receiving at least one oxfendazole
+#'   dose. Must be >= the vaccinated fraction, which it contains. Defaults to
+#'   the vaccinated fraction, i.e. oxfendazole at the second dose only.
+#' @param age_target_pig_combined_vac Age classes at which the vaccine schedule
+#'   completes and protection is conferred - one class per cohort for a
+#'   maintenance round. Defaults to `age_struc_pig_vacc_func()`.
+#' @param age_target_pig_combined_ofz Age classes at which a drench is given.
+#'   Must contain the vaccine window. Defaults to the vaccine window extended
+#'   down by one round interval.
+#' @param pig_vaccinate_recovered Move OFZ-cleared pigs from RP0 into VP0 as
+#'   well. Inert at `pig_MDA_prop_noimmunity = 1`.
+#' @param pig_combined_vac_cov_stage1,pig_combined_vac_cov_stage2 As above, per stage.
+#' @param pig_combined_ofz_cov_stage1,pig_combined_ofz_cov_stage2 As above, per stage.
+#' @param age_target_pig_combined_vac_stage1,age_target_pig_combined_vac_stage2 As above.
+#' @param age_target_pig_combined_ofz_stage1,age_target_pig_combined_ofz_stage2 As above.
 #' 
 #' @examples
 #' # Run the baseline model:
@@ -129,7 +147,20 @@ run_model <-
            pig_vaccine_ds1_cov_stage1 = NULL,
            pig_vaccine_ds1_cov_stage2 = NULL,
            pig_vaccine_ds2_cov_stage1 = NULL,
-           pig_vaccine_ds2_cov_stage2 = NULL) {
+           pig_vaccine_ds2_cov_stage2 = NULL,
+           pig_combined_vac_cov = NULL,
+           pig_combined_ofz_cov = NULL,
+           age_target_pig_combined_vac = NULL,
+           age_target_pig_combined_ofz = NULL,
+           pig_combined_vac_cov_stage1 = NULL,
+           pig_combined_vac_cov_stage2 = NULL,
+           pig_combined_ofz_cov_stage1 = NULL,
+           pig_combined_ofz_cov_stage2 = NULL,
+           age_target_pig_combined_vac_stage1 = NULL,
+           age_target_pig_combined_vac_stage2 = NULL,
+           age_target_pig_combined_ofz_stage1 = NULL,
+           age_target_pig_combined_ofz_stage2 = NULL,
+           pig_vaccinate_recovered = FALSE) {
     
   # Calculate parameters and initial state variables (if not provided)
     if (is.null(params) || is.null(initial_states)) {
@@ -210,6 +241,15 @@ run_model <-
       human_nic_efficacy = human_nic_efficacy,
       pig_MDA_prop_noimmunity = pig_MDA_prop_noimmunity
     )
+    
+    int_effect_full <- pig_combined_effects_full(
+      pig_MDA_prop_noimmunity = pig_MDA_prop_noimmunity,
+      pig_ofz_efficacy        = pig_ofz_efficacy)
+    
+    combined_cov <- resolve_combined_cov(pig_combined_vac_cov,
+                                         pig_combined_ofz_cov,
+                                         pig_vaccine_ds1_cov,
+                                         pig_vaccine_ds2_cov)
     # check on inputs
     check_interventions(intervention)
     stopifnot(
@@ -239,6 +279,11 @@ run_model <-
     
     if('Pig_vaccine' %in% intervention && is.numeric(age_target_pig_vaccine) && params$na_pig == 1) {
       stop('Cannot specify age target for vaccine in non age-structured pig model')
+    }
+    
+    if('Pig_vaccine_MDA' %in% intervention && params$na_pig == 1 &&
+       (is.numeric(age_target_pig_combined_vac) || is.numeric(age_target_pig_combined_ofz))) {
+      stop('Cannot specify age target for combined vaccine + MDA in non age-structured pig model')
     }
     
     if('Human_MDA_pzq' %in% intervention && is.numeric(age_target_human_MDA) && params$na_human == 1) {
@@ -310,6 +355,7 @@ run_model <-
       
       # Alter states/params for single NPI interventions (during first year of intervention)
       if (i == 1 && !'Pig_vaccine' %in% intervention && !'Pig_MDA' %in% intervention &&
+          !'Pig_vaccine_MDA' %in% intervention &&
           !'Human_MDA_nic' %in% intervention && !'Human_MDA_pzq' %in% intervention &&
           !'Human_test_and_treat' %in% intervention) {
         params <- intervention_event_param(params = params, intervention, intervention_effect)
@@ -318,6 +364,7 @@ run_model <-
       
       # Alter states/params for single NPI interventions (subsequent years of intervention if continuously applied)
       if (i > 1 && !'Pig_vaccine' %in% intervention && !'Pig_MDA' %in% intervention &&
+          !'Pig_vaccine_MDA' %in% intervention &&
           !'Human_MDA_nic' %in% intervention && !'Human_MDA_pzq' %in% intervention &&
           !'Human_test_and_treat' %in% intervention) {
         states <- intervention_event_state(states = tail_states, intervention, intervention_effect)
@@ -515,6 +562,40 @@ run_model <-
       #=========================================================================================#
       # IF statements for pig interventions (either after or in absence of human interventions) #
       
+      # IF statements for pig interventions (combined pig MDA and vaccine jointly occuring in same animals)
+      if ('Pig_vaccine_MDA' %in% intervention) {
+        
+        if (any(c('Pig_MDA', 'Pig_vaccine') %in% intervention)) {
+          stop("'Pig_vaccine_MDA' replaces 'Pig_MDA' and 'Pig_vaccine' - do ",
+               "not list them together")
+        }
+        
+        if (i == 1) {
+          params <- intervention_event_param(params = params, intervention,
+                                             intervention_effect)
+        }
+        
+        if (any(c('Human_MDA_nic', 'Human_MDA_pzq', 'Human_test_and_treat')
+                %in% intervention)) {
+          tail_states <- states
+        }
+        
+        out <- pig_combined_round(
+          tail_states            = tail_states,
+          age_target_vac         = age_target_pig_combined_vac,
+          age_target_ofz         = age_target_pig_combined_ofz,
+          ofz_cov                = combined_cov[["ofz"]],
+          vac_cov                = combined_cov[["vac"]],
+          effects_full           = int_effect_full,
+          vaccinate_recovered    = pig_vaccinate_recovered,
+          na_pig                 = params$na_pig,
+          intervention_frequency = intervention_frequency)
+        
+        states                      <- out$states
+        age_target_pig_combined_vac <- out$age_target_vac
+        age_target_pig_combined_ofz <- out$age_target_ofz
+      }
+      
       # IF statements for pig interventions (including age-structured interventions)
       if('Pig_MDA' %in% intervention || 'Pig_vaccine' %in% intervention) {
         
@@ -691,8 +772,8 @@ run_model <-
   #=======================================================================================================#
   # Note only pig intervention can currently be structured with two different stages
   
-  #======================================================================================#
-  #                             Prepare pre-STAGE 1 and STAGE 1intervention period       #
+  #=======================================================================================#
+  #                             Prepare pre-STAGE 1 and STAGE 1 intervention period       #
   
   #=======================================================================================================#
   #       Multi-stage interventions (Diff intervention applied over model run) i.e. different dataframes  #
@@ -767,14 +848,18 @@ run_model <-
     apply_pig_round <- function(tail_states, params, intervention_vec,
                                 age_target_MDA, age_target_vaccine,
                                 int_effect_size_list, intervention_frequency,
-                                update_params) {
+                                update_params, 
+                                age_target_combined_vac, age_target_combined_ofz,
+                                combined_ofz_cov, combined_vac_cov) {
       
       states <- tail_states
       
       if (length(intervention_vec) == 0) {
         return(list(params = params, states = states,
                     age_target_MDA = age_target_MDA,
-                    age_target_vaccine = age_target_vaccine))
+                    age_target_vaccine = age_target_vaccine,
+                    age_target_combined_vac = age_target_combined_vac,
+                    age_target_combined_ofz = age_target_combined_ofz))
       }
       
       # Parameter changes (non-biomedical interventions) - applied once per stage
@@ -784,17 +869,45 @@ run_model <-
                                            intervention_effect = int_effect_size_list)
       }
       
-      has_MDA  <- "Pig_MDA"     %in% intervention_vec
-      has_vacc <- "Pig_vaccine" %in% intervention_vec
+      has_MDA  <- "Pig_MDA"         %in% intervention_vec
+      has_vacc <- "Pig_vaccine"     %in% intervention_vec
+      has_comb <- "Pig_vaccine_MDA" %in% intervention_vec
+      
+      if (has_comb && (has_MDA || has_vacc)) {
+        stop("'Pig_vaccine_MDA' replaces 'Pig_MDA' and 'Pig_vaccine' - do not ",
+             "list them together in the same stage")
+      }
+      
+      if (has_comb) {
+        out <- pig_combined_round(
+          tail_states            = states,
+          age_target_vac         = age_target_combined_vac,
+          age_target_ofz         = age_target_combined_ofz,
+          ofz_cov                = combined_ofz_cov,
+          vac_cov                = combined_vac_cov,
+          effects_full           = int_effect_full,
+          vaccinate_recovered    = pig_vaccinate_recovered,
+          na_pig                 = params$na_pig,
+          intervention_frequency = intervention_frequency)
+        
+        return(list(params = params, states = out$states,
+                    age_target_MDA          = age_target_MDA,
+                    age_target_vaccine      = age_target_vaccine,
+                    age_target_combined_vac = out$age_target_vac,
+                    age_target_combined_ofz = out$age_target_ofz))
+      }
+      
       
       # ---- NPI-only round: apply to the whole population -------------------------- #
-      if (!has_MDA && !has_vacc) {
+      if (!has_MDA && !has_vacc && !has_comb) {
         states <- intervention_event_state(states = states,
                                            intervention = intervention_vec,
                                            intervention_effect = int_effect_size_list)
         return(list(params = params, states = states,
                     age_target_MDA = age_target_MDA,
-                    age_target_vaccine = age_target_vaccine))
+                    age_target_vaccine = age_target_vaccine,
+                    age_target_combined_vac = age_target_combined_vac,
+                    age_target_combined_ofz = age_target_combined_ofz))
       }
       
       # ---- Non age-structured pig model: no age selection possible ----------------- #
@@ -804,7 +917,9 @@ run_model <-
                                            intervention_effect = int_effect_size_list)
         return(list(params = params, states = states,
                     age_target_MDA = age_target_MDA,
-                    age_target_vaccine = age_target_vaccine))
+                    age_target_vaccine = age_target_vaccine,
+                    age_target_combined_vac = age_target_combined_vac,
+                    age_target_combined_ofz = age_target_combined_ofz))
       }
       
       # ---- A) Fill in age targets where the user did not supply them --------------- #
@@ -839,7 +954,9 @@ run_model <-
       
       list(params = params, states = states,
            age_target_MDA = age_target_MDA,
-           age_target_vaccine = age_target_vaccine)
+           age_target_vaccine = age_target_vaccine,
+           age_target_combined_vac = age_target_combined_vac,
+           age_target_combined_ofz = age_target_combined_ofz)
     }
     
     # ================================================================================ #
@@ -859,6 +976,17 @@ run_model <-
         human_pzq_efficacy      = human_pzq_efficacy,
         human_nic_efficacy      = human_nic_efficacy
       )
+    
+    # build the combined pig vaccine + MDA (when applied jointly)
+    int_effect_full <- pig_combined_effects_full(
+      pig_MDA_prop_noimmunity = pig_MDA_prop_noimmunity,
+      pig_ofz_efficacy        = pig_ofz_efficacy)
+    
+    combined_cov_stage1 <- resolve_combined_cov(pig_combined_vac_cov_stage1,
+                                                pig_combined_ofz_cov_stage1,
+                                                pig_vaccine_ds1_cov_stage1,
+                                                pig_vaccine_ds2_cov_stage1)
+    
     
     # Input checks (pig / NPI names only - human names are validated above)
     if (length(nonhuman_stage1) > 0) check_interventions_stg1(nonhuman_stage1)
@@ -889,13 +1017,18 @@ run_model <-
         (is.numeric(age_target_pig_vaccine_stage1) || is.numeric(age_target_pig_vaccine_stage2))) {
       stop("Cannot specify age target for vaccine in non age-structured pig model")
     }
+    if (params$na_pig == 1 &&
+        (is.numeric(age_target_pig_combined_vac_stage1) || is.numeric(age_target_pig_combined_vac_stage2) ||
+         is.numeric(age_target_pig_combined_ofz_stage1) || is.numeric(age_target_pig_combined_ofz_stage2))) {
+      stop("Cannot specify age target for combined vaccine + MDA in non age-structured pig model")
+    }
     if (params$na_human == 1 && is.numeric(age_target_human_MDA_multistage)) {
       stop("Cannot specify age target for human MDA in non age-structured human model")
     }
     
     # Stage 2 must contain something if stage 1 used the biomedical pig interventions
-    if (any(c("Pig_MDA", "Pig_vaccine") %in% nonhuman_stage1) &&
-        !any(c("Pig_MDA", "Pig_vaccine") %in% nonhuman_stage2)) {
+    if (any(c("Pig_MDA", "Pig_vaccine", "Pig_vaccine_MDA") %in% nonhuman_stage1) &&
+        !any(c("Pig_MDA", "Pig_vaccine", "Pig_vaccine_MDA") %in% nonhuman_stage2)) {
       stop("need to specify interventions for stage 2")
     }
     
@@ -958,6 +1091,10 @@ run_model <-
           intervention_vec       = nonhuman_stage1,
           age_target_MDA         = age_target_pig_MDA_stage1,
           age_target_vaccine     = age_target_pig_vaccine_stage1,
+          age_target_combined_vac = age_target_pig_combined_vac_stage1,   
+          age_target_combined_ofz = age_target_pig_combined_ofz_stage1,   
+          combined_ofz_cov        = combined_cov_stage1[["ofz"]],         
+          combined_vac_cov        = combined_cov_stage1[["vac"]],         
           int_effect_size_list   = int_effect_size_list,
           intervention_frequency = intervention_frequency_stage1,
           update_params          = (i == first_pig_stage1)
@@ -966,6 +1103,8 @@ run_model <-
         states                        <- out$states
         age_target_pig_MDA_stage1     <- out$age_target_MDA
         age_target_pig_vaccine_stage1 <- out$age_target_vaccine
+        age_target_pig_combined_vac_stage1 <- out$age_target_combined_vac  
+        age_target_pig_combined_ofz_stage1 <- out$age_target_combined_ofz  
       }
       
       # ---- Human round (applied after the pig round so the two compose) ------------- #
@@ -1013,6 +1152,11 @@ run_model <-
         human_pzq_efficacy      = human_pzq_efficacy,
         human_nic_efficacy      = human_nic_efficacy
       )
+    
+    combined_cov_stage2 <- resolve_combined_cov(pig_combined_vac_cov_stage2,
+                                                pig_combined_ofz_cov_stage2,
+                                                pig_vaccine_ds1_cov_stage2,
+                                                pig_vaccine_ds2_cov_stage2)
     
     if (length(nonhuman_stage2) > 0) check_interventions_stg2(nonhuman_stage2)
     check_effect(intervention_effect = int_effect_size_list)
@@ -1083,6 +1227,10 @@ run_model <-
           intervention_vec       = nonhuman_stage2,
           age_target_MDA         = age_target_pig_MDA_stage2,
           age_target_vaccine     = age_target_pig_vaccine_stage2,
+          age_target_combined_vac = age_target_pig_combined_vac_stage2,   
+          age_target_combined_ofz = age_target_pig_combined_ofz_stage2,   
+          combined_ofz_cov        = combined_cov_stage2[["ofz"]],         
+          combined_vac_cov        = combined_cov_stage2[["vac"]],         
           int_effect_size_list   = int_effect_size_list,
           intervention_frequency = intervention_frequency_stage2,
           update_params          = (i == first_pig_stage2)
@@ -1091,6 +1239,8 @@ run_model <-
         states                        <- out$states
         age_target_pig_MDA_stage2     <- out$age_target_MDA
         age_target_pig_vaccine_stage2 <- out$age_target_vaccine
+        age_target_pig_combined_vac_stage2 <- out$age_target_combined_vac  
+        age_target_pig_combined_ofz_stage2 <- out$age_target_combined_ofz  
       }
       
       if (event_hum_stage2[i]) {

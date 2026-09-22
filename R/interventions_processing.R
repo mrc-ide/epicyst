@@ -53,6 +53,40 @@ pre_pig_vaccine <- function(age_target, tail_states) {
 
 
 #' @title
+#' pre_pig_combined
+#' @description
+#' Selects the pig compartments needed for a coupled round. Both the Pig_MDA
+#' and the Pig_vaccine move are applied to the same sub-list, so it must carry
+#' every compartment either touches: SP0, PP0, IPL0, IPH0, RP0 (Pig_MDA) and
+#' VP0 (Pig_vaccine).
+#'
+#' @param age_target numeric vector of pig age classes
+#' @param tail_states output from inter_run_setup()
+#'
+#' @return list of age-subsetted pig states
+#' @export
+pre_pig_combined <- function(age_target, tail_states) {
+  
+  need <- c("SP0", "PP0", "IPL0", "IPH0", "RP0", "VP0")
+  miss <- need[!need %in% names(tail_states)]
+  if (length(miss)) {
+    stop("pre_pig_combined(): tail_states is missing ",
+         paste(miss, collapse = ", "))
+  }
+  
+  list(
+    SP0  = unlist(tail_states$SP0 [grep("SP",  names(tail_states$SP0 ))][age_target]),
+    PP0  = unlist(tail_states$PP0 [grep("PP",  names(tail_states$PP0 ))][age_target]),
+    IPL0 = unlist(tail_states$IPL0[grep("IPL", names(tail_states$IPL0))][age_target]),
+    IPH0 = unlist(tail_states$IPH0[grep("IPH", names(tail_states$IPH0))][age_target]),
+    RP0  = unlist(tail_states$RP0 [grep("RP",  names(tail_states$RP0 ))][age_target]),
+    VP0  = unlist(tail_states$VP0 [grep("VP",  names(tail_states$VP0 ))][age_target])
+  )
+}
+
+
+
+#' @title
 #' update_states
 #' @description
 #' Identifies age targetted states and updates these specific states in the overall tail states from the initial model run
@@ -123,6 +157,88 @@ age_struc_pig_vacc_func <-function(oldest_age, intervention_frequency) {
   age_target_pig_vaccine <- c(youngest:oldest)
   
   return(age_target_pig_vaccine)
+}
+
+
+#' @title
+#' pig_combined_round
+#' @description
+#' Applies a coupled round across its two age windows and writes the result
+#' back into the full state list.
+#'
+#' The vaccine window is where the schedule completes and protection is
+#' conferred - one age class per cohort, or the full eligible range for a
+#' catch-up round. The OFZ window is the wider set of classes at which a drench
+#' is given; classes in it but below the vaccine window receive oxfendazole
+#' alone, at `ofz_cov`.
+#'
+#' @param tail_states full state list from inter_run_setup()
+#' @param age_target_vac vaccine age window; if not numeric, taken from
+#'   age_struc_pig_vacc_func()
+#' @param age_target_ofz OFZ age window; if not numeric, taken as the vaccine
+#'   window extended downwards by one round interval (floored at age class 1)
+#' @param ofz_cov,vac_cov nested coverages, from resolve_combined_cov()
+#' @param effects_full effect list at coverage 1
+#' @param vaccinate_recovered see pig_combined_event()
+#' @param na_pig number of pig age classes
+#' @param intervention_frequency round interval, used to build defaults
+#'
+#' @return list with `states`, `age_target_vac` and `age_target_ofz`, the
+#'   latter two so the caller can retain defaults filled in here
+#' @export
+pig_combined_round <- function(tail_states, age_target_vac, age_target_ofz,
+                               ofz_cov, vac_cov, effects_full,
+                               vaccinate_recovered, na_pig,
+                               intervention_frequency) {
+  
+  # ---- Non age-structured pig model: no selection possible ----------------- #
+  if (na_pig == 1) {
+    sm <- pig_combined_event(
+      states = tail_states[c("SP0", "PP0", "IPL0", "IPH0", "RP0", "VP0")],
+      ofz_cov = ofz_cov, vac_cov = vac_cov, effects_full = effects_full,
+      vaccinate_recovered = vaccinate_recovered)
+    tail_states[names(sm)] <- sm
+    return(list(states = tail_states,
+                age_target_vac = age_target_vac,
+                age_target_ofz = age_target_ofz))
+  }
+  
+  # ---- Defaults ------------------------------------------------------------ #
+  if (!is.numeric(age_target_vac)) {
+    age_target_vac <- age_struc_pig_vacc_func(
+      oldest_age = na_pig, intervention_frequency = intervention_frequency)
+  }
+  if (!is.numeric(age_target_ofz)) {
+    age_target_ofz <- max(1, min(age_target_vac) - intervention_frequency):
+      max(age_target_vac)
+  }
+  
+  if (!all(age_target_vac %in% age_target_ofz)) {
+    stop("The vaccine age window must sit inside the OFZ window: every ",
+         "vaccinated animal is also medicated.")
+  }
+  
+  # ---- Vaccine window: three-cell coupled round ---------------------------- #
+  p  <- pre_pig_combined(age_target = age_target_vac, tail_states = tail_states)
+  sm <- pig_combined_event(states = p, ofz_cov = ofz_cov, vac_cov = vac_cov,
+                           effects_full = effects_full,
+                           vaccinate_recovered = vaccinate_recovered)
+  states <- update_states(states_move = sm, tail_states = tail_states)
+  
+  # ---- OFZ-only classes: drench at ofz_cov, no protection conferred -------- #
+  ofz_only_ages <- setdiff(age_target_ofz, age_target_vac)
+  
+  if (length(ofz_only_ages) > 0 && ofz_cov > 0) {
+    q    <- pre_pig_MDA(age_target = ofz_only_ages, tail_states = states)
+    trt  <- intervention_event_state(states = q, intervention = "Pig_MDA",
+                                     intervention_effect = effects_full)
+    sm2  <- blend_states(list(q, trt), c(1 - ofz_cov, ofz_cov))
+    states <- update_states(states_move = sm2, tail_states = states)
+  }
+  
+  list(states = states,
+       age_target_vac = age_target_vac,
+       age_target_ofz = age_target_ofz)
 }
 
 
